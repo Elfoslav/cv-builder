@@ -13,7 +13,27 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+      },
+      backgroundImage: {
+        'gradient-primary': 'var(--gradient-primary)',
+        'gradient-glow': 'var(--gradient-glow)',
+        'gradient-card': 'var(--gradient-card)',
+      },
+      boxShadow: {
+        glow: 'var(--shadow-glow)',
+        card: 'var(--shadow-card)',
+      },
       colors: {
+        terminal: {
+          green: 'hsl(var(--terminal-green))',
+          cyan: 'hsl(var(--terminal-cyan))',
+          purple: 'hsl(var(--terminal-purple))',
+          yellow: 'hsl(var(--terminal-yellow))',
+          pink: 'hsl(var(--terminal-pink))',
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -65,25 +85,31 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "blink": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0" },
+        },
+        "fade-up": {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "progress-fill": {
+          "0%": { width: "0%" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "blink": "blink 1s step-end infinite",
+        "fade-up": "fade-up 0.6s ease-out forwards",
+        "progress-fill": "progress-fill 1.2s ease-out forwards",
       },
     },
   },

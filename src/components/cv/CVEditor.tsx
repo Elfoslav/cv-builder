@@ -53,7 +53,7 @@ export const CVEditor = ({ data, setData, reset }: CVEditorProps) => {
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <h2 className="font-mono text-sm text-primary">~/cv $ edit --live</h2>
+        <h2 className="text-sm font-semibold text-foreground">Edit your CV</h2>
         <div className="flex gap-1">
           <Button size="sm" variant="ghost" onClick={exportJSON} title="Export JSON">
             <Download className="h-4 w-4" />
@@ -112,6 +112,7 @@ export const CVEditor = ({ data, setData, reset }: CVEditorProps) => {
           </Section>
 
           <Section value="skills" title={`Skills (${data.skills.length})`}>
+            <p className="text-xs text-muted-foreground">Use "Languages" for programming languages and "Frameworks &amp; Tools" for everything else.</p>
             <div className="space-y-3">
               {data.skills.map((s, i) => (
                 <div key={s.id} className="space-y-2 rounded border border-border bg-secondary/20 p-3">
@@ -290,14 +291,14 @@ export const CVEditor = ({ data, setData, reset }: CVEditorProps) => {
 
 const Section = ({ value, title, children }: { value: string; title: string; children: React.ReactNode }) => (
   <AccordionItem value={value} className="rounded border border-border bg-card px-3">
-    <AccordionTrigger className="font-mono text-sm hover:no-underline">{title}</AccordionTrigger>
+    <AccordionTrigger className="text-sm font-medium hover:no-underline">{title}</AccordionTrigger>
     <AccordionContent className="space-y-3 pt-2">{children}</AccordionContent>
   </AccordionItem>
 );
 
 const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div className="space-y-1.5">
-    <Label className="font-mono text-xs text-muted-foreground">{label}</Label>
+    <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
     {children}
   </div>
 );

@@ -28,14 +28,14 @@ const Index = () => {
             onClick={() => setEditorOpen((v) => !v)}
           >
             {editorOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
-            <span className="font-mono text-xs">{editorOpen ? "Hide editor" : "Show editor"}</span>
+            <span className="text-xs font-medium">{editorOpen ? "Hide editor" : "Show editor"}</span>
           </Button>
-          <span className="font-mono text-xs text-muted-foreground lg:hidden">
-            cv-builder · resize to ≥1024px to edit
+          <span className="text-xs text-muted-foreground lg:hidden">
+            Resize window to ≥1024px to edit
           </span>
           <Button size="sm" variant="ghost" className="gap-2" onClick={handleDownload}>
             <Printer className="h-4 w-4" />
-            <span className="font-mono text-xs">Print / PDF</span>
+            <span className="text-xs font-medium">Print / PDF</span>
           </Button>
         </div>
 

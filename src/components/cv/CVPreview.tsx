@@ -44,7 +44,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
         {data.skills.length > 0 && (
           <section className="mb-24">
             <SectionHeader index="02" title="Technical Skills" command="skills.json" />
-            <div className="grid gap-10 md:grid-cols-2">
+            <div className="grid gap-10 md:grid-cols-2 print-grid-2">
               {languages.length > 0 && (
                 <div>
                   <h3 className="mb-6 font-mono text-sm uppercase tracking-wider text-accent">
@@ -116,7 +116,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
         {data.projects.length > 0 && (
           <section className="mb-24">
             <SectionHeader index="05" title="Featured Projects" command="projects/*" />
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="grid gap-5 md:grid-cols-2 print-grid-2-tight">
               {data.projects.map((p) => (
                 <ProjectCard
                   key={p.id}
@@ -135,7 +135,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
         {data.hobbies.length > 0 && (
           <section className="mb-24">
             <SectionHeader index="06" title="When I'm Offline" command="hobbies/" />
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-5 print-grid-5">
               {data.hobbies.map((h) => {
                 const Icon = ICON_MAP[h.icon] ?? Code2;
                 return (

@@ -32,7 +32,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
       <main className="container mx-auto max-w-5xl px-6 py-20">
         {data.about && (
           <section className="mb-24">
-            <SectionHeader index="01" title="About Me" command="about.md" />
+            <SectionHeader index="01" title="About Me" subtitle="Introduction" />
             <div className="space-y-4 text-muted-foreground">
               {data.about.split("\n\n").map((p, i) => (
                 <p key={i} className="text-base leading-relaxed">{p}</p>
@@ -43,12 +43,12 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
 
         {data.skills.length > 0 && (
           <section className="mb-24">
-            <SectionHeader index="02" title="Technical Skills" command="skills.json" />
+            <SectionHeader index="02" title="Skills" subtitle="What I work with" />
             <div className="grid gap-10 md:grid-cols-2 print-grid-2">
               {languages.length > 0 && (
                 <div>
-                  <h3 className="mb-6 font-mono text-sm uppercase tracking-wider text-accent">
-                    {"// Languages"}
+                  <h3 className="mb-6 text-sm font-semibold uppercase tracking-wider text-accent">
+                    Programming Languages
                   </h3>
                   <div className="space-y-5">
                     {languages.map((s) => (
@@ -59,8 +59,8 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
               )}
               {frameworks.length > 0 && (
                 <div>
-                  <h3 className="mb-6 font-mono text-sm uppercase tracking-wider text-accent">
-                    {"// Frameworks & Tools"}
+                  <h3 className="mb-6 text-sm font-semibold uppercase tracking-wider text-accent">
+                    Tools &amp; Technologies
                   </h3>
                   <div className="space-y-5">
                     {frameworks.map((s) => (
@@ -75,7 +75,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
 
         {data.experience.length > 0 && (
           <section className="mb-24">
-            <SectionHeader index="03" title="Work Experience" command="experience.log" />
+            <SectionHeader index="03" title="Work Experience" subtitle="Career history" />
             <div>
               {data.experience.map((e) => (
                 <TimelineItem
@@ -95,7 +95,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
 
         {data.education.length > 0 && (
           <section className="mb-24">
-            <SectionHeader index="04" title="Education" command="education.yml" />
+            <SectionHeader index="04" title="Education" subtitle="Academic background" />
             <div>
               {data.education.map((e) => (
                 <TimelineItem
@@ -115,7 +115,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
 
         {data.projects.length > 0 && (
           <section className="mb-24">
-            <SectionHeader index="05" title="Featured Projects" command="projects/*" />
+            <SectionHeader index="05" title="Featured Projects" subtitle="Things I've built" />
             <div className="grid gap-5 md:grid-cols-2 print-grid-2-tight">
               {data.projects.map((p) => (
                 <ProjectCard
@@ -134,7 +134,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
 
         {data.hobbies.length > 0 && (
           <section className="mb-24">
-            <SectionHeader index="06" title="When I'm Offline" command="hobbies/" />
+            <SectionHeader index="06" title="Interests" subtitle="Outside of work" />
             <div className="grid grid-cols-2 gap-4 md:grid-cols-5 print-grid-5">
               {data.hobbies.map((h) => {
                 const Icon = ICON_MAP[h.icon] ?? Code2;
@@ -144,7 +144,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
                     className="group flex flex-col items-center gap-3 rounded-lg border border-border bg-gradient-card p-5 text-center transition-all hover:border-primary/50 hover:shadow-glow"
                   >
                     <Icon className="h-7 w-7 text-primary transition-transform group-hover:scale-110" />
-                    <span className="font-mono text-xs text-muted-foreground">{h.label}</span>
+                    <span className="text-xs text-muted-foreground">{h.label}</span>
                   </div>
                 );
               })}
@@ -153,14 +153,10 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
         )}
 
         <footer className="border-t border-border pt-10">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <div className="font-mono text-xs text-muted-foreground">
-              <span className="text-primary">$</span> echo "Thanks for reading."
-            </div>
-            <div className="font-mono text-xs text-muted-foreground">
-              © {new Date().getFullYear()} {data.name} · Built with{" "}
-              <span className="text-primary">React</span> &{" "}
-              <span className="text-accent">Tailwind</span>
+          <div className="flex flex-col items-center justify-between gap-4 text-center text-xs text-muted-foreground md:flex-row md:text-left">
+            <div>Thanks for taking the time to read my CV.</div>
+            <div>
+              © {new Date().getFullYear()} {data.name}
             </div>
           </div>
         </footer>

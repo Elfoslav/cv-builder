@@ -15,24 +15,21 @@ export const ProjectCard = ({ name, description, stack, stars, repo, link }: Pro
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
 
       <div className="mb-3 flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs text-muted-foreground">/</span>
-          <h3 className="text-lg font-semibold text-foreground">{name}</h3>
-        </div>
-        <div className="flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-foreground">{name}</h3>
+        <div className="flex items-center gap-3">
           {stars !== undefined && (
-            <span className="flex items-center gap-1 font-mono text-xs text-terminal-yellow">
+            <span className="flex items-center gap-1 text-xs text-terminal-yellow" title="GitHub stars">
               <Star className="h-3 w-3 fill-current" />
-              {stars}
+              {stars.toLocaleString()}
             </span>
           )}
           {repo && (
-            <a href={repo} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
+            <a href={repo} target="_blank" rel="noreferrer" aria-label="View source" className="text-muted-foreground transition-colors hover:text-primary">
               <Github className="h-4 w-4" />
             </a>
           )}
           {link && (
-            <a href={link} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
+            <a href={link} target="_blank" rel="noreferrer" aria-label="Visit project" className="text-muted-foreground transition-colors hover:text-primary">
               <ExternalLink className="h-4 w-4" />
             </a>
           )}
@@ -41,16 +38,18 @@ export const ProjectCard = ({ name, description, stack, stars, repo, link }: Pro
 
       <p className="mb-4 text-sm leading-relaxed text-muted-foreground">{description}</p>
 
-      <div className="flex flex-wrap gap-1.5">
-        {stack.map((tech) => (
-          <span
-            key={tech}
-            className="rounded border border-border bg-background/60 px-2 py-0.5 font-mono text-[11px] text-accent"
-          >
-            {tech}
-          </span>
-        ))}
-      </div>
+      {stack.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {stack.map((tech) => (
+            <span
+              key={tech}
+              className="rounded-full border border-border bg-background/60 px-2.5 py-0.5 text-[11px] text-accent"
+            >
+              {tech}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

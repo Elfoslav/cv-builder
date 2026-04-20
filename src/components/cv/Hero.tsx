@@ -8,48 +8,30 @@ interface HeroProps {
 }
 
 export const Hero = ({ data, onDownload }: HeroProps) => {
-  const initials = data.name
-    .split(" ")
-    .map((p) => p[0])
-    .join("")
-    .slice(0, 2)
-    .toLowerCase();
-
   return (
     <section className="relative overflow-hidden border-b border-border">
       <div className="grid-bg absolute inset-0" />
       <div className="absolute inset-0 bg-gradient-glow" />
-      <div className="container relative mx-auto px-6 py-20 md:py-32">
+      <div className="container relative mx-auto px-6 py-20 md:py-28">
         <div className="mx-auto max-w-4xl">
           {data.available && (
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5">
               <span className="h-2 w-2 animate-blink rounded-full bg-primary" />
-              <span className="font-mono text-xs text-primary">available_for_hire = true</span>
+              <span className="text-xs font-medium text-primary">Available for new opportunities</span>
             </div>
           )}
 
-          <div className="mb-2 font-mono text-sm text-muted-foreground">
-            <span className="text-primary">const</span>{" "}
-            <span className="text-accent">{initials || "dev"}</span> ={" "}
-            <span className="text-terminal-yellow">{"{"}</span>
-          </div>
-
-          <h1 className="mb-4 text-5xl font-extrabold tracking-tight text-foreground md:text-7xl">
+          <h1 className="mb-3 text-5xl font-extrabold tracking-tight text-foreground md:text-7xl">
             {data.name || "Your Name"}
-            <span className="ml-1 inline-block h-12 w-1 animate-blink bg-primary md:h-16" />
           </h1>
 
-          <p className="mb-2 font-mono text-lg text-accent md:text-xl">
-            <span className="text-muted-foreground">role:</span> "{data.role}"
+          <p className="mb-5 text-xl font-medium text-accent md:text-2xl">
+            {data.role}
           </p>
 
           <p className="max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
             {data.bio}
           </p>
-
-          <div className="mt-2 font-mono text-sm text-muted-foreground">
-            <span className="text-terminal-yellow">{"}"}</span>;
-          </div>
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Button
@@ -82,12 +64,12 @@ export const Hero = ({ data, onDownload }: HeroProps) => {
             )}
             <div className="flex items-center gap-3">
               {data.github && (
-                <a href={data.github} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
+                <a href={data.github} target="_blank" rel="noreferrer" aria-label="GitHub" className="text-muted-foreground transition-colors hover:text-primary">
                   <Github className="h-5 w-5" />
                 </a>
               )}
               {data.linkedin && (
-                <a href={data.linkedin} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
+                <a href={data.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="text-muted-foreground transition-colors hover:text-primary">
                   <Linkedin className="h-5 w-5" />
                 </a>
               )}
@@ -103,7 +85,7 @@ const ContactItem = ({ icon, label, href }: { icon: React.ReactNode; label: stri
   const content = (
     <div className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary">
       <span className="text-primary">{icon}</span>
-      <span className="truncate font-mono text-xs">{label}</span>
+      <span className="truncate text-sm">{label}</span>
     </div>
   );
   return href ? <a href={href}>{content}</a> : content;

@@ -131,7 +131,7 @@ export const CVEditor = ({ data, setData, reset }: CVEditorProps) => {
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div>
                     <Select value={s.group} onValueChange={(v) => {
                       const next = [...data.skills];
                       next[i] = { ...s, group: v as Skill["group"] };
@@ -141,18 +141,6 @@ export const CVEditor = ({ data, setData, reset }: CVEditorProps) => {
                       <SelectContent>
                         <SelectItem value="languages">Languages</SelectItem>
                         <SelectItem value="frameworks">Frameworks & Tools</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select value={s.color} onValueChange={(v) => {
-                      const next = [...data.skills];
-                      next[i] = { ...s, color: v as Skill["color"] };
-                      update("skills", next);
-                    }}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {SKILL_COLORS.map((c) => (
-                          <SelectItem key={c} value={c}>{c}</SelectItem>
-                        ))}
                       </SelectContent>
                     </Select>
                   </div>

@@ -34,6 +34,11 @@ export default {
           yellow: 'hsl(var(--terminal-yellow))',
           pink: 'hsl(var(--terminal-pink))',
         },
+        skill: {
+          high: 'hsl(var(--skill-high))',
+          mid: 'hsl(var(--skill-mid))',
+          low: 'hsl(var(--skill-low))',
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

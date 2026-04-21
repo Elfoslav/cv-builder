@@ -1,16 +1,9 @@
 interface SkillBarProps {
   name: string;
   percentage: number;
-  color?: 'green' | 'cyan' | 'purple' | 'yellow' | 'pink';
+  /** @deprecated color is now derived from percentage */
+  color?: string;
 }
-
-const colorMap = {
-  green: 'bg-terminal-green',
-  cyan: 'bg-terminal-cyan',
-  purple: 'bg-terminal-purple',
-  yellow: 'bg-terminal-yellow',
-  pink: 'bg-terminal-pink',
-};
 
 const levelLabel = (p: number) => {
   if (p >= 90) return 'Expert';
@@ -20,7 +13,13 @@ const levelLabel = (p: number) => {
   return 'Beginner';
 };
 
-export const SkillBar = ({ name, percentage, color = 'green' }: SkillBarProps) => {
+const barColor = (p: number) => {
+  if (p >= 80) return 'bg-skill-high';
+  if (p >= 30) return 'bg-skill-mid';
+  return 'bg-skill-low';
+};
+
+export const SkillBar = ({ name, percentage }: SkillBarProps) => {
   return (
     <div className="group">
       <div className="mb-2 flex items-baseline justify-between">
@@ -29,7 +28,7 @@ export const SkillBar = ({ name, percentage, color = 'green' }: SkillBarProps) =
       </div>
       <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
         <div
-          className={`h-full ${colorMap[color]} animate-progress-fill rounded-full transition-all duration-500 group-hover:shadow-glow`}
+          className={`h-full ${barColor(percentage)} animate-progress-fill rounded-full transition-all duration-500 group-hover:shadow-glow`}
           style={{ width: `${percentage}%` }}
         />
       </div>

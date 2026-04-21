@@ -12,7 +12,7 @@ export const Hero = ({ data, onDownload }: HeroProps) => {
     <section className="relative overflow-hidden border-b border-border">
       <div className="grid-bg absolute inset-0" />
       <div className="absolute inset-0 bg-gradient-glow" />
-      <div className="container relative mx-auto px-6 py-20 md:py-28">
+      <div className="container relative mx-auto px-6 py-10 md:py-14 print:py-6">
         <div className="mx-auto max-w-4xl">
           {data.available && (
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5">

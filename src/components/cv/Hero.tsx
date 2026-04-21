@@ -33,7 +33,7 @@ export const Hero = ({ data, onDownload }: HeroProps) => {
             {data.bio}
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap gap-3 print:hidden">
             <Button
               size="lg"
               onClick={onDownload}

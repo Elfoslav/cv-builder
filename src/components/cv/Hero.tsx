@@ -14,12 +14,6 @@ export const Hero = ({ data, onDownload }: HeroProps) => {
       <div className="absolute inset-0 bg-gradient-glow" />
       <div className="container relative mx-auto px-6 py-10 md:py-14 print:py-6">
         <div className="mx-auto max-w-4xl">
-          {data.available && (
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5">
-              <span className="h-2 w-2 animate-blink rounded-full bg-primary" />
-              <span className="text-xs font-medium text-primary">Available for new opportunities</span>
-            </div>
-          )}
 
           <h1 className="mb-3 text-5xl font-extrabold tracking-tight text-foreground md:text-7xl">
             {data.name || "Your Name"}

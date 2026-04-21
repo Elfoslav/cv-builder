@@ -1,4 +1,5 @@
-import { CVData, HOBBY_ICONS, SKILL_COLORS, Skill, Experience, Education, Project, Hobby } from "@/lib/cv-types";
+import { Dispatch, SetStateAction } from "react";
+import { CVData, HOBBY_ICONS, Skill, Experience, Education, Project, Hobby } from "@/lib/cv-types";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -12,15 +13,37 @@ import { toast } from "@/hooks/use-toast";
 
 interface CVEditorProps {
   data: CVData;
-  setData: (d: CVData) => void;
+  setData: Dispatch<SetStateAction<CVData>>;
   reset: () => void;
 }
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
+type ListKey = "skills" | "experience" | "education" | "projects" | "hobbies";
+
 export const CVEditor = ({ data, setData, reset }: CVEditorProps) => {
   const update = <K extends keyof CVData>(key: K, value: CVData[K]) =>
-    setData({ ...data, [key]: value });
+    setData((prev) => ({ ...prev, [key]: value }));
+
+  const patchItem = <K extends ListKey>(key: K, id: string, patch: Partial<CVData[K][number]>) =>
+    setData((prev) => ({
+      ...prev,
+      [key]: (prev[key] as Array<{ id: string }>).map((item) =>
+        item.id === id ? { ...item, ...patch } : item,
+      ),
+    }) as CVData);
+
+  const removeItem = (key: ListKey, id: string) =>
+    setData((prev) => ({
+      ...prev,
+      [key]: (prev[key] as Array<{ id: string }>).filter((item) => item.id !== id),
+    }) as CVData);
+
+  const appendItem = <K extends ListKey>(key: K, item: CVData[K][number]) =>
+    setData((prev) => ({
+      ...prev,
+      [key]: [...(prev[key] as Array<unknown>), item],
+    }) as CVData);
 
   const exportJSON = () => {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -39,8 +62,8 @@ export const CVEditor = ({ data, setData, reset }: CVEditorProps) => {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const parsed = JSON.parse(String(reader.result));
-        setData({ ...data, ...parsed });
+        const parsed = JSON.parse(String(reader.result)) as Partial<CVData>;
+        setData((prev) => ({ ...prev, ...parsed }));
         toast({ title: "Imported", description: "CV data loaded successfully." });
       } catch {
         toast({ title: "Import failed", description: "Invalid JSON file.", variant: "destructive" });

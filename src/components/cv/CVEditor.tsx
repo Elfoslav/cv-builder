@@ -137,29 +137,21 @@ export const CVEditor = ({ data, setData, reset }: CVEditorProps) => {
           <Section value="skills" title={`Skills (${data.skills.length})`}>
             <p className="text-xs text-muted-foreground">Use "Languages" for programming languages and "Frameworks &amp; Tools" for everything else.</p>
             <div className="space-y-3">
-              {data.skills.map((s, i) => (
+              {data.skills.map((s) => (
                 <div key={s.id} className="space-y-2 rounded border border-border bg-secondary/20 p-3">
                   <div className="flex gap-2">
                     <Input
                       placeholder="Skill name"
                       value={s.name}
-                      onChange={(e) => {
-                        const next = [...data.skills];
-                        next[i] = { ...s, name: e.target.value };
-                        update("skills", next);
-                      }}
+                      onChange={(e) => patchItem("skills", s.id, { name: e.target.value })}
                       maxLength={40}
                     />
-                    <Button size="icon" variant="ghost" onClick={() => update("skills", data.skills.filter((x) => x.id !== s.id))}>
+                    <Button size="icon" variant="ghost" onClick={() => removeItem("skills", s.id)}>
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
                   <div>
-                    <Select value={s.group} onValueChange={(v) => {
-                      const next = [...data.skills];
-                      next[i] = { ...s, group: v as Skill["group"] };
-                      update("skills", next);
-                    }}>
+                    <Select value={s.group} onValueChange={(v) => patchItem("skills", s.id, { group: v as Skill["group"] })}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="languages">Languages</SelectItem>
@@ -175,123 +167,119 @@ export const CVEditor = ({ data, setData, reset }: CVEditorProps) => {
                     <Slider
                       min={0} max={100} step={5}
                       value={[s.percentage]}
-                      onValueChange={([v]) => {
-                        const next = [...data.skills];
-                        next[i] = { ...s, percentage: v };
-                        update("skills", next);
-                      }}
+                      onValueChange={([v]) => patchItem("skills", s.id, { percentage: v })}
                     />
                   </div>
                 </div>
               ))}
-              <AddButton label="Add skill" onClick={() => update("skills", [...data.skills, {
+              <AddButton label="Add skill" onClick={() => appendItem("skills", {
                 id: uid(), name: "New skill", percentage: 50, color: "green", group: "languages",
-              } as Skill])} />
+              } as Skill)} />
             </div>
           </Section>
 
           <Section value="experience" title={`Experience (${data.experience.length})`}>
             <div className="space-y-3">
-              {data.experience.map((e, i) => (
-                <ItemCard key={e.id} onDelete={() => update("experience", data.experience.filter((x) => x.id !== e.id))}>
+              {data.experience.map((e) => (
+                <ItemCard key={e.id} onDelete={() => removeItem("experience", e.id)}>
                   <Input placeholder="Period (e.g. 2022 — Present)" value={e.period}
-                    onChange={(ev) => { const n = [...data.experience]; n[i] = { ...e, period: ev.target.value }; update("experience", n); }} maxLength={40} />
+                    onChange={(ev) => patchItem("experience", e.id, { period: ev.target.value })} maxLength={40} />
                   <Input placeholder="Job title" value={e.title}
-                    onChange={(ev) => { const n = [...data.experience]; n[i] = { ...e, title: ev.target.value }; update("experience", n); }} maxLength={80} />
+                    onChange={(ev) => patchItem("experience", e.id, { title: ev.target.value })} maxLength={80} />
                   <div className="grid grid-cols-2 gap-2">
                     <Input placeholder="Company" value={e.company}
-                      onChange={(ev) => { const n = [...data.experience]; n[i] = { ...e, company: ev.target.value }; update("experience", n); }} maxLength={60} />
+                      onChange={(ev) => patchItem("experience", e.id, { company: ev.target.value })} maxLength={60} />
                     <Input placeholder="Location" value={e.location}
-                      onChange={(ev) => { const n = [...data.experience]; n[i] = { ...e, location: ev.target.value }; update("experience", n); }} maxLength={60} />
+                      onChange={(ev) => patchItem("experience", e.id, { location: ev.target.value })} maxLength={60} />
                   </div>
                   <Textarea placeholder="Description" rows={3} value={e.description}
-                    onChange={(ev) => { const n = [...data.experience]; n[i] = { ...e, description: ev.target.value }; update("experience", n); }} maxLength={600} />
+                    onChange={(ev) => patchItem("experience", e.id, { description: ev.target.value })} maxLength={600} />
                   <Input placeholder="Tags (comma-separated)" value={e.tags}
-                    onChange={(ev) => { const n = [...data.experience]; n[i] = { ...e, tags: ev.target.value }; update("experience", n); }} maxLength={200} />
+                    onChange={(ev) => patchItem("experience", e.id, { tags: ev.target.value })} maxLength={200} />
                 </ItemCard>
               ))}
-              <AddButton label="Add experience" onClick={() => update("experience", [...data.experience, {
+              <AddButton label="Add experience" onClick={() => appendItem("experience", {
                 id: uid(), period: "2024 — Present", title: "New role", company: "Company", location: "", description: "", tags: "",
-              } as Experience])} />
+              } as Experience)} />
             </div>
           </Section>
 
           <Section value="education" title={`Education (${data.education.length})`}>
             <div className="space-y-3">
-              {data.education.map((e, i) => (
-                <ItemCard key={e.id} onDelete={() => update("education", data.education.filter((x) => x.id !== e.id))}>
+              {data.education.map((e) => (
+                <ItemCard key={e.id} onDelete={() => removeItem("education", e.id)}>
                   <Input placeholder="Period" value={e.period}
-                    onChange={(ev) => { const n = [...data.education]; n[i] = { ...e, period: ev.target.value }; update("education", n); }} maxLength={40} />
+                    onChange={(ev) => patchItem("education", e.id, { period: ev.target.value })} maxLength={40} />
                   <Input placeholder="Degree / Title" value={e.title}
-                    onChange={(ev) => { const n = [...data.education]; n[i] = { ...e, title: ev.target.value }; update("education", n); }} maxLength={100} />
+                    onChange={(ev) => patchItem("education", e.id, { title: ev.target.value })} maxLength={100} />
                   <div className="grid grid-cols-2 gap-2">
                     <Input placeholder="School" value={e.school}
-                      onChange={(ev) => { const n = [...data.education]; n[i] = { ...e, school: ev.target.value }; update("education", n); }} maxLength={80} />
+                      onChange={(ev) => patchItem("education", e.id, { school: ev.target.value })} maxLength={80} />
                     <Input placeholder="Location" value={e.location}
-                      onChange={(ev) => { const n = [...data.education]; n[i] = { ...e, location: ev.target.value }; update("education", n); }} maxLength={60} />
+                      onChange={(ev) => patchItem("education", e.id, { location: ev.target.value })} maxLength={60} />
                   </div>
                   <Textarea placeholder="Description" rows={3} value={e.description}
-                    onChange={(ev) => { const n = [...data.education]; n[i] = { ...e, description: ev.target.value }; update("education", n); }} maxLength={500} />
+                    onChange={(ev) => patchItem("education", e.id, { description: ev.target.value })} maxLength={500} />
                   <Input placeholder="Tags (comma-separated)" value={e.tags}
-                    onChange={(ev) => { const n = [...data.education]; n[i] = { ...e, tags: ev.target.value }; update("education", n); }} maxLength={200} />
+                    onChange={(ev) => patchItem("education", e.id, { tags: ev.target.value })} maxLength={200} />
                 </ItemCard>
               ))}
-              <AddButton label="Add education" onClick={() => update("education", [...data.education, {
+              <AddButton label="Add education" onClick={() => appendItem("education", {
                 id: uid(), period: "", title: "Degree", school: "School", location: "", description: "", tags: "",
-              } as Education])} />
+              } as Education)} />
             </div>
           </Section>
 
           <Section value="projects" title={`Projects (${data.projects.length})`}>
             <div className="space-y-3">
-              {data.projects.map((p, i) => (
-                <ItemCard key={p.id} onDelete={() => update("projects", data.projects.filter((x) => x.id !== p.id))}>
+              {data.projects.map((p) => (
+                <ItemCard key={p.id} onDelete={() => removeItem("projects", p.id)}>
                   <Input placeholder="Project name" value={p.name}
-                    onChange={(ev) => { const n = [...data.projects]; n[i] = { ...p, name: ev.target.value }; update("projects", n); }} maxLength={60} />
+                    onChange={(ev) => patchItem("projects", p.id, { name: ev.target.value })} maxLength={60} />
                   <Textarea placeholder="Description" rows={3} value={p.description}
-                    onChange={(ev) => { const n = [...data.projects]; n[i] = { ...p, description: ev.target.value }; update("projects", n); }} maxLength={400} />
+                    onChange={(ev) => patchItem("projects", p.id, { description: ev.target.value })} maxLength={400} />
                   <Input placeholder="Tech stack (comma-separated)" value={p.stack}
-                    onChange={(ev) => { const n = [...data.projects]; n[i] = { ...p, stack: ev.target.value }; update("projects", n); }} maxLength={200} />
+                    onChange={(ev) => patchItem("projects", p.id, { stack: ev.target.value })} maxLength={200} />
                   <div className="grid grid-cols-3 gap-2">
                     <Input type="number" placeholder="Stars" value={p.stars ?? ""}
-                      onChange={(ev) => { const n = [...data.projects]; n[i] = { ...p, stars: ev.target.value ? Number(ev.target.value) : undefined }; update("projects", n); }} />
+                      onChange={(ev) => patchItem("projects", p.id, { stars: ev.target.value ? Number(ev.target.value) : undefined })} />
                     <Input placeholder="Repo URL" value={p.repo ?? ""}
-                      onChange={(ev) => { const n = [...data.projects]; n[i] = { ...p, repo: ev.target.value }; update("projects", n); }} maxLength={200} />
+                      onChange={(ev) => patchItem("projects", p.id, { repo: ev.target.value })} maxLength={200} />
                     <Input placeholder="Live URL" value={p.link ?? ""}
-                      onChange={(ev) => { const n = [...data.projects]; n[i] = { ...p, link: ev.target.value }; update("projects", n); }} maxLength={200} />
+                      onChange={(ev) => patchItem("projects", p.id, { link: ev.target.value })} maxLength={200} />
                   </div>
                 </ItemCard>
               ))}
-              <AddButton label="Add project" onClick={() => update("projects", [...data.projects, {
+              <AddButton label="Add project" onClick={() => appendItem("projects", {
                 id: uid(), name: "New project", description: "", stack: "",
-              } as Project])} />
+              } as Project)} />
             </div>
           </Section>
 
           <Section value="hobbies" title={`Hobbies (${data.hobbies.length})`}>
             <div className="space-y-3">
-              {data.hobbies.map((h, i) => (
+              {data.hobbies.map((h) => (
                 <div key={h.id} className="flex gap-2">
                   <Input
                     placeholder="Hobby"
                     value={h.label}
-                    onChange={(e) => { const n = [...data.hobbies]; n[i] = { ...h, label: e.target.value }; update("hobbies", n); }}
+                    onChange={(e) => patchItem("hobbies", h.id, { label: e.target.value })}
                     maxLength={40}
                   />
-                  <Select value={h.icon} onValueChange={(v) => { const n = [...data.hobbies]; n[i] = { ...h, icon: v as Hobby["icon"] }; update("hobbies", n); }}>
+                  <Select value={h.icon} onValueChange={(v) => patchItem("hobbies", h.id, { icon: v as Hobby["icon"] })}>
                     <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {HOBBY_ICONS.map((ic) => <SelectItem key={ic} value={ic}>{ic}</SelectItem>)}
                     </SelectContent>
                   </Select>
-                  <Button size="icon" variant="ghost" onClick={() => update("hobbies", data.hobbies.filter((x) => x.id !== h.id))}>
+                  <Button size="icon" variant="ghost" onClick={() => removeItem("hobbies", h.id)}>
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
               ))}
-              <AddButton label="Add hobby" onClick={() => update("hobbies", [...data.hobbies, {
+              <AddButton label="Add hobby" onClick={() => appendItem("hobbies", {
                 id: uid(), label: "New hobby", icon: "Code2",
-              } as Hobby])} />
+              } as Hobby)} />
             </div>
           </Section>
         </Accordion>

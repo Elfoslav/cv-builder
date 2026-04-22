@@ -47,7 +47,6 @@ export interface Hobby {
 export interface CVData {
   name: string;
   role: string;
-  available: boolean;
   bio: string;
   about: string;
   email: string;
@@ -65,7 +64,6 @@ export interface CVData {
 export const defaultCV: CVData = {
   name: "Alex Morgan",
   role: "Senior Full-Stack Engineer",
-  available: true,
   bio: "I build performant, accessible web applications with a focus on developer experience. Passionate about clean code, distributed systems, and shipping products that make a difference.",
   about:
     "I'm a software engineer with 8+ years of experience designing and shipping web platforms used by millions. I love turning hard problems into elegant abstractions and mentoring engineers to do their best work.\n\nMy sweet spot is the seam between product and infrastructure — building high-leverage tools, polishing developer experience, and obsessing over the last 5% of UX that turns a good product into a great one.",

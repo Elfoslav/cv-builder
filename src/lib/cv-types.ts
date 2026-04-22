@@ -1,11 +1,17 @@
 export type SkillColor = "green" | "cyan" | "purple" | "yellow" | "pink";
 
+export interface SkillGroup {
+  id: string;
+  name: string;
+}
+
 export interface Skill {
   id: string;
   name: string;
   percentage: number;
   color: SkillColor;
-  group: "languages" | "frameworks";
+  /** ID of the SkillGroup this skill belongs to */
+  group: string;
 }
 
 export interface Experience {

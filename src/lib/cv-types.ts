@@ -60,6 +60,7 @@ export interface CVData {
   location: string;
   github: string;
   linkedin: string;
+  skillGroups: SkillGroup[];
   skills: Skill[];
   experience: Experience[];
   education: Education[];
@@ -78,15 +79,19 @@ export const defaultCV: CVData = {
   location: "Berlin, Germany",
   github: "https://github.com",
   linkedin: "https://linkedin.com",
+  skillGroups: [
+    { id: "g_lang", name: "Programming Languages" },
+    { id: "g_tools", name: "Tools & Technologies" },
+  ],
   skills: [
-    { id: "s1", name: "TypeScript", percentage: 95, color: "cyan", group: "languages" },
-    { id: "s2", name: "Python", percentage: 88, color: "yellow", group: "languages" },
-    { id: "s3", name: "Go", percentage: 78, color: "green", group: "languages" },
-    { id: "s4", name: "Rust", percentage: 65, color: "pink", group: "languages" },
-    { id: "s5", name: "React / Next.js", percentage: 96, color: "cyan", group: "frameworks" },
-    { id: "s6", name: "Node.js", percentage: 92, color: "green", group: "frameworks" },
-    { id: "s7", name: "PostgreSQL", percentage: 85, color: "purple", group: "frameworks" },
-    { id: "s8", name: "Docker / K8s", percentage: 80, color: "yellow", group: "frameworks" },
+    { id: "s1", name: "TypeScript", percentage: 95, color: "cyan", group: "g_lang" },
+    { id: "s2", name: "Python", percentage: 88, color: "yellow", group: "g_lang" },
+    { id: "s3", name: "Go", percentage: 78, color: "green", group: "g_lang" },
+    { id: "s4", name: "Rust", percentage: 65, color: "pink", group: "g_lang" },
+    { id: "s5", name: "React / Next.js", percentage: 96, color: "cyan", group: "g_tools" },
+    { id: "s6", name: "Node.js", percentage: 92, color: "green", group: "g_tools" },
+    { id: "s7", name: "PostgreSQL", percentage: 85, color: "purple", group: "g_tools" },
+    { id: "s8", name: "Docker / K8s", percentage: 80, color: "yellow", group: "g_tools" },
   ],
   experience: [
     {

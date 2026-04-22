@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CVPreview } from "@/components/cv/CVPreview";
 import { CVEditor } from "@/components/cv/CVEditor";
 import { useCVData } from "@/lib/use-cv-data";
@@ -8,6 +8,29 @@ import { PanelLeftClose, PanelLeftOpen, Printer } from "lucide-react";
 const Index = () => {
   const { data, setData, reset } = useCVData();
   const [editorOpen, setEditorOpen] = useState(true);
+
+  useEffect(() => {
+    const name = data.name?.trim() || "CV";
+    const role = data.role?.trim();
+    const title = role ? `${name} — ${role} CV` : `${name} — CV`;
+    document.title = title;
+
+    const desc = `CV of ${name}${role ? `, ${role.toLowerCase()}` : ""}. Skills, experience, projects, and education.`;
+    const setMeta = (selector: string, attr: string, value: string) => {
+      let el = document.head.querySelector<HTMLMetaElement>(selector);
+      if (!el) {
+        el = document.createElement("meta");
+        const [key, val] = attr.split("=");
+        el.setAttribute(key, val.replace(/"/g, ""));
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", value);
+    };
+    setMeta('meta[name="description"]', 'name="description"', desc);
+    setMeta('meta[name="author"]', 'name="author"', name);
+    setMeta('meta[property="og:title"]', 'property="og:title"', title);
+    setMeta('meta[property="og:description"]', 'property="og:description"', desc);
+  }, [data.name, data.role]);
 
   const handleDownload = () => window.print();
 

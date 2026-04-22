@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
 import { CVPreview } from "@/components/cv/CVPreview";
 import { CVEditor } from "@/components/cv/CVEditor";
+import { LanguageSwitcher } from "@/components/cv/LanguageSwitcher";
 import { useCVData } from "@/lib/use-cv-data";
 import { Button } from "@/components/ui/button";
 import { PanelLeftClose, PanelLeftOpen, Printer } from "lucide-react";
 
 const Index = () => {
-  const { data, setData, reset } = useCVData();
+  const {
+    data, setData, reset,
+    languages, activeId, setActiveId,
+    addLanguage, renameLanguage, deleteLanguage,
+  } = useCVData();
   const [editorOpen, setEditorOpen] = useState(true);
 
   useEffect(() => {

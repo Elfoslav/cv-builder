@@ -1,15 +1,14 @@
 import { Dispatch, SetStateAction } from "react";
-import { CVData, HOBBY_ICONS, Skill, Experience, Education, Project, Hobby } from "@/lib/cv-types";
+import { CVData, HOBBY_ICONS, Experience, Education, Project, Hobby } from "@/lib/cv-types";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2, RotateCcw, Download, Upload } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { SkillsSection } from "./SkillsSection";
 
 interface CVEditorProps {
   data: CVData;
@@ -131,47 +130,7 @@ export const CVEditor = ({ data, setData, reset }: CVEditorProps) => {
           </Section>
 
           <Section value="skills" title={`Skills (${data.skills.length})`}>
-            <p className="text-xs text-muted-foreground">Use "Languages" for programming languages and "Frameworks &amp; Tools" for everything else.</p>
-            <div className="space-y-3">
-              {data.skills.map((s) => (
-                <div key={s.id} className="space-y-2 rounded border border-border bg-secondary/20 p-3">
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Skill name"
-                      value={s.name}
-                      onChange={(e) => patchItem("skills", s.id, { name: e.target.value })}
-                      maxLength={40}
-                    />
-                    <Button size="icon" variant="ghost" onClick={() => removeItem("skills", s.id)}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                  <div>
-                    <Select value={s.group} onValueChange={(v) => patchItem("skills", s.id, { group: v as Skill["group"] })}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="languages">Languages</SelectItem>
-                        <SelectItem value="frameworks">Frameworks & Tools</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <div className="mb-1 flex justify-between font-mono text-xs text-muted-foreground">
-                      <span>Experience</span>
-                      <span>{s.percentage}%</span>
-                    </div>
-                    <Slider
-                      min={0} max={100} step={5}
-                      value={[s.percentage]}
-                      onValueChange={([v]) => patchItem("skills", s.id, { percentage: v })}
-                    />
-                  </div>
-                </div>
-              ))}
-              <AddButton label="Add skill" onClick={() => appendItem("skills", {
-                id: uid(), name: "New skill", percentage: 50, color: "green", group: "languages",
-              } as Skill)} />
-            </div>
+            <SkillsSection data={data} setData={setData} />
           </Section>
 
           <Section value="experience" title={`Experience (${data.experience.length})`}>

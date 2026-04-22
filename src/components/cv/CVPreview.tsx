@@ -22,8 +22,9 @@ interface CVPreviewProps {
 }
 
 export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
-  const languages = data.skills.filter((s) => s.group === "languages");
-  const frameworks = data.skills.filter((s) => s.group === "frameworks");
+  const groupedSkills = data.skillGroups
+    .map((g) => ({ group: g, items: data.skills.filter((s) => s.group === g.id) }))
+    .filter((g) => g.items.length > 0);
 
   return (
     <div className="bg-background">
@@ -41,34 +42,22 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
           </section>
         )}
 
-        {data.skills.length > 0 && (
+        {groupedSkills.length > 0 && (
           <section className="mb-24">
             <SectionHeader index="02" title="Skills" subtitle="What I work with" />
             <div className="grid gap-10 md:grid-cols-2 print-grid-2">
-              {languages.length > 0 && (
-                <div>
+              {groupedSkills.map(({ group, items }) => (
+                <div key={group.id}>
                   <h3 className="mb-6 text-sm font-semibold uppercase tracking-wider text-accent">
-                    Programming Languages
+                    {group.name}
                   </h3>
                   <div className="space-y-5">
-                    {languages.map((s) => (
+                    {items.map((s) => (
                       <SkillBar key={s.id} name={s.name} percentage={s.percentage} color={s.color} />
                     ))}
                   </div>
                 </div>
-              )}
-              {frameworks.length > 0 && (
-                <div>
-                  <h3 className="mb-6 text-sm font-semibold uppercase tracking-wider text-accent">
-                    Tools &amp; Technologies
-                  </h3>
-                  <div className="space-y-5">
-                    {frameworks.map((s) => (
-                      <SkillBar key={s.id} name={s.name} percentage={s.percentage} color={s.color} />
-                    ))}
-                  </div>
-                </div>
-              )}
+              ))}
             </div>
           </section>
         )}

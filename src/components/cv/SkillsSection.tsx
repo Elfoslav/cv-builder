@@ -233,7 +233,3 @@ export const SkillsSection = ({ data, setData }: Props) => {
     </div>
   );
 };
-
-const Label = ({ children, className }: { children: React.ReactNode; className?: string }) => (
-  <div className={`text-xs font-medium text-muted-foreground ${className ?? ""}`}>{children}</div>
-);

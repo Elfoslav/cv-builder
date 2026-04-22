@@ -104,10 +104,6 @@ export const CVEditor = ({ data, setData, reset }: CVEditorProps) => {
             <Field label="Role">
               <Input value={data.role} onChange={(e) => update("role", e.target.value)} maxLength={80} />
             </Field>
-            <div className="flex items-center justify-between rounded border border-border bg-secondary/30 px-3 py-2">
-              <Label className="font-mono text-xs">Available for hire</Label>
-              <Switch checked={data.available} onCheckedChange={(v) => update("available", v)} />
-            </div>
             <Field label="Short bio">
               <Textarea rows={4} value={data.bio} onChange={(e) => update("bio", e.target.value)} maxLength={400} />
             </Field>

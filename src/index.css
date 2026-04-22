@@ -131,6 +131,14 @@
 
 @page {
   margin: 12mm;
+  /* Hide browser-injected headers/footers (URL, date, page numbers) */
+  marks: none;
+  @top-left { content: ""; }
+  @top-center { content: ""; }
+  @top-right { content: ""; }
+  @bottom-left { content: ""; }
+  @bottom-center { content: ""; }
+  @bottom-right { content: ""; }
 }
 
 @layer components {

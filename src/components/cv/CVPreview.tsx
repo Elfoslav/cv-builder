@@ -6,11 +6,11 @@ import { ProjectCard } from "@/components/cv/ProjectCard";
 import { CVData } from "@/lib/cv-types";
 import {
   Code2, Coffee, Gamepad2, Mountain, Music,
-  Book, Camera, Bike, Plane, Dumbbell, LucideIcon,
+  Book, Camera, Bike, Plane, Dumbbell, Flower2, LucideIcon,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, LucideIcon> = {
-  Mountain, Coffee, Music, Code2, Gamepad2, Book, Camera, Bike, Plane, Dumbbell,
+  Mountain, Coffee, Music, Code2, Gamepad2, Book, Camera, Bike, Plane, Dumbbell, Flower2,
 };
 
 const splitTags = (s: string) =>

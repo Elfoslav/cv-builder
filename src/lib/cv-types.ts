@@ -47,7 +47,7 @@ export interface Project {
 export interface Hobby {
   id: string;
   label: string;
-  icon: "Mountain" | "Coffee" | "Music" | "Code2" | "Gamepad2" | "Book" | "Camera" | "Bike" | "Plane" | "Dumbbell";
+  icon: "Mountain" | "Coffee" | "Music" | "Code2" | "Gamepad2" | "Book" | "Camera" | "Bike" | "Plane" | "Dumbbell" | "Flower2";
 }
 
 export interface CVData {
@@ -158,7 +158,7 @@ export const defaultCV: CVData = {
 };
 
 export const HOBBY_ICONS: Hobby["icon"][] = [
-  "Mountain", "Coffee", "Music", "Code2", "Gamepad2", "Book", "Camera", "Bike", "Plane", "Dumbbell",
+  "Mountain", "Coffee", "Music", "Code2", "Gamepad2", "Book", "Camera", "Bike", "Plane", "Dumbbell", "Flower2",
 ];
 
 export const SKILL_COLORS: SkillColor[] = ["green", "cyan", "purple", "yellow", "pink"];

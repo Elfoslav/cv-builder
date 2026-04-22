@@ -1,15 +1,14 @@
 import { Dispatch, SetStateAction } from "react";
-import { CVData, HOBBY_ICONS, Skill, Experience, Education, Project, Hobby } from "@/lib/cv-types";
+import { CVData, HOBBY_ICONS, Experience, Education, Project, Hobby } from "@/lib/cv-types";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2, RotateCcw, Download, Upload } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { SkillsSection } from "./SkillsSection";
 
 interface CVEditorProps {
   data: CVData;

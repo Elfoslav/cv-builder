@@ -42,8 +42,18 @@ const Index = () => {
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background print:block print:h-auto">
       {editorOpen && (
-        <aside className="hidden w-[420px] shrink-0 border-r border-border bg-card lg:block print:hidden">
-          <CVEditor data={data} setData={setData} reset={reset} />
+        <aside className="hidden w-[420px] shrink-0 flex-col border-r border-border bg-card lg:flex print:hidden">
+          <LanguageSwitcher
+            languages={languages}
+            activeId={activeId}
+            setActiveId={setActiveId}
+            addLanguage={addLanguage}
+            renameLanguage={renameLanguage}
+            deleteLanguage={deleteLanguage}
+          />
+          <div className="flex-1 overflow-hidden">
+            <CVEditor data={data} setData={setData} reset={reset} />
+          </div>
         </aside>
       )}
 

@@ -212,15 +212,21 @@ export const SkillsSection = ({ data, setData }: Props) => {
                 No skills yet.
               </p>
             ) : (
-              items.map((s) => (
+              items.map((s, sIdx) => (
                 <div key={s.id} className="space-y-2 rounded border border-border bg-secondary/20 p-3">
-                  <div className="flex gap-2">
+                  <div className="flex gap-1">
                     <Input
                       placeholder="Skill name"
                       value={s.name}
                       onChange={(e) => patchSkill(s.id, { name: e.target.value })}
                       maxLength={40}
                     />
+                    <Button size="icon" variant="ghost" disabled={sIdx === 0} onClick={() => moveSkill(s.id, -1)} title="Move up">
+                      <ArrowUp className="h-4 w-4" />
+                    </Button>
+                    <Button size="icon" variant="ghost" disabled={sIdx === items.length - 1} onClick={() => moveSkill(s.id, 1)} title="Move down">
+                      <ArrowDown className="h-4 w-4" />
+                    </Button>
                     <Button size="icon" variant="ghost" onClick={() => removeSkill(s.id)}>
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>

@@ -85,6 +85,26 @@ export const SkillsSection = ({ data, setData }: Props) => {
   const removeSkill = (id: string) =>
     setData((prev) => ({ ...prev, skills: prev.skills.filter((s) => s.id !== id) }));
 
+  const moveSkill = (id: string, dir: -1 | 1) => {
+    setData((prev) => {
+      const skill = prev.skills.find((s) => s.id === id);
+      if (!skill) return prev;
+      // Indices of skills within the same group, preserving overall array order
+      const sameGroupIndices = prev.skills
+        .map((s, i) => ({ s, i }))
+        .filter(({ s }) => s.group === skill.group)
+        .map(({ i }) => i);
+      const posInGroup = sameGroupIndices.findIndex((i) => prev.skills[i].id === id);
+      const targetPos = posInGroup + dir;
+      if (posInGroup < 0 || targetPos < 0 || targetPos >= sameGroupIndices.length) return prev;
+      const fromIdx = sameGroupIndices[posInGroup];
+      const toIdx = sameGroupIndices[targetPos];
+      const next = [...prev.skills];
+      [next[fromIdx], next[toIdx]] = [next[toIdx], next[fromIdx]];
+      return { ...prev, skills: next };
+    });
+  };
+
   const addSkill = (groupId: string) =>
     setData((prev) => ({
       ...prev,
@@ -192,15 +212,21 @@ export const SkillsSection = ({ data, setData }: Props) => {
                 No skills yet.
               </p>
             ) : (
-              items.map((s) => (
+              items.map((s, sIdx) => (
                 <div key={s.id} className="space-y-2 rounded border border-border bg-secondary/20 p-3">
-                  <div className="flex gap-2">
+                  <div className="flex gap-1">
                     <Input
                       placeholder="Skill name"
                       value={s.name}
                       onChange={(e) => patchSkill(s.id, { name: e.target.value })}
                       maxLength={40}
                     />
+                    <Button size="icon" variant="ghost" disabled={sIdx === 0} onClick={() => moveSkill(s.id, -1)} title="Move up">
+                      <ArrowUp className="h-4 w-4" />
+                    </Button>
+                    <Button size="icon" variant="ghost" disabled={sIdx === items.length - 1} onClick={() => moveSkill(s.id, 1)} title="Move down">
+                      <ArrowDown className="h-4 w-4" />
+                    </Button>
                     <Button size="icon" variant="ghost" onClick={() => removeSkill(s.id)}>
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>

@@ -202,6 +202,8 @@ export const CVEditor = ({ data, setData }: CVEditorProps) => {
                 >
                   <Input placeholder="Project name" value={p.name}
                     onChange={(ev) => patchItem("projects", p.id, { name: ev.target.value })} maxLength={60} />
+                  <Input placeholder="Period (e.g. 2023 — Present)" value={p.period ?? ""}
+                    onChange={(ev) => patchItem("projects", p.id, { period: ev.target.value })} maxLength={40} />
                   <Textarea placeholder="Description" rows={3} value={p.description}
                     onChange={(ev) => patchItem("projects", p.id, { description: ev.target.value })} maxLength={400} />
                   <Input placeholder="Tech stack (comma-separated)" value={p.stack}
@@ -217,7 +219,7 @@ export const CVEditor = ({ data, setData }: CVEditorProps) => {
                 </ItemCard>
               ))}
               <AddButton label="Add project" onClick={() => appendItem("projects", {
-                id: uid(), name: "New project", description: "", stack: "",
+                id: uid(), name: "New project", period: "", description: "", stack: "",
               } as Project)} />
             </div>
           </Section>

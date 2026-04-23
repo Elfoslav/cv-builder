@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { CVData, HOBBY_ICONS, Experience, Education, Project, Hobby } from "@/lib/cv-types";
+import { CVData, CVLabels, HOBBY_ICONS, defaultLabels, Experience, Education, Project, Hobby } from "@/lib/cv-types";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -228,15 +228,53 @@ export const CVEditor = ({ data, setData }: CVEditorProps) => {
                   </Button>
                 </div>
               ))}
+              {data.hobbies.map((h) => h)}
               <AddButton label="Add hobby" onClick={() => appendItem("hobbies", {
                 id: uid(), label: "New hobby", icon: "Code2",
               } as Hobby)} />
             </div>
           </Section>
+
+          <Section value="labels" title="Section labels (translations)">
+            <p className="text-xs text-muted-foreground">
+              Translate the section titles and subtitles for this language.
+            </p>
+            {(Object.keys(defaultLabels) as Array<keyof CVLabels>).map((k) => (
+              <Field key={k} label={LABEL_FIELD_NAMES[k]}>
+                <Input
+                  value={data.labels?.[k] ?? defaultLabels[k]}
+                  placeholder={defaultLabels[k]}
+                  onChange={(e) =>
+                    setData((prev) => ({
+                      ...prev,
+                      labels: { ...(prev.labels ?? defaultLabels), [k]: e.target.value },
+                    }))
+                  }
+                  maxLength={80}
+                />
+              </Field>
+            ))}
+          </Section>
         </Accordion>
       </div>
     </div>
   );
+};
+
+const LABEL_FIELD_NAMES: Record<keyof CVLabels, string> = {
+  aboutTitle: "About — title",
+  aboutSubtitle: "About — subtitle",
+  skillsTitle: "Skills — title",
+  skillsSubtitle: "Skills — subtitle",
+  experienceTitle: "Experience — title",
+  experienceSubtitle: "Experience — subtitle",
+  educationTitle: "Education — title",
+  educationSubtitle: "Education — subtitle",
+  projectsTitle: "Projects — title",
+  projectsSubtitle: "Projects — subtitle",
+  hobbiesTitle: "Interests — title",
+  hobbiesSubtitle: "Interests — subtitle",
+  footerThanks: "Footer — thanks message",
 };
 
 const Section = ({ value, title, children }: { value: string; title: string; children: React.ReactNode }) => (

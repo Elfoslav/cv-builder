@@ -2,6 +2,7 @@ import { ExternalLink, Github, Star } from "lucide-react";
 
 interface ProjectCardProps {
   name: string;
+  period?: string;
   description: string;
   stack: string[];
   stars?: number;
@@ -9,13 +10,18 @@ interface ProjectCardProps {
   link?: string;
 }
 
-export const ProjectCard = ({ name, description, stack, stars, repo, link }: ProjectCardProps) => {
+export const ProjectCard = ({ name, period, description, stack, stars, repo, link }: ProjectCardProps) => {
   return (
     <div className="group relative overflow-hidden rounded-lg border border-border bg-gradient-card p-6 shadow-card transition-all hover:border-primary/50 hover:shadow-glow">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
 
       <div className="mb-3 flex items-start justify-between gap-3">
-        <h3 className="text-lg font-semibold text-foreground">{name}</h3>
+        <div className="min-w-0">
+          <h3 className="text-lg font-semibold text-foreground">{name}</h3>
+          {period && (
+            <p className="mt-0.5 font-mono text-xs text-primary">{period}</p>
+          )}
+        </div>
         <div className="flex items-center gap-3">
           {stars !== undefined && (
             <span className="flex items-center gap-1 text-xs text-terminal-yellow" title="GitHub stars">

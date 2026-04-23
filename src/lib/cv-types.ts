@@ -165,6 +165,7 @@ export const defaultCV: CVData = {
     {
       id: "p1",
       name: "orbit-cli",
+      period: "2023 — Present",
       description:
         "A blazing-fast TypeScript monorepo task runner written in Rust. Drop-in replacement for turbo with smarter caching.",
       stack: "Rust, Node.js, Tokio",
@@ -174,6 +175,7 @@ export const defaultCV: CVData = {
     {
       id: "p2",
       name: "kanban-zero",
+      period: "2021 — 2023",
       description:
         "Local-first project management app with end-to-end encryption and CRDT-based real-time sync.",
       stack: "TypeScript, Yjs, IndexedDB",

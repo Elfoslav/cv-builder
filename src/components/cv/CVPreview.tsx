@@ -112,6 +112,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
                 <ProjectCard
                   key={p.id}
                   name={p.name}
+                  period={p.period}
                   description={p.description}
                   stack={splitTags(p.stack)}
                   stars={p.stars}

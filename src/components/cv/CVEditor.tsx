@@ -228,7 +228,6 @@ export const CVEditor = ({ data, setData }: CVEditorProps) => {
                   </Button>
                 </div>
               ))}
-              {data.hobbies.map((h) => h)}
               <AddButton label="Add hobby" onClick={() => appendItem("hobbies", {
                 id: uid(), label: "New hobby", icon: "Code2",
               } as Hobby)} />

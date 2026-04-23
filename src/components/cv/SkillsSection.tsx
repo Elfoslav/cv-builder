@@ -85,6 +85,26 @@ export const SkillsSection = ({ data, setData }: Props) => {
   const removeSkill = (id: string) =>
     setData((prev) => ({ ...prev, skills: prev.skills.filter((s) => s.id !== id) }));
 
+  const moveSkill = (id: string, dir: -1 | 1) => {
+    setData((prev) => {
+      const skill = prev.skills.find((s) => s.id === id);
+      if (!skill) return prev;
+      // Indices of skills within the same group, preserving overall array order
+      const sameGroupIndices = prev.skills
+        .map((s, i) => ({ s, i }))
+        .filter(({ s }) => s.group === skill.group)
+        .map(({ i }) => i);
+      const posInGroup = sameGroupIndices.findIndex((i) => prev.skills[i].id === id);
+      const targetPos = posInGroup + dir;
+      if (posInGroup < 0 || targetPos < 0 || targetPos >= sameGroupIndices.length) return prev;
+      const fromIdx = sameGroupIndices[posInGroup];
+      const toIdx = sameGroupIndices[targetPos];
+      const next = [...prev.skills];
+      [next[fromIdx], next[toIdx]] = [next[toIdx], next[fromIdx]];
+      return { ...prev, skills: next };
+    });
+  };
+
   const addSkill = (groupId: string) =>
     setData((prev) => ({
       ...prev,

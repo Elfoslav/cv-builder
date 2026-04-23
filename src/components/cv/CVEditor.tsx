@@ -6,21 +6,20 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, RotateCcw, Download, Upload } from "lucide-react";
+import { Plus, Trash2, Download, Upload } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { SkillsSection } from "./SkillsSection";
 
 interface CVEditorProps {
   data: CVData;
   setData: Dispatch<SetStateAction<CVData>>;
-  reset: () => void;
 }
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
 type ListKey = "skills" | "experience" | "education" | "projects" | "hobbies";
 
-export const CVEditor = ({ data, setData, reset }: CVEditorProps) => {
+export const CVEditor = ({ data, setData }: CVEditorProps) => {
   const update = <K extends keyof CVData>(key: K, value: CVData[K]) =>
     setData((prev) => ({ ...prev, [key]: value }));
 
@@ -88,9 +87,6 @@ export const CVEditor = ({ data, setData, reset }: CVEditorProps) => {
             </Button>
             <input type="file" accept="application/json" className="hidden" onChange={importJSON} />
           </label>
-          <Button size="sm" variant="ghost" onClick={() => { reset(); toast({ title: "Reset", description: "Data restored to default." }); }} title="Reset">
-            <RotateCcw className="h-4 w-4" />
-          </Button>
         </div>
       </div>
 

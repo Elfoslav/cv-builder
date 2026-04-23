@@ -1,8 +1,9 @@
-import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { CVData, defaultCV, SkillGroup } from "./cv-types";
 
 const STORAGE_KEY = "cv-builder-data-v1";
 const STORAGE_KEY_MULTI = "cv-builder-data-v2";
+const STORAGE_KEY_MULTI_BAK = "cv-builder-data-v2.bak";
 
 export interface CVLanguage {
   id: string;
@@ -18,7 +19,24 @@ export interface MultiCVStore {
 const uid = () => Math.random().toString(36).slice(2, 9);
 
 const migrateData = (parsed: Partial<CVData> & { skills?: Array<{ group?: string }> }): CVData => {
-  const merged: CVData = { ...defaultCV, ...parsed } as CVData;
+  // Per-key fallback: only fill in missing top-level fields, never overwrite existing user values.
+  const merged: CVData = {
+    name: parsed.name ?? defaultCV.name,
+    role: parsed.role ?? defaultCV.role,
+    bio: parsed.bio ?? defaultCV.bio,
+    about: parsed.about ?? defaultCV.about,
+    email: parsed.email ?? defaultCV.email,
+    phone: parsed.phone ?? defaultCV.phone,
+    location: parsed.location ?? defaultCV.location,
+    github: parsed.github ?? defaultCV.github,
+    linkedin: parsed.linkedin ?? defaultCV.linkedin,
+    skills: parsed.skills ?? defaultCV.skills,
+    skillGroups: parsed.skillGroups ?? defaultCV.skillGroups,
+    experience: parsed.experience ?? defaultCV.experience,
+    education: parsed.education ?? defaultCV.education,
+    projects: parsed.projects ?? defaultCV.projects,
+    hobbies: parsed.hobbies ?? defaultCV.hobbies,
+  } as CVData;
 
   const legacyMap: Record<string, { id: string; name: string }> = {
     languages: { id: "g_lang", name: "Programming Languages" },
@@ -55,10 +73,11 @@ const loadStore = (): MultiCVStore => {
     const id = uid();
     return { languages: [{ id, name: "English", data: defaultCV }], activeId: id };
   }
-  try {
-    const rawMulti = localStorage.getItem(STORAGE_KEY_MULTI);
-    if (rawMulti) {
-      const parsed = JSON.parse(rawMulti) as MultiCVStore;
+
+  const tryParseStore = (raw: string | null, source: string): MultiCVStore | null => {
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw) as MultiCVStore;
       if (parsed && Array.isArray(parsed.languages) && parsed.languages.length > 0) {
         const languages = parsed.languages.map((l) => ({
           ...l,
@@ -69,9 +88,25 @@ const loadStore = (): MultiCVStore => {
           : languages[0].id;
         return { languages, activeId };
       }
+      console.error(`[cv-store] ${source} is malformed (no languages array). Raw:`, raw);
+      return null;
+    } catch (err) {
+      console.error(`[cv-store] Failed to parse ${source}:`, err, "Raw:", raw);
+      return null;
     }
+  };
 
-    // Migrate legacy single-CV storage
+  // Try main key, then backup, then legacy single-CV key.
+  const fromMain = tryParseStore(localStorage.getItem(STORAGE_KEY_MULTI), STORAGE_KEY_MULTI);
+  if (fromMain) return fromMain;
+
+  const fromBackup = tryParseStore(localStorage.getItem(STORAGE_KEY_MULTI_BAK), STORAGE_KEY_MULTI_BAK);
+  if (fromBackup) {
+    console.warn("[cv-store] Recovered CV data from backup key.");
+    return fromBackup;
+  }
+
+  try {
     const rawLegacy = localStorage.getItem(STORAGE_KEY);
     if (rawLegacy) {
       const parsed = JSON.parse(rawLegacy) as Partial<CVData>;
@@ -81,9 +116,10 @@ const loadStore = (): MultiCVStore => {
         activeId: id,
       };
     }
-  } catch {
-    // fall through to default
+  } catch (err) {
+    console.error("[cv-store] Failed to parse legacy v1 key:", err);
   }
+
   const id = uid();
   return { languages: [{ id, name: "English", data: defaultCV }], activeId: id };
 };
@@ -91,7 +127,6 @@ const loadStore = (): MultiCVStore => {
 export const useCVData = (): {
   data: CVData;
   setData: Dispatch<SetStateAction<CVData>>;
-  reset: () => void;
   languages: CVLanguage[];
   activeId: string;
   setActiveId: (id: string) => void;
@@ -100,12 +135,30 @@ export const useCVData = (): {
   deleteLanguage: (id: string) => void;
 } => {
   const [store, setStore] = useState<MultiCVStore>(() => loadStore());
+  const loadedRef = useRef(false);
 
   useEffect(() => {
+    // Skip the very first effect run so we never overwrite storage with the
+    // initial-mount value before the user has had a chance to edit anything.
+    if (!loadedRef.current) {
+      loadedRef.current = true;
+      return;
+    }
     try {
-      localStorage.setItem(STORAGE_KEY_MULTI, JSON.stringify(store));
-    } catch {
-      // ignore
+      const serialized = JSON.stringify(store);
+      // Write rolling backup BEFORE overwriting main key, so a failure mid-save
+      // still leaves a recoverable copy.
+      const previous = localStorage.getItem(STORAGE_KEY_MULTI);
+      if (previous) {
+        try {
+          localStorage.setItem(STORAGE_KEY_MULTI_BAK, previous);
+        } catch (bakErr) {
+          console.error("[cv-store] Failed to write backup:", bakErr);
+        }
+      }
+      localStorage.setItem(STORAGE_KEY_MULTI, serialized);
+    } catch (err) {
+      console.error("[cv-store] Failed to save CV data to localStorage:", err);
     }
   }, [store]);
 
@@ -125,15 +178,6 @@ export const useCVData = (): {
         ),
       };
     });
-  }, []);
-
-  const reset = useCallback(() => {
-    setStore((prev) => ({
-      ...prev,
-      languages: prev.languages.map((l) =>
-        l.id === prev.activeId ? { ...l, data: defaultCV } : l,
-      ),
-    }));
   }, []);
 
   const setActiveId = useCallback((id: string) => {
@@ -175,7 +219,6 @@ export const useCVData = (): {
   return {
     data: active.data,
     setData,
-    reset,
     languages: store.languages,
     activeId: store.activeId,
     setActiveId,

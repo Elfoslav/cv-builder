@@ -8,7 +8,7 @@ import { PanelLeftClose, PanelLeftOpen, Printer } from "lucide-react";
 
 const Index = () => {
   const {
-    data, setData, reset,
+    data, setData,
     languages, activeId, setActiveId,
     addLanguage, renameLanguage, deleteLanguage,
   } = useCVData();
@@ -52,7 +52,7 @@ const Index = () => {
             deleteLanguage={deleteLanguage}
           />
           <div className="flex-1 overflow-hidden">
-            <CVEditor data={data} setData={setData} reset={reset} />
+            <CVEditor data={data} setData={setData} />
           </div>
         </aside>
       )}

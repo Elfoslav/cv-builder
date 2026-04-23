@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Download, Upload } from "lucide-react";
+import { Plus, Trash2, Download, Upload, ArrowUp, ArrowDown } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { SkillsSection } from "./SkillsSection";
 
@@ -42,6 +42,16 @@ export const CVEditor = ({ data, setData }: CVEditorProps) => {
       ...prev,
       [key]: [...(prev[key] as Array<unknown>), item],
     }) as CVData);
+
+  const moveItem = (key: ListKey, id: string, dir: -1 | 1) =>
+    setData((prev) => {
+      const list = [...(prev[key] as Array<{ id: string }>)];
+      const idx = list.findIndex((it) => it.id === id);
+      const target = idx + dir;
+      if (idx < 0 || target < 0 || target >= list.length) return prev;
+      [list[idx], list[target]] = [list[target], list[idx]];
+      return { ...prev, [key]: list } as CVData;
+    });
 
   const exportJSON = () => {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -183,8 +193,13 @@ export const CVEditor = ({ data, setData }: CVEditorProps) => {
 
           <Section value="projects" title={`Projects (${data.projects.length})`}>
             <div className="space-y-3">
-              {data.projects.map((p) => (
-                <ItemCard key={p.id} onDelete={() => removeItem("projects", p.id)}>
+              {data.projects.map((p, idx) => (
+                <ItemCard
+                  key={p.id}
+                  onDelete={() => removeItem("projects", p.id)}
+                  onMoveUp={idx > 0 ? () => moveItem("projects", p.id, -1) : undefined}
+                  onMoveDown={idx < data.projects.length - 1 ? () => moveItem("projects", p.id, 1) : undefined}
+                >
                   <Input placeholder="Project name" value={p.name}
                     onChange={(ev) => patchItem("projects", p.id, { name: ev.target.value })} maxLength={60} />
                   <Textarea placeholder="Description" rows={3} value={p.description}
@@ -290,11 +305,33 @@ const Field = ({ label, children }: { label: string; children: React.ReactNode }
   </div>
 );
 
-const ItemCard = ({ children, onDelete }: { children: React.ReactNode; onDelete: () => void }) => (
+const ItemCard = ({
+  children,
+  onDelete,
+  onMoveUp,
+  onMoveDown,
+}: {
+  children: React.ReactNode;
+  onDelete: () => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
+}) => (
   <div className="relative space-y-2 rounded border border-border bg-secondary/20 p-3">
-    <Button size="icon" variant="ghost" className="absolute right-1 top-1 z-10" onClick={onDelete}>
-      <Trash2 className="h-4 w-4 text-destructive" />
-    </Button>
+    <div className="absolute right-1 top-1 z-10 flex gap-0.5">
+      {(onMoveUp || onMoveDown) && (
+        <>
+          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={onMoveUp} disabled={!onMoveUp} title="Move up">
+            <ArrowUp className="h-3.5 w-3.5" />
+          </Button>
+          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={onMoveDown} disabled={!onMoveDown} title="Move down">
+            <ArrowDown className="h-3.5 w-3.5" />
+          </Button>
+        </>
+      )}
+      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={onDelete}>
+        <Trash2 className="h-4 w-4 text-destructive" />
+      </Button>
+    </div>
     {children}
   </div>
 );

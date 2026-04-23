@@ -37,7 +37,7 @@ export interface Education {
 export interface Project {
   id: string;
   name: string;
-  period: string;
+  period?: string;
   description: string;
   stack: string;
   stars?: number;

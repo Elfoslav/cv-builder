@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
-import { CVData, defaultCV, SkillGroup } from "./cv-types";
+import { CVData, CVLabels, defaultCV, defaultLabels, SkillGroup } from "./cv-types";
 
 const STORAGE_KEY = "cv-builder-data-v1";
 const STORAGE_KEY_MULTI = "cv-builder-data-v2";
@@ -36,6 +36,7 @@ const migrateData = (parsed: Partial<CVData> & { skills?: Array<{ group?: string
     education: parsed.education ?? defaultCV.education,
     projects: parsed.projects ?? defaultCV.projects,
     hobbies: parsed.hobbies ?? defaultCV.hobbies,
+    labels: { ...defaultLabels, ...((parsed as { labels?: Partial<CVLabels> }).labels ?? {}) },
   } as CVData;
 
   const legacyMap: Record<string, { id: string; name: string }> = {

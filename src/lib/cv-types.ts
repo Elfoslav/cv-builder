@@ -50,6 +50,38 @@ export interface Hobby {
   icon: "Mountain" | "Coffee" | "Music" | "Code2" | "Gamepad2" | "Book" | "Camera" | "Bike" | "Plane" | "Dumbbell" | "Flower2";
 }
 
+export interface CVLabels {
+  aboutTitle: string;
+  aboutSubtitle: string;
+  skillsTitle: string;
+  skillsSubtitle: string;
+  experienceTitle: string;
+  experienceSubtitle: string;
+  educationTitle: string;
+  educationSubtitle: string;
+  projectsTitle: string;
+  projectsSubtitle: string;
+  hobbiesTitle: string;
+  hobbiesSubtitle: string;
+  footerThanks: string;
+}
+
+export const defaultLabels: CVLabels = {
+  aboutTitle: "About Me",
+  aboutSubtitle: "Introduction",
+  skillsTitle: "Skills",
+  skillsSubtitle: "What I work with",
+  experienceTitle: "Work Experience",
+  experienceSubtitle: "Career history",
+  educationTitle: "Education",
+  educationSubtitle: "Academic background",
+  projectsTitle: "Featured Projects",
+  projectsSubtitle: "Things I've built",
+  hobbiesTitle: "Interests",
+  hobbiesSubtitle: "Outside of work",
+  footerThanks: "Thanks for taking the time to read my CV.",
+};
+
 export interface CVData {
   name: string;
   role: string;
@@ -66,6 +98,7 @@ export interface CVData {
   education: Education[];
   projects: Project[];
   hobbies: Hobby[];
+  labels: CVLabels;
 }
 
 export const defaultCV: CVData = {
@@ -155,6 +188,7 @@ export const defaultCV: CVData = {
     { id: "h4", label: "Open source", icon: "Code2" },
     { id: "h5", label: "Indie games", icon: "Gamepad2" },
   ],
+  labels: defaultLabels,
 };
 
 export const HOBBY_ICONS: Hobby["icon"][] = [

@@ -26,6 +26,8 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
     .map((g) => ({ group: g, items: data.skills.filter((s) => s.group === g.id) }))
     .filter((g) => g.items.length > 0);
 
+  const L = data.labels;
+
   return (
     <div className="bg-background">
       <Hero data={data} onDownload={onDownload} />
@@ -33,7 +35,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
       <main className="container mx-auto max-w-5xl px-6 py-20">
         {data.about && (
           <section className="mb-24">
-            <SectionHeader index="01" title="About Me" subtitle="Introduction" />
+            <SectionHeader index="01" title={L.aboutTitle} subtitle={L.aboutSubtitle} />
             <div className="space-y-4 text-muted-foreground">
               {data.about.split("\n\n").map((p, i) => (
                 <p key={i} className="text-base leading-relaxed">{p}</p>
@@ -44,7 +46,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
 
         {groupedSkills.length > 0 && (
           <section className="mb-24">
-            <SectionHeader index="02" title="Skills" subtitle="What I work with" />
+            <SectionHeader index="02" title={L.skillsTitle} subtitle={L.skillsSubtitle} />
             <div className="grid gap-10 md:grid-cols-2 print-grid-2">
               {groupedSkills.map(({ group, items }) => (
                 <div key={group.id}>
@@ -64,7 +66,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
 
         {data.experience.length > 0 && (
           <section className="mb-24">
-            <SectionHeader index="03" title="Work Experience" subtitle="Career history" />
+            <SectionHeader index="03" title={L.experienceTitle} subtitle={L.experienceSubtitle} />
             <div>
               {data.experience.map((e) => (
                 <TimelineItem
@@ -84,7 +86,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
 
         {data.education.length > 0 && (
           <section className="mb-24">
-            <SectionHeader index="04" title="Education" subtitle="Academic background" />
+            <SectionHeader index="04" title={L.educationTitle} subtitle={L.educationSubtitle} />
             <div>
               {data.education.map((e) => (
                 <TimelineItem
@@ -104,7 +106,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
 
         {data.projects.length > 0 && (
           <section className="mb-24">
-            <SectionHeader index="05" title="Featured Projects" subtitle="Things I've built" />
+            <SectionHeader index="05" title={L.projectsTitle} subtitle={L.projectsSubtitle} />
             <div className="grid gap-5 md:grid-cols-2 print-grid-2-tight">
               {data.projects.map((p) => (
                 <ProjectCard
@@ -123,7 +125,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
 
         {data.hobbies.length > 0 && (
           <section className="mb-24">
-            <SectionHeader index="06" title="Interests" subtitle="Outside of work" />
+            <SectionHeader index="06" title={L.hobbiesTitle} subtitle={L.hobbiesSubtitle} />
             <div className="grid grid-cols-2 gap-4 md:grid-cols-5 print-grid-5">
               {data.hobbies.map((h) => {
                 const Icon = ICON_MAP[h.icon] ?? Code2;
@@ -143,7 +145,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
 
         <footer className="border-t border-border pt-10">
           <div className="flex flex-col items-center justify-between gap-4 text-center text-xs text-muted-foreground md:flex-row md:text-left">
-            <div>Thanks for taking the time to read my CV.</div>
+            <div>{L.footerThanks}</div>
             <div>
               © {new Date().getFullYear()} {data.name}
             </div>

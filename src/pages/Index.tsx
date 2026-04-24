@@ -15,6 +15,8 @@ const Index = () => {
     addLanguage, renameLanguage, deleteLanguage,
   } = useCVData();
   const [editorOpen, setEditorOpen] = useState(true);
+  const [exporting, setExporting] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const name = data.name?.trim() || "CV";
@@ -39,7 +41,22 @@ const Index = () => {
     setMeta('meta[property="og:description"]', 'property="og:description"', desc);
   }, [data.name, data.role]);
 
-  const handleDownload = () => window.print();
+  const handlePrint = () => window.print();
+
+  const handleDownloadPDF = async () => {
+    if (!previewRef.current || exporting) return;
+    setExporting(true);
+    const safeName = (data.name?.trim() || "CV").replace(/[^a-z0-9-_ ]/gi, "").trim() || "CV";
+    try {
+      await exportElementToPDF(previewRef.current, `${safeName} - CV.pdf`);
+      toast.success("PDF downloaded");
+    } catch (err) {
+      console.error("PDF export failed", err);
+      toast.error("PDF export failed. Try the Print option as a fallback.");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background print:block print:h-auto">

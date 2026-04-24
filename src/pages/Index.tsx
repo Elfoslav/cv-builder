@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CVPreview } from "@/components/cv/CVPreview";
 import { CVEditor } from "@/components/cv/CVEditor";
 import { LanguageSwitcher } from "@/components/cv/LanguageSwitcher";
 import { useCVData } from "@/lib/use-cv-data";
 import { Button } from "@/components/ui/button";
-import { PanelLeftClose, PanelLeftOpen, Printer } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen, Printer, Download, Loader2 } from "lucide-react";
+import { exportElementToPDF } from "@/lib/export-pdf";
+import { toast } from "sonner";
 
 const Index = () => {
   const {

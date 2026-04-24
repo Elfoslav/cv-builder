@@ -1,109 +1,140 @@
-import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
-
-// A4 in mm
-const A4_WIDTH_MM = 210;
-const A4_HEIGHT_MM = 297;
-
 /**
- * Render an element to a multi-page A4 PDF using html2canvas + jsPDF.
+ * Reliable PDF export via the browser's native print engine.
  *
- * Strategy:
- * - Force the element to a fixed pixel width matching A4 at our chosen DPI
- *   so layout in the canvas matches what we expect on the printed page.
- * - Render to a single tall canvas at scale=2 for crisp output.
- * - Slice the canvas into A4-sized page-height chunks and place each on a
- *   new PDF page. This avoids text being cut horizontally and produces
- *   a real multi-page PDF instead of a giant single-page image.
+ * Why not html2canvas + jsPDF?
+ *   That approach rasterizes the page into JPEGs and stitches them into a PDF.
+ *   It frequently produces visual issues: blurry text, shifted layouts, broken
+ *   gradients/shadows, missing webfonts, and unsupported CSS color functions.
+ *
+ * What this does instead:
+ *   1. Builds a self-contained HTML document containing the cloned CV markup
+ *      plus every stylesheet currently applied in the app (Tailwind, fonts,
+ *      design tokens, the print stylesheet).
+ *   2. Loads it inside a hidden same-origin iframe.
+ *   3. Calls the iframe's `window.print()`. The user picks "Save as PDF" in
+ *      the native dialog and gets crisp vector text, real selectable content,
+ *      and pixel-accurate colors — exactly matching the on-screen design's
+ *      `@media print` rules.
+ *
+ * The `filename` is set as the iframe document title so most browsers use it
+ * as the default "Save as PDF" filename.
  */
 export async function exportElementToPDF(
   element: HTMLElement,
   filename: string,
 ): Promise<void> {
-  // Render at 96 DPI base; html2canvas scale=2 doubles physical resolution.
-  // 794 px ≈ 210mm at 96 DPI.
-  const RENDER_WIDTH_PX = 794;
-  const SCALE = 2;
+  // Strip the .pdf extension for the document title — browsers append it.
+  const docTitle = filename.replace(/\.pdf$/i, "");
 
-  // Clone to avoid mutating the live DOM (e.g. forced width breaking the UI).
+  // Collect every stylesheet link and inline <style> from the host document
+  // so the iframe renders identically to the live preview.
+  const styleTags = Array.from(
+    document.querySelectorAll<HTMLLinkElement | HTMLStyleElement>(
+      'link[rel="stylesheet"], style',
+    ),
+  )
+    .map((node) => node.outerHTML)
+    .join("\n");
+
+  // Clone the element so we don't disturb the live DOM.
   const clone = element.cloneNode(true) as HTMLElement;
 
-  // Off-screen container with a fixed A4-equivalent width.
-  const wrapper = document.createElement("div");
-  wrapper.style.position = "fixed";
-  wrapper.style.left = "-100000px";
-  wrapper.style.top = "0";
-  wrapper.style.width = `${RENDER_WIDTH_PX}px`;
-  wrapper.style.background = getComputedStyle(document.body).backgroundColor || "#ffffff";
-  wrapper.appendChild(clone);
-  document.body.appendChild(wrapper);
+  // Remove any elements explicitly hidden in print — they shouldn't take up
+  // space or affect layout in the print document either.
+  clone.querySelectorAll(".print\\:hidden, [data-print-hide]").forEach((n) => n.remove());
 
-  // Force the cloned root to the target width so flex/grid layout reflows
-  // to a predictable A4-friendly size.
-  clone.style.width = `${RENDER_WIDTH_PX}px`;
-  clone.style.maxWidth = "none";
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>${escapeHtml(docTitle)}</title>
+${styleTags}
+<style>
+  /* Force the print stylesheet on screen too — the iframe never enters a
+     real "print" media state until window.print() is called, but we want
+     the layout to settle before then. */
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  /* Hide anything tagged for screen-only inside the cloned tree. */
+  .print\\:hidden { display: none !important; }
+</style>
+</head>
+<body>
+${clone.outerHTML}
+</body>
+</html>`;
+
+  // Create a hidden iframe to host the print document.
+  const iframe = document.createElement("iframe");
+  iframe.setAttribute("aria-hidden", "true");
+  iframe.style.position = "fixed";
+  iframe.style.right = "0";
+  iframe.style.bottom = "0";
+  iframe.style.width = "0";
+  iframe.style.height = "0";
+  iframe.style.border = "0";
+  iframe.style.opacity = "0";
+  iframe.style.pointerEvents = "none";
+  document.body.appendChild(iframe);
 
   try {
-    // Wait a frame so fonts/layout settle.
-    await new Promise((r) => requestAnimationFrame(() => r(null)));
-    if (document.fonts && (document.fonts as FontFaceSet).ready) {
+    const doc = iframe.contentDocument;
+    if (!doc) throw new Error("Could not access print iframe document");
+
+    doc.open();
+    doc.write(html);
+    doc.close();
+
+    // Wait for the iframe to finish loading its resources (fonts, etc.).
+    await new Promise<void>((resolve) => {
+      if (iframe.contentDocument?.readyState === "complete") {
+        resolve();
+      } else {
+        iframe.addEventListener("load", () => resolve(), { once: true });
+      }
+    });
+
+    // Wait for webfonts inside the iframe to be ready so text isn't laid out
+    // with fallback metrics and then re-flowed mid-print.
+    const iframeDoc = iframe.contentDocument!;
+    const iframeFonts = (iframeDoc as Document & { fonts?: FontFaceSet }).fonts;
+    if (iframeFonts?.ready) {
       try {
-        await (document.fonts as FontFaceSet).ready;
+        await iframeFonts.ready;
       } catch {
-        // ignore — proceed even if fonts API is unavailable.
+        // Non-fatal — proceed even if the fonts API rejects.
       }
     }
 
-    const canvas = await html2canvas(clone, {
-      scale: SCALE,
-      useCORS: true,
-      logging: false,
-      backgroundColor: "#ffffff",
-      windowWidth: RENDER_WIDTH_PX,
-    });
+    // Give layout one more frame to settle after fonts load.
+    await new Promise((r) => requestAnimationFrame(() => r(null)));
 
-    const pdf = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
+    // Trigger the native print dialog. The user chooses "Save as PDF".
+    const win = iframe.contentWindow;
+    if (!win) throw new Error("Could not access print iframe window");
+    win.focus();
+    win.print();
 
-    // Pixel-per-mm of the rendered canvas.
-    const pxPerMm = canvas.width / A4_WIDTH_MM;
-    const pageHeightPx = Math.floor(A4_HEIGHT_MM * pxPerMm);
-
-    let renderedHeightPx = 0;
-    let pageIndex = 0;
-
-    while (renderedHeightPx < canvas.height) {
-      const sliceHeight = Math.min(pageHeightPx, canvas.height - renderedHeightPx);
-
-      // Create a per-page canvas to avoid huge images on each page.
-      const pageCanvas = document.createElement("canvas");
-      pageCanvas.width = canvas.width;
-      pageCanvas.height = sliceHeight;
-      const ctx = pageCanvas.getContext("2d");
-      if (!ctx) throw new Error("Could not get 2D context for PDF page slice");
-
-      // White background so transparent areas don't render as black in PDF.
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-      ctx.drawImage(
-        canvas,
-        0, renderedHeightPx,
-        canvas.width, sliceHeight,
-        0, 0,
-        canvas.width, sliceHeight,
-      );
-
-      const imgData = pageCanvas.toDataURL("image/jpeg", 0.95);
-      const pageHeightMm = sliceHeight / pxPerMm;
-
-      if (pageIndex > 0) pdf.addPage();
-      pdf.addImage(imgData, "JPEG", 0, 0, A4_WIDTH_MM, pageHeightMm, undefined, "FAST");
-
-      renderedHeightPx += sliceHeight;
-      pageIndex += 1;
-    }
-
-    pdf.save(filename);
+    // Give the browser a moment to spawn the print dialog before we tear
+    // down the iframe — removing it too early can cancel the print job in
+    // some browsers.
+    await new Promise((r) => setTimeout(r, 1000));
   } finally {
-    document.body.removeChild(wrapper);
+    iframe.remove();
   }
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }

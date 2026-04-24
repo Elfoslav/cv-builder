@@ -110,7 +110,13 @@
   .print-grid-2 {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
-    gap: 2.5rem !important;
+    gap: 1.5rem 2rem !important;
+  }
+  /* Inner two-column skill grid in print */
+  .print-grid-2 .grid.sm\:grid-cols-2 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5rem 1.25rem !important;
   }
   .print-grid-2-tight {
     display: grid !important;

@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CVPreview } from "@/components/cv/CVPreview";
 import { CVEditor } from "@/components/cv/CVEditor";
 import { LanguageSwitcher } from "@/components/cv/LanguageSwitcher";
 import { useCVData } from "@/lib/use-cv-data";
 import { Button } from "@/components/ui/button";
-import { PanelLeftClose, PanelLeftOpen, Printer } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen, Printer, Download, Loader2 } from "lucide-react";
+import { exportElementToPDF } from "@/lib/export-pdf";
+import { toast } from "sonner";
 
 const Index = () => {
   const {
@@ -13,6 +15,8 @@ const Index = () => {
     addLanguage, renameLanguage, deleteLanguage,
   } = useCVData();
   const [editorOpen, setEditorOpen] = useState(true);
+  const [exporting, setExporting] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const name = data.name?.trim() || "CV";
@@ -37,7 +41,22 @@ const Index = () => {
     setMeta('meta[property="og:description"]', 'property="og:description"', desc);
   }, [data.name, data.role]);
 
-  const handleDownload = () => window.print();
+  const handlePrint = () => window.print();
+
+  const handleDownloadPDF = async () => {
+    if (!previewRef.current || exporting) return;
+    setExporting(true);
+    const safeName = (data.name?.trim() || "CV").replace(/[^a-z0-9-_ ]/gi, "").trim() || "CV";
+    try {
+      await exportElementToPDF(previewRef.current, `${safeName} - CV.pdf`);
+      toast.success("PDF downloaded");
+    } catch (err) {
+      console.error("PDF export failed", err);
+      toast.error("PDF export failed. Try the Print option as a fallback.");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background print:block print:h-auto">
@@ -71,13 +90,21 @@ const Index = () => {
           <span className="text-xs text-muted-foreground lg:hidden">
             Resize window to ≥1024px to edit
           </span>
-          <Button size="sm" variant="ghost" className="gap-2" onClick={handleDownload}>
-            <Printer className="h-4 w-4" />
-            <span className="text-xs font-medium">Print / PDF</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="ghost" className="gap-2" onClick={handlePrint}>
+              <Printer className="h-4 w-4" />
+              <span className="text-xs font-medium">Print</span>
+            </Button>
+            <Button size="sm" className="gap-2" onClick={handleDownloadPDF} disabled={exporting}>
+              {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+              <span className="text-xs font-medium">{exporting ? "Generating…" : "Download PDF"}</span>
+            </Button>
+          </div>
         </div>
 
-        <CVPreview data={data} onDownload={handleDownload} />
+        <div ref={previewRef}>
+          <CVPreview data={data} onDownload={handleDownloadPDF} />
+        </div>
       </div>
     </div>
   );

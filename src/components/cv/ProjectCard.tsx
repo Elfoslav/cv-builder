@@ -12,7 +12,7 @@ interface ProjectCardProps {
 
 export const ProjectCard = ({ name, period, description, stack, stars, repo, link }: ProjectCardProps) => {
   return (
-    <div className="group relative overflow-hidden rounded-md border border-border bg-gradient-card p-3.5 shadow-card transition-all hover:border-primary/50 hover:shadow-glow">
+    <div className="group relative overflow-hidden rounded-md border border-border bg-gradient-card p-2.5 shadow-card transition-all hover:border-primary/50 hover:shadow-glow">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
 
       <div className="mb-1.5 flex items-start justify-between gap-2">

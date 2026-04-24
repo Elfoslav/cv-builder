@@ -107,7 +107,7 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
         {data.projects.length > 0 && (
           <section className="mb-24">
             <SectionHeader index="05" title={L.projectsTitle} subtitle={L.projectsSubtitle} />
-            <div className="grid gap-3 md:grid-cols-2 print-grid-2-tight">
+            <div className="grid gap-2 md:grid-cols-2 print-grid-2-tight">
               {data.projects.map((p) => (
                 <ProjectCard
                   key={p.id}

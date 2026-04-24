@@ -90,13 +90,21 @@ const Index = () => {
           <span className="text-xs text-muted-foreground lg:hidden">
             Resize window to ≥1024px to edit
           </span>
-          <Button size="sm" variant="ghost" className="gap-2" onClick={handleDownload}>
-            <Printer className="h-4 w-4" />
-            <span className="text-xs font-medium">Print / PDF</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="ghost" className="gap-2" onClick={handlePrint}>
+              <Printer className="h-4 w-4" />
+              <span className="text-xs font-medium">Print</span>
+            </Button>
+            <Button size="sm" className="gap-2" onClick={handleDownloadPDF} disabled={exporting}>
+              {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+              <span className="text-xs font-medium">{exporting ? "Generating…" : "Download PDF"}</span>
+            </Button>
+          </div>
         </div>
 
-        <CVPreview data={data} onDownload={handleDownload} />
+        <div ref={previewRef}>
+          <CVPreview data={data} onDownload={handleDownloadPDF} />
+        </div>
       </div>
     </div>
   );

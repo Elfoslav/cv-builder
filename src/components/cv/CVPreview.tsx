@@ -45,15 +45,15 @@ export const CVPreview = ({ data, onDownload }: CVPreviewProps) => {
         )}
 
         {groupedSkills.length > 0 && (
-          <section className="mb-24">
+          <section className="mb-24 avoid-break">
             <SectionHeader index="02" title={L.skillsTitle} subtitle={L.skillsSubtitle} />
-            <div className="grid gap-10 md:grid-cols-2 print-grid-2">
+            <div className="grid gap-x-8 gap-y-6 md:grid-cols-2 print-grid-2">
               {groupedSkills.map(({ group, items }) => (
-                <div key={group.id}>
-                  <h3 className="mb-6 text-sm font-semibold uppercase tracking-wider text-accent">
+                <div key={group.id} className="avoid-break">
+                  <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-accent">
                     {group.name}
                   </h3>
-                  <div className="space-y-5">
+                  <div className="grid grid-cols-1 gap-x-6 gap-y-2.5 sm:grid-cols-2">
                     {items.map((s) => (
                       <SkillBar key={s.id} name={s.name} percentage={s.percentage} color={s.color} />
                     ))}

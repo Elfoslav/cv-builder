@@ -49,7 +49,7 @@ const Index = () => {
     const safeName = (data.name?.trim() || "CV").replace(/[^a-z0-9-_ ]/gi, "").trim() || "CV";
     try {
       await exportElementToPDF(previewRef.current, `${safeName} - CV.pdf`);
-      toast.success("PDF downloaded");
+      toast.success('Choose "Save as PDF" in the print dialog');
     } catch (err) {
       console.error("PDF export failed", err);
       toast.error("PDF export failed. Try the Print option as a fallback.");

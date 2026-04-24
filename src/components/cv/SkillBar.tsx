@@ -22,11 +22,11 @@ const barColor = (p: number) => {
 export const SkillBar = ({ name, percentage }: SkillBarProps) => {
   return (
     <div className="group">
-      <div className="mb-2 flex items-baseline justify-between">
-        <span className="text-sm font-medium text-foreground">{name}</span>
-        <span className="text-xs text-muted-foreground">{levelLabel(percentage)}</span>
+      <div className="mb-1 flex items-baseline justify-between gap-2">
+        <span className="text-xs font-medium text-foreground leading-tight">{name}</span>
+        <span className="text-[10px] text-muted-foreground leading-tight">{levelLabel(percentage)}</span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
         <div
           className={`h-full ${barColor(percentage)} animate-progress-fill rounded-full transition-all duration-500 group-hover:shadow-glow`}
           style={{ width: `${percentage}%` }}

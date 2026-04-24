@@ -213,43 +213,53 @@ export const SkillsSection = ({ data, setData }: Props) => {
               </p>
             ) : (
               items.map((s, sIdx) => (
-                <div key={s.id} className="space-y-2 rounded border border-border bg-secondary/20 p-3">
-                  <div className="flex gap-1">
-                    <Input
-                      placeholder="Skill name"
-                      value={s.name}
-                      onChange={(e) => patchSkill(s.id, { name: e.target.value })}
-                      maxLength={40}
-                    />
-                    <Button size="icon" variant="ghost" disabled={sIdx === 0} onClick={() => moveSkill(s.id, -1)} title="Move up">
-                      <ArrowUp className="h-4 w-4" />
-                    </Button>
-                    <Button size="icon" variant="ghost" disabled={sIdx === items.length - 1} onClick={() => moveSkill(s.id, 1)} title="Move down">
-                      <ArrowDown className="h-4 w-4" />
-                    </Button>
-                    <Button size="icon" variant="ghost" onClick={() => removeSkill(s.id)}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                  <Select value={s.group} onValueChange={(v) => patchSkill(s.id, { group: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {data.skillGroups.map((gr) => (
-                        <SelectItem key={gr.id} value={gr.id}>{gr.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <div>
-                    <div className="mb-1 flex justify-between font-mono text-xs text-muted-foreground">
-                      <span>Experience</span>
-                      <span>{s.percentage}%</span>
+                <div key={s.id} className="space-y-2">
+                  <div className="space-y-2 rounded border border-border bg-secondary/20 p-3">
+                    <div className="flex gap-1">
+                      <Input
+                        placeholder="Skill name"
+                        value={s.name}
+                        onChange={(e) => patchSkill(s.id, { name: e.target.value })}
+                        maxLength={40}
+                      />
+                      <Button size="icon" variant="ghost" disabled={sIdx === 0} onClick={() => moveSkill(s.id, -1)} title="Move up">
+                        <ArrowUp className="h-4 w-4" />
+                      </Button>
+                      <Button size="icon" variant="ghost" disabled={sIdx === items.length - 1} onClick={() => moveSkill(s.id, 1)} title="Move down">
+                        <ArrowDown className="h-4 w-4" />
+                      </Button>
+                      <Button size="icon" variant="ghost" onClick={() => removeSkill(s.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
                     </div>
-                    <Slider
-                      min={0} max={100} step={5}
-                      value={[s.percentage]}
-                      onValueChange={([v]) => patchSkill(s.id, { percentage: v })}
-                    />
+                    <Select value={s.group} onValueChange={(v) => patchSkill(s.id, { group: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {data.skillGroups.map((gr) => (
+                          <SelectItem key={gr.id} value={gr.id}>{gr.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <div>
+                      <div className="mb-1 flex justify-between font-mono text-xs text-muted-foreground">
+                        <span>Experience</span>
+                        <span>{s.percentage}%</span>
+                      </div>
+                      <Slider
+                        min={0} max={100} step={5}
+                        value={[s.percentage]}
+                        onValueChange={([v]) => patchSkill(s.id, { percentage: v })}
+                      />
+                    </div>
                   </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full gap-2 border-dashed"
+                    onClick={() => addSkill(g.id)}
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Add skill
+                  </Button>
                 </div>
               ))
             )}

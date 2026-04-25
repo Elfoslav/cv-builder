@@ -160,6 +160,14 @@
     break-inside: avoid;
     page-break-inside: avoid;
   }
+  /* Tighten section spacing in print so the first page fills naturally */
+  main > section.mb-24 {
+    margin-bottom: 2rem !important;
+  }
+  main {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
 }
 
 @page {

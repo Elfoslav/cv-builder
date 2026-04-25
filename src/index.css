@@ -153,8 +153,10 @@
     grid-template-columns: repeat(5, 1fr) !important;
     gap: 1rem !important;
   }
-  /* Avoid awkward page breaks inside cards/timeline items */
-  section, article, .avoid-break {
+  /* Avoid awkward page breaks inside small items only.
+     Sections themselves must be allowed to break so they can flow up
+     onto the previous page when a sibling section is empty. */
+  .avoid-break {
     break-inside: avoid;
     page-break-inside: avoid;
   }

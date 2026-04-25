@@ -26,15 +26,10 @@ export async function exportElementToPDF(
   // Strip the .pdf extension for the document title — browsers append it.
   const docTitle = filename.replace(/\.pdf$/i, "");
 
-  // Collect every stylesheet link and inline <style> from the host document
-  // so the iframe renders identically to the live preview.
-  const styleTags = Array.from(
-    document.querySelectorAll<HTMLLinkElement | HTMLStyleElement>(
-      'link[rel="stylesheet"], style',
-    ),
-  )
-    .map((node) => node.outerHTML)
-    .join("\n");
+  // Inline readable CSS rules instead of relying only on <link>/<style> tags.
+  // This keeps export styling stable in the print iframe, including Vite/Tailwind
+  // injected styles that can otherwise fail to resolve before printing.
+  const styleTags = collectDocumentStyles();
 
   // Clone the element so we don't disturb the live DOM.
   const clone = element.cloneNode(true) as HTMLElement;
@@ -74,10 +69,10 @@ ${clone.outerHTML}
   const iframe = document.createElement("iframe");
   iframe.setAttribute("aria-hidden", "true");
   iframe.style.position = "fixed";
-  iframe.style.right = "0";
-  iframe.style.bottom = "0";
-  iframe.style.width = "0";
-  iframe.style.height = "0";
+  iframe.style.left = "-10000px";
+  iframe.style.top = "0";
+  iframe.style.width = "794px";
+  iframe.style.height = "1123px";
   iframe.style.border = "0";
   iframe.style.opacity = "0";
   iframe.style.pointerEvents = "none";
@@ -99,6 +94,8 @@ ${clone.outerHTML}
         iframe.addEventListener("load", () => resolve(), { once: true });
       }
     });
+
+    await waitForStylesheets(doc);
 
     // Wait for webfonts inside the iframe to be ready so text isn't laid out
     // with fallback metrics and then re-flowed mid-print.
@@ -128,6 +125,42 @@ ${clone.outerHTML}
   } finally {
     iframe.remove();
   }
+}
+
+function collectDocumentStyles(): string {
+  const css: string[] = [];
+  const fallbacks: string[] = [];
+
+  Array.from(document.styleSheets).forEach((sheet) => {
+    try {
+      const rules = Array.from(sheet.cssRules)
+        .map((rule) => rule.cssText)
+        .join("\n");
+      if (rules) css.push(rules);
+    } catch {
+      const owner = sheet.ownerNode as HTMLElement | null;
+      if (owner?.outerHTML) fallbacks.push(owner.outerHTML);
+    }
+  });
+
+  return `${fallbacks.join("\n")}\n<style>${css.join("\n")}</style>`;
+}
+
+async function waitForStylesheets(doc: Document): Promise<void> {
+  const links = Array.from(doc.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'));
+  await Promise.all(
+    links.map(
+      (link) =>
+        new Promise<void>((resolve) => {
+          if (link.sheet) {
+            resolve();
+            return;
+          }
+          link.addEventListener("load", () => resolve(), { once: true });
+          link.addEventListener("error", () => resolve(), { once: true });
+        }),
+    ),
+  );
 }
 
 function escapeHtml(s: string): string {

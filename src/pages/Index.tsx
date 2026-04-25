@@ -1,12 +1,23 @@
 import { useEffect, useRef, useState } from "react";
+import { createRoot } from "react-dom/client";
 import { CVPreview } from "@/components/cv/CVPreview";
 import { CVEditor } from "@/components/cv/CVEditor";
 import { LanguageSwitcher } from "@/components/cv/LanguageSwitcher";
 import { useCVData } from "@/lib/use-cv-data";
 import { Button } from "@/components/ui/button";
-import { PanelLeftClose, PanelLeftOpen, Printer, Download, Loader2 } from "lucide-react";
+import {
+  PanelLeftClose, PanelLeftOpen, Printer, Download, Loader2, Languages,
+} from "lucide-react";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
 import { exportElementToPDF } from "@/lib/export-pdf";
 import { toast } from "sonner";
+import { CVData } from "@/lib/cv-types";
+
+const safeFileName = (name: string, fallback = "CV") =>
+  (name?.trim() || fallback).replace(/[^a-z0-9-_ ]/gi, "").trim() || fallback;
 
 const Index = () => {
   const {
@@ -43,16 +54,64 @@ const Index = () => {
 
   const handlePrint = () => window.print();
 
+  // Render a CVData snapshot into an off-screen DOM node, export it, then unmount.
+  const exportLanguage = async (langData: CVData, langName: string) => {
+    const host = document.createElement("div");
+    host.style.position = "fixed";
+    host.style.left = "-10000px";
+    host.style.top = "0";
+    host.style.width = "1024px";
+    host.style.pointerEvents = "none";
+    host.setAttribute("aria-hidden", "true");
+    document.body.appendChild(host);
+
+    const root = createRoot(host);
+    try {
+      await new Promise<void>((resolve) => {
+        root.render(<CVPreview data={langData} />);
+        // Wait two frames so layout settles before snapshotting.
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      });
+
+      const name = safeFileName(langData.name);
+      const lang = safeFileName(langName, "lang");
+      await exportElementToPDF(host, `${name} - CV (${lang}).pdf`);
+    } finally {
+      root.unmount();
+      host.remove();
+    }
+  };
+
   const handleDownloadPDF = async () => {
     if (!previewRef.current || exporting) return;
     setExporting(true);
-    const safeName = (data.name?.trim() || "CV").replace(/[^a-z0-9-_ ]/gi, "").trim() || "CV";
+    const safeName = safeFileName(data.name);
     try {
       await exportElementToPDF(previewRef.current, `${safeName} - CV.pdf`);
       toast.success('Choose "Save as PDF" in the print dialog');
     } catch (err) {
       console.error("PDF export failed", err);
       toast.error("PDF export failed. Try the Print option as a fallback.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleDownloadAllPDFs = async () => {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      for (const lang of languages) {
+        // eslint-disable-next-line no-await-in-loop
+        await exportLanguage(lang.data, lang.name);
+        // Small delay so the print dialog doesn't get stomped by the next call.
+        // eslint-disable-next-line no-await-in-loop
+        await new Promise((r) => setTimeout(r, 400));
+      }
+      toast.success(`Generated ${languages.length} PDF${languages.length > 1 ? "s" : ""}. Save each in the print dialog.`);
+    } catch (err) {
+      console.error("Bulk PDF export failed", err);
+      toast.error("Bulk PDF export failed. Try downloading languages one by one.");
     } finally {
       setExporting(false);
     }
@@ -95,10 +154,32 @@ const Index = () => {
               <Printer className="h-4 w-4" />
               <span className="text-xs font-medium">Print</span>
             </Button>
-            <Button size="sm" className="gap-2" onClick={handleDownloadPDF} disabled={exporting}>
-              {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-              <span className="text-xs font-medium">{exporting ? "Generating…" : "Download PDF"}</span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" className="gap-2" disabled={exporting}>
+                  {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                  <span className="text-xs font-medium">{exporting ? "Generating…" : "Download PDF"}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem onClick={handleDownloadPDF} disabled={exporting}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Current language
+                </DropdownMenuItem>
+                {languages.length > 1 && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel className="text-xs text-muted-foreground">
+                      All languages
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem onClick={handleDownloadAllPDFs} disabled={exporting}>
+                      <Languages className="mr-2 h-4 w-4" />
+                      Download all ({languages.length})
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 

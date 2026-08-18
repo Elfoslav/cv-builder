@@ -214,7 +214,7 @@ export const CVShell = ({
       case "footer":
         return (
           <footer className="border-t border-border pt-10">
-            <div className="flex flex-col items-center justify-between gap-4 text-center text-xs text-muted-foreground md:flex-row md:text-left">
+            <div className="flex flex-col items-center justify-between gap-4 text-center text-xs text-muted-foreground md:flex-row md:text-left print:flex-row print:text-left">
               <div>{L.footerThanks}</div>
               <div>{L.footerCopyright || `© ${new Date().getFullYear()} ${data.name}`}</div>
             </div>

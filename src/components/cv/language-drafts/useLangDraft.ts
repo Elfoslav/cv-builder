@@ -1,0 +1,148 @@
+import { useState } from "react";
+
+export interface MockLang {
+  id: string;
+  name: string;
+}
+
+export interface DraftLangProps {
+  languages: MockLang[];
+  activeId: string;
+  setActiveId: (id: string) => void;
+  addLanguage: (name: string, copyFromActive: boolean) => void;
+  renameLanguage: (id: string, name: string) => void;
+  deleteLanguage: (id: string) => void;
+}
+
+export interface LangDraft {
+  languages: MockLang[];
+  activeId: string;
+  setActiveId: (id: string) => void;
+  add: (name: string) => void;
+  rename: (name: string) => void;
+  del: () => void;
+  canDelete: boolean;
+  addOpen: boolean;
+  setAddOpen: (open: boolean) => void;
+  newName: string;
+  setNewName: (name: string) => void;
+  renameOpen: boolean;
+  setRenameOpen: (open: boolean) => void;
+  editName: string;
+  setEditName: (name: string) => void;
+  deleteOpen: boolean;
+  setDeleteOpen: (open: boolean) => void;
+  requestAdd: () => void;
+  requestRename: () => void;
+  requestDelete: () => void;
+}
+
+export type { LangDraft };
+
+const INITIAL: MockLang[] = [
+  { id: "en", name: "English" },
+  { id: "de", name: "Deutsch" },
+  { id: "fr", name: "Français" },
+  { id: "ja", name: "日本語" },
+];
+
+let counter = 0;
+const uid = () => `lang-${++counter}-${Math.random().toString(36).slice(2, 6)}`;
+
+/**
+ * Normalizes the real topbar props (languages/activeId/add/rename/delete)
+ * into the shared action + dialog-state object every draft consumes.
+ * Mirrors `useLangDraft`'s shape, so a draft works identically with mock
+ * data on /drafts and with live data in the Index topbar.
+ */
+export const useDraftActions = (p: DraftLangProps): LangDraft => {
+  const [addOpen, setAddOpen] = useState(false);
+  const [renameOpen, setRenameOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [editName, setEditName] = useState("");
+
+  const active = p.languages.find((l) => l.id === p.activeId);
+  const canDelete = p.languages.length > 1;
+
+  const add = (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    p.addLanguage(trimmed, false);
+    setNewName("");
+    setAddOpen(false);
+  };
+
+  const rename = (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed || !active) return;
+    p.renameLanguage(active.id, trimmed);
+    setRenameOpen(false);
+  };
+
+  const del = () => {
+    if (!canDelete || !active) return;
+    p.deleteLanguage(active.id);
+    setDeleteOpen(false);
+  };
+
+  const requestAdd = () => {
+    setNewName("");
+    setAddOpen(true);
+  };
+
+  const requestRename = () => {
+    setEditName(active?.name ?? "");
+    setRenameOpen(true);
+  };
+
+  const requestDelete = () => setDeleteOpen(true);
+
+  return {
+    languages: p.languages,
+    activeId: p.activeId,
+    setActiveId: p.setActiveId,
+    add, rename, del, canDelete,
+    addOpen, setAddOpen, newName, setNewName,
+    renameOpen, setRenameOpen, editName, setEditName,
+    deleteOpen, setDeleteOpen,
+    requestAdd, requestRename, requestDelete,
+  };
+};
+
+/**
+ * State + actions shared by every language-switcher draft (mock data).
+ */
+export const useLangDraft = () => {
+  const [languages, setLanguages] = useState<MockLang[]>(INITIAL);
+  const [activeId, setActiveId] = useState(INITIAL[0].id);
+
+  const addLanguage = (name: string) =>
+    setLanguages((ls) => [...ls, { id: uid(), name }]);
+  const renameLanguage = (id: string, name: string) =>
+    setLanguages((ls) => ls.map((l) => (l.id === id ? { ...l, name } : l)));
+  const deleteLanguage = (id: string) => {
+    setLanguages((ls) => {
+      const next = ls.filter((l) => l.id !== id);
+      if (next.length < ls.length) {
+        setActiveId((prev) => (prev === id ? next[0].id : prev));
+      }
+      return next;
+    });
+  };
+
+  return useDraftActions({
+    languages, activeId, setActiveId,
+    addLanguage, renameLanguage, deleteLanguage,
+  });
+};
+
+/** Adapts a `useLangDraft()` result into the real-props shape. */
+export const toDraftProps = (m: LangDraft): DraftLangProps => ({
+  languages: m.languages,
+  activeId: m.activeId,
+  setActiveId: m.setActiveId,
+  addLanguage: (name) => m.add(name),
+  renameLanguage: (id, name) => m.rename(name),
+  deleteLanguage: () => m.del(),
+});

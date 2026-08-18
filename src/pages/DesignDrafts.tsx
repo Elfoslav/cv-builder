@@ -1,11 +1,16 @@
 import { Link } from "react-router-dom";
+import { type ReactNode, type ComponentType } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useDraftData } from "@/components/cv/drafts/useDraftData";
 import { DraftInline } from "@/components/cv/drafts/DraftInline";
 import { DraftDrawer } from "@/components/cv/drafts/DraftDrawer";
 import { DraftFloating } from "@/components/cv/drafts/DraftFloating";
-import { ArrowLeft, RotateCcw, MousePointerClick } from "lucide-react";
+import { DraftLangIcon } from "@/components/cv/language-drafts/DraftLangIcon";
+import { DraftLangPills } from "@/components/cv/language-drafts/DraftLangPills";
+import { LanguageSwitcher } from "@/components/cv/LanguageSwitcher";
+import { useLangDraft, toDraftProps, type DraftLangProps } from "@/components/cv/language-drafts/useLangDraft";
+import { ArrowLeft, RotateCcw, MousePointerClick, Languages } from "lucide-react";
 
 const DRAFT_META = [
   {
@@ -39,6 +44,59 @@ const DRAFT_META = [
     ],
   },
 ];
+
+const LANG_DRAFT_META = [
+  {
+    id: "lang-menu",
+    name: "A · Compact dropdown",
+    desc: "One small button showing the active language. Clicking it opens a menu to switch languages and to add, rename, or delete a CV version. Slimmest vertical footprint.",
+    hints: [
+      "Single row, ~32px tall (was ~90px)",
+      "Switch + all management in one menu",
+      "Shows active language at a glance",
+    ],
+  },
+  {
+    id: "lang-icon",
+    name: "B · Icon only",
+    desc: "Just the languages icon. The most minimal option — active language is shown in a tooltip. Perfect when space is extremely tight.",
+    hints: [
+      "Narrowest possible trigger",
+      "Tooltip shows the active language",
+      "All actions live in the popover menu",
+    ],
+  },
+  {
+    id: "lang-pills",
+    name: "C · Inline pills",
+    desc: "Every language is a small pill in a single row, so switching is one click with no menu. A tiny gear opens add / rename / delete.",
+    hints: [
+      "One click to switch languages",
+      "Single row, still compact",
+      "Gear menu for management",
+    ],
+  },
+];
+
+const MockTopbar = ({ children }: { children: ReactNode }) => (
+  <div className="flex items-center gap-2 border-b border-border bg-background px-4 py-2">
+    <span className="text-xs font-medium text-muted-foreground">Drafts</span>
+    {children}
+    <div className="ml-auto flex items-center gap-1 text-[10px] text-muted-foreground">
+      <span>Print</span>
+      <span>·</span>
+      <span>JSON</span>
+      <span>·</span>
+      <span>PDF</span>
+    </div>
+  </div>
+);
+
+/** Feeds a language draft component with mock state, like the /drafts page. */
+const LangDraftDemo = ({ Draft }: { Draft: ComponentType<DraftLangProps> }) => {
+  const m = useLangDraft();
+  return <Draft {...toDraftProps(m)} />;
+};
 
 export const DesignDrafts = () => {
   const { data, helpers, reset } = useDraftData();
@@ -100,6 +158,51 @@ export const DesignDrafts = () => {
             <DraftFloating data={data} h={helpers} />
           </TabsContent>
         </Tabs>
+
+        <section className="mt-12">
+          <div className="mb-4">
+            <h2 className="flex items-center gap-1.5 text-sm font-semibold">
+              <Languages className="h-4 w-4 text-primary" /> Topbar language switcher — compact drafts
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              The current switcher is a two-row block (~90px tall). These versions fit in one row (~32px).
+            </p>
+          </div>
+
+          <div className="mb-6 grid gap-3 md:grid-cols-3">
+            {LANG_DRAFT_META.map((d) => (
+              <div key={d.id} className="rounded-lg border border-border bg-card p-3 text-xs">
+                <div className="mb-1 font-semibold">{d.name}</div>
+                <p className="mb-2 text-muted-foreground">{d.desc}</p>
+                <ul className="space-y-0.5 text-muted-foreground">
+                  {d.hints.map((hint) => (
+                    <li key={hint} className="flex gap-1.5">
+                      <MousePointerClick className="mt-0.5 h-3 w-3 shrink-0 text-primary" />
+                      {hint}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          <Tabs defaultValue="lang-menu" className="w-full">
+            <TabsList className="mb-4">
+              {LANG_DRAFT_META.map((d) => (
+                <TabsTrigger key={d.id} value={d.id}>{d.name}</TabsTrigger>
+              ))}
+            </TabsList>
+            <TabsContent value="lang-menu" className="rounded-xl border border-border bg-background shadow-sm">
+              <MockTopbar><LangDraftDemo Draft={LanguageSwitcher} /></MockTopbar>
+            </TabsContent>
+            <TabsContent value="lang-icon" className="rounded-xl border border-border bg-background shadow-sm">
+              <MockTopbar><LangDraftDemo Draft={DraftLangIcon} /></MockTopbar>
+            </TabsContent>
+            <TabsContent value="lang-pills" className="rounded-xl border border-border bg-background shadow-sm">
+              <MockTopbar><LangDraftDemo Draft={DraftLangPills} /></MockTopbar>
+            </TabsContent>
+          </Tabs>
+        </section>
       </main>
     </div>
   );

@@ -1,5 +1,7 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
-import { CVData, CVLabels, defaultCV, defaultLabels, SkillGroup } from "./cv-types";
+import {
+  CVData, CVLabels, defaultCV, defaultLabels, SkillGroup, SectionKey, SECTION_KEYS,
+} from "./cv-types";
 
 const STORAGE_KEY = "cv-builder-data-v1";
 const STORAGE_KEY_MULTI = "cv-builder-data-v2";
@@ -17,6 +19,22 @@ export interface MultiCVStore {
 }
 
 const uid = () => Math.random().toString(36).slice(2, 9);
+
+/**
+ * Normalizes a stored section order: drops unknown keys, appends any missing
+ * sections, and pins hero first / footer last.
+ */
+const normalizeSectionOrder = (stored?: SectionKey[]): SectionKey[] => {
+  const valid = new Set(SECTION_KEYS);
+  const incoming = Array.isArray(stored)
+    ? stored.filter((k): k is SectionKey => valid.has(k))
+    : [];
+  SECTION_KEYS.forEach((k) => {
+    if (!incoming.includes(k)) incoming.push(k);
+  });
+  const movable = incoming.filter((k) => k !== "hero" && k !== "footer");
+  return ["hero", ...movable, "footer"];
+};
 
 const migrateData = (parsed: Partial<CVData> & { skills?: Array<{ group?: string }> }): CVData => {
   // Per-key fallback: only fill in missing top-level fields, never overwrite existing user values.
@@ -37,6 +55,7 @@ const migrateData = (parsed: Partial<CVData> & { skills?: Array<{ group?: string
     projects: parsed.projects ?? defaultCV.projects,
     hobbies: parsed.hobbies ?? defaultCV.hobbies,
     labels: { ...defaultLabels, ...((parsed as { labels?: Partial<CVLabels> }).labels ?? {}) },
+    sectionOrder: normalizeSectionOrder((parsed as { sectionOrder?: SectionKey[] }).sectionOrder),
   } as CVData;
 
   const legacyMap: Record<string, { id: string; name: string }> = {

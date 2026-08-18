@@ -1,202 +1,219 @@
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
-
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 220 25% 12%;
+	:root {
+		--background: 0 0% 100%;
+		--foreground: 220 25% 12%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 25% 12%;
+		--card: 0 0% 100%;
+		--card-foreground: 220 25% 12%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 25% 12%;
+		--popover: 0 0% 100%;
+		--popover-foreground: 220 25% 12%;
 
-    --primary: 220 75% 45%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 220 85% 60%;
+		--primary: 220 75% 45%;
+		--primary-foreground: 0 0% 100%;
+		--primary-glow: 220 85% 60%;
 
-    --secondary: 220 15% 95%;
-    --secondary-foreground: 220 25% 20%;
+		--secondary: 220 15% 95%;
+		--secondary-foreground: 220 25% 20%;
 
-    --muted: 220 15% 96%;
-    --muted-foreground: 220 10% 40%;
+		--muted: 220 15% 96%;
+		--muted-foreground: 220 10% 40%;
 
-    --accent: 199 85% 42%;
-    --accent-foreground: 0 0% 100%;
+		--accent: 199 85% 42%;
+		--accent-foreground: 0 0% 100%;
 
-    --destructive: 0 75% 50%;
-    --destructive-foreground: 0 0% 100%;
+		--destructive: 0 75% 50%;
+		--destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 90%;
-    --input: 220 15% 92%;
-    --ring: 220 75% 45%;
+		--border: 220 15% 90%;
+		--input: 220 15% 92%;
+		--ring: 220 75% 45%;
 
-    --radius: 0.5rem;
+		--radius: 0.5rem;
 
-    --terminal-green: 142 65% 40%;
-    --terminal-cyan: 199 85% 42%;
-    --terminal-purple: 270 65% 55%;
-    --terminal-yellow: 38 90% 45%;
-    --terminal-pink: 330 70% 55%;
+		--terminal-green: 142 65% 40%;
+		--terminal-cyan: 199 85% 42%;
+		--terminal-purple: 270 65% 55%;
+		--terminal-yellow: 38 90% 45%;
+		--terminal-pink: 330 70% 55%;
 
-    --skill-high: 142 70% 40%;
-    --skill-mid: 38 90% 50%;
-    --skill-low: 350 75% 55%;
+		--skill-high: 142 70% 40%;
+		--skill-mid: 38 90% 50%;
+		--skill-low: 350 75% 55%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(220 75% 45%), hsl(199 85% 50%));
-    --gradient-glow: radial-gradient(circle at 50% 0%, hsl(220 75% 45% / 0.10), transparent 70%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 20% 98%));
+		--gradient-primary: linear-gradient(135deg, hsl(220 75% 45%), hsl(199 85% 50%));
+		--gradient-glow: radial-gradient(circle at 50% 0%, hsl(220 75% 45% / 0.1), transparent 70%);
+		--gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 20% 98%));
 
-    --shadow-glow: 0 10px 40px hsl(220 75% 45% / 0.15);
-    --shadow-card: 0 4px 20px hsl(220 30% 20% / 0.08);
+		--shadow-glow: 0 10px 40px hsl(220 75% 45% / 0.15);
+		--shadow-card: 0 4px 20px hsl(220 30% 20% / 0.08);
 
-    --sidebar-background: 220 20% 98%;
-    --sidebar-foreground: 220 25% 15%;
-    --sidebar-primary: 220 75% 45%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 94%;
-    --sidebar-accent-foreground: 220 25% 15%;
-    --sidebar-border: 220 15% 90%;
-    --sidebar-ring: 220 75% 45%;
-  }
+		--sidebar-background: 220 20% 98%;
+		--sidebar-foreground: 220 25% 15%;
+		--sidebar-primary: 220 75% 45%;
+		--sidebar-primary-foreground: 0 0% 100%;
+		--sidebar-accent: 220 15% 94%;
+		--sidebar-accent-foreground: 220 25% 15%;
+		--sidebar-border: 220 15% 90%;
+		--sidebar-ring: 220 75% 45%;
+	}
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+	* {
+		@apply border-border;
+	}
 
-  body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-feature-settings: "ss01", "cv01";
-  }
+	body {
+		@apply bg-background text-foreground font-sans antialiased;
+		font-feature-settings: "ss01", "cv01";
+	}
 
-  ::selection {
-    @apply bg-primary/30 text-foreground;
-  }
+	::selection {
+		@apply bg-primary/30 text-foreground;
+	}
 
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  ::-webkit-scrollbar-track {
-    @apply bg-background;
-  }
-  ::-webkit-scrollbar-thumb {
-    @apply bg-secondary rounded-full;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted;
-  }
+	::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+	::-webkit-scrollbar-track {
+		@apply bg-background;
+	}
+	::-webkit-scrollbar-thumb {
+		@apply bg-secondary rounded-full;
+	}
+	::-webkit-scrollbar-thumb:hover {
+		@apply bg-muted;
+	}
 }
 
 @media print {
-  /* Force backgrounds & colors to render in print/PDF */
-  html, body {
-    background: hsl(var(--background)) !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    color-adjust: exact !important;
-  }
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    /* Strip effects that commonly cause rendering glitches in PDF */
-    box-shadow: none !important;
-    text-shadow: none !important;
-    filter: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    transition: none !important;
-    animation: none !important;
-  }
-  /* Replace gradient backgrounds with flat surfaces for predictable output */
-  .bg-gradient-card,
-  .bg-gradient-primary,
-  .bg-gradient-glow,
-  [class*="bg-gradient-"] {
-    background: hsl(var(--card)) !important;
-    background-image: none !important;
-  }
-  /* Remove decorative grid background in print */
-  .grid-bg {
-    background-image: none !important;
-    mask-image: none !important;
-  }
-  /* Neutralize glow text effects */
-  .glow-text {
-    text-shadow: none !important;
-  }
-  /* Force two-column layouts even on narrow print page widths */
-  .print-grid-2 {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 1.5rem 2rem !important;
-  }
-  /* Inner two-column skill grid in print */
-  .print-grid-2 .grid.sm\:grid-cols-2 {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 0.5rem 1.25rem !important;
-  }
-  .print-grid-2-tight {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 0.5rem !important;
-  }
-  .print-grid-5 {
-    display: grid !important;
-    grid-template-columns: repeat(5, 1fr) !important;
-    gap: 1rem !important;
-  }
-  /* Avoid awkward page breaks inside small items only.
+	/* Force backgrounds & colors to render in print/PDF */
+	html,
+	body {
+		background: hsl(var(--background)) !important;
+		-webkit-print-color-adjust: exact !important;
+		print-color-adjust: exact !important;
+		color-adjust: exact !important;
+	}
+	* {
+		-webkit-print-color-adjust: exact !important;
+		print-color-adjust: exact !important;
+		/* Strip effects that commonly cause rendering glitches in PDF */
+		box-shadow: none !important;
+		text-shadow: none !important;
+		filter: none !important;
+		backdrop-filter: none !important;
+		-webkit-backdrop-filter: none !important;
+		transition: none !important;
+		animation: none !important;
+	}
+	/* Replace gradient backgrounds with flat surfaces for predictable output */
+	.bg-gradient-card,
+	.bg-gradient-primary,
+	.bg-gradient-glow,
+	[class*="bg-gradient-"] {
+		background: hsl(var(--card)) !important;
+		background-image: none !important;
+	}
+	/* Remove decorative grid background in print */
+	.grid-bg {
+		background-image: none !important;
+		mask-image: none !important;
+	}
+	/* Neutralize glow text effects */
+	.glow-text {
+		text-shadow: none !important;
+	}
+	/* Force two-column layouts even on narrow print page widths */
+	.print-grid-2 {
+		display: grid !important;
+		grid-template-columns: 1fr 1fr !important;
+		gap: 1.5rem 2rem !important;
+	}
+	/* Inner two-column skill grid in print */
+	.print-grid-2 .grid.sm\:grid-cols-2 {
+		display: grid !important;
+		grid-template-columns: 1fr 1fr !important;
+		gap: 0.5rem 1.25rem !important;
+	}
+	.print-grid-2-tight {
+		display: grid !important;
+		grid-template-columns: 1fr 1fr !important;
+		gap: 0.5rem !important;
+	}
+	.print-grid-5 {
+		display: grid !important;
+		grid-template-columns: repeat(5, 1fr) !important;
+		gap: 1rem !important;
+	}
+	/* Avoid awkward page breaks inside small items only.
      Sections themselves must be allowed to break so they can flow up
      onto the previous page when a sibling section is empty. */
-  .avoid-break {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-  /* Tighten section spacing in print so the first page fills naturally */
-  main > section.mb-24 {
-    margin-bottom: 2rem !important;
-  }
-  main {
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
-  }
+	.avoid-break {
+		break-inside: avoid;
+		page-break-inside: avoid;
+	}
+	/* Empty sections are editable affordances on screen — never print them. */
+	.empty-section {
+		display: none !important;
+	}
+	/* Tighten section spacing in print so the first page fills naturally */
+	main > section {
+		margin-bottom: 2rem !important;
+	}
+	main {
+		padding-top: 1rem !important;
+		padding-bottom: 1rem !important;
+	}
 }
 
 @page {
-  margin: 12mm;
-  /* Hide browser-injected headers/footers (URL, date, page numbers) */
-  marks: none;
-  @top-left { content: ""; }
-  @top-center { content: ""; }
-  @top-right { content: ""; }
-  @bottom-left { content: ""; }
-  @bottom-center { content: ""; }
-  @bottom-right { content: ""; }
+	margin: 12mm;
+	/* Hide browser-injected headers/footers (URL, date, page numbers) */
+	marks: none;
+	@top-left {
+		content: "";
+	}
+	@top-center {
+		content: "";
+	}
+	@top-right {
+		content: "";
+	}
+	@bottom-left {
+		content: "";
+	}
+	@bottom-center {
+		content: "";
+	}
+	@bottom-right {
+		content: "";
+	}
 }
 
 @layer components {
-  .terminal-prompt::before {
-    content: "$ ";
-    @apply text-primary font-mono;
-  }
+	.terminal-prompt::before {
+		content: "$ ";
+		@apply text-primary font-mono;
+	}
 
-  .glow-text {
-    text-shadow: 0 0 20px hsl(var(--primary) / 0.5);
-  }
+	.glow-text {
+		text-shadow: 0 0 20px hsl(var(--primary) / 0.5);
+	}
 
-  .grid-bg {
-    background-image:
-      linear-gradient(hsl(var(--border) / 0.4) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.4) 1px, transparent 1px);
-    background-size: 40px 40px;
-    mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black, transparent);
-  }
+	.grid-bg {
+		background-image:
+			linear-gradient(hsl(var(--border) / 0.4) 1px, transparent 1px),
+			linear-gradient(90deg, hsl(var(--border) / 0.4) 1px, transparent 1px);
+		background-size: 40px 40px;
+		mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black, transparent);
+	}
 }

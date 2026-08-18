@@ -1,5 +1,18 @@
 export type SkillColor = "green" | "cyan" | "purple" | "yellow" | "pink";
 
+export type ListKey = "skills" | "experience" | "education" | "projects" | "hobbies";
+
+export type SectionKey = "hero" | "about" | "footer" | ListKey;
+
+export const SECTION_KEYS: SectionKey[] = [
+  "hero", "about", "experience", "education", "skills", "projects", "hobbies", "footer",
+];
+
+/** Hero stays pinned first, footer pinned last; the middle sections are reorderable. */
+export const DEFAULT_SECTION_ORDER: SectionKey[] = [
+  "hero", "about", "experience", "education", "skills", "projects", "hobbies", "footer",
+];
+
 export interface SkillGroup {
   id: string;
   name: string;
@@ -65,6 +78,8 @@ export interface CVLabels {
   hobbiesTitle: string;
   hobbiesSubtitle: string;
   footerThanks: string;
+  /** Copyright line; empty falls back to "© {year} {name}". */
+  footerCopyright: string;
 }
 
 export const defaultLabels: CVLabels = {
@@ -81,6 +96,7 @@ export const defaultLabels: CVLabels = {
   hobbiesTitle: "Interests",
   hobbiesSubtitle: "Outside of work",
   footerThanks: "Thanks for taking the time to read my CV.",
+  footerCopyright: "",
 };
 
 export interface CVData {
@@ -100,6 +116,8 @@ export interface CVData {
   projects: Project[];
   hobbies: Hobby[];
   labels: CVLabels;
+  /** Display order of the CV sections. Hero & footer are pinned at the ends. */
+  sectionOrder: SectionKey[];
 }
 
 export const defaultCV: CVData = {
@@ -192,6 +210,7 @@ export const defaultCV: CVData = {
     { id: "h5", label: "Indie games", icon: "Gamepad2" },
   ],
   labels: defaultLabels,
+  sectionOrder: DEFAULT_SECTION_ORDER,
 };
 
 export const HOBBY_ICONS: Hobby["icon"][] = [

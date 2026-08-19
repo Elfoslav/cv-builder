@@ -6,7 +6,8 @@ import { Hero } from "@/components/cv/Hero";
 import { EmptyState, groupSkills, splitTags } from "@/components/cv/cv-utils";
 import { SkillsView } from "@/components/cv/themed/skills/SkillsView";
 import { ProjectsView } from "@/components/cv/themed/projects/ProjectsView";
-import { TimelineView, type TimelineEntry } from "@/components/cv/themed/timeline/TimelineView";
+import { TimelineView } from "@/components/cv/themed/timeline/TimelineView";
+import { type ListEntry } from "@/components/cv/themed/shared/types";
 import { HobbiesView } from "@/components/cv/themed/hobbies/HobbiesView";
 import { AboutView } from "@/components/cv/themed/about/AboutView";
 import { FooterView } from "@/components/cv/themed/footer/FooterView";
@@ -57,7 +58,7 @@ export const CVShell = ({
 
   const groupedSkills = groupSkills(data);
 
-  const toTimelineEntry = (entry: {
+  const toListEntry = (entry: {
     id: string;
     period: string;
     title: string;
@@ -65,7 +66,7 @@ export const CVShell = ({
     location: string;
     description: string;
     tags: string;
-  }): TimelineEntry => ({
+  }): ListEntry => ({
     id: entry.id, period: entry.period, title: entry.title, subtitle: entry.subtitle,
     location: entry.location, description: entry.description, tags: splitTags(entry.tags),
   });
@@ -110,11 +111,11 @@ export const CVShell = ({
           : section(<EmptyState label="Add a short introduction…" />);
       case "experience":
         return data.experience.length
-          ? section(<TimelineView items={data.experience.map(toTimelineEntry)} variant={d.experience} />)
+          ? section(<TimelineView items={data.experience.map(toListEntry)} variant={d.experience} />)
           : section(<EmptyState label="No experience entries yet" />);
       case "education":
         return data.education.length
-          ? section(<TimelineView items={data.education.map(toTimelineEntry)} variant={d.education} />)
+          ? section(<TimelineView items={data.education.map(toListEntry)} variant={d.education} />)
           : section(<EmptyState label="No education entries yet" />);
       case "skills":
         return groupedSkills.length

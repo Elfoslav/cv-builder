@@ -1,29 +1,20 @@
 import { type TimelineLayout } from "@/lib/section-designs";
-import { TimelineDots } from "./TimelineDots";
-import { TimelineCards } from "./TimelineCards";
-import { TimelineFlatCards } from "./TimelineFlatCards";
-import { TimelineAccentCards } from "./TimelineAccentCards";
-import { TimelineRows } from "./TimelineRows";
-
-export interface TimelineEntry {
-  id: string;
-  period: string;
-  title: string;
-  subtitle: string;
-  location?: string;
-  description: string;
-  tags: string[];
-}
+import { type ListEntry } from "@/components/cv/themed/shared/types";
+import { ListCards } from "@/components/cv/themed/shared/ListCards";
+import { ListFlatCards } from "@/components/cv/themed/shared/ListFlatCards";
+import { ListAccentCards } from "@/components/cv/themed/shared/ListAccentCards";
+import { ListRows } from "@/components/cv/themed/shared/ListRows";
+import { ListTimeline } from "@/components/cv/themed/shared/ListTimeline";
 
 interface TimelineViewProps {
-  items: TimelineEntry[];
+  items: ListEntry[];
   variant: TimelineLayout;
 }
 
 export const TimelineView = ({ items, variant }: TimelineViewProps) => {
-  if (variant === "cards-gradient") return <TimelineCards items={items} />;
-  if (variant === "cards-flat") return <TimelineFlatCards items={items} />;
-  if (variant === "cards-accent") return <TimelineAccentCards items={items} />;
-  if (variant === "rows") return <TimelineRows items={items} />;
-  return <TimelineDots items={items} />;
+  if (variant === "cards-gradient") return <ListCards items={items} stacked />;
+  if (variant === "cards-flat") return <ListFlatCards items={items} stacked />;
+  if (variant === "cards-accent") return <ListAccentCards items={items} stacked />;
+  if (variant === "rows") return <ListRows items={items} />;
+  return <ListTimeline items={items} />;
 };

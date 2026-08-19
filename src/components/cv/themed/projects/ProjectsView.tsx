@@ -1,22 +1,35 @@
 import { type Project } from "@/lib/cv-types";
 import { type ProjectLayout } from "@/lib/section-designs";
-import { ProjectsCards } from "./ProjectsCards";
-import { ProjectsFlatCards } from "./ProjectsFlatCards";
-import { ProjectsAccentCards } from "./ProjectsAccentCards";
+import { splitTags } from "@/components/cv/cv-utils";
+import { type ListEntry } from "@/components/cv/themed/shared/types";
+import { ListCards } from "@/components/cv/themed/shared/ListCards";
+import { ListFlatCards } from "@/components/cv/themed/shared/ListFlatCards";
+import { ListAccentCards } from "@/components/cv/themed/shared/ListAccentCards";
+import { ListRows } from "@/components/cv/themed/shared/ListRows";
+import { ListTimeline } from "@/components/cv/themed/shared/ListTimeline";
 import { ProjectsRows } from "./ProjectsRows";
-import { ProjectsRowsPlain } from "./ProjectsRowsPlain";
-import { ProjectsTimeline } from "./ProjectsTimeline";
 
 interface ProjectsViewProps {
   projects: Project[];
   variant: ProjectLayout;
 }
 
+const toEntry = (p: Project): ListEntry => ({
+  id: p.id,
+  period: p.period,
+  title: p.name,
+  description: p.description,
+  tags: splitTags(p.stack),
+  compact: true,
+  links: { stars: p.stars, repo: p.repo, link: p.link },
+});
+
 export const ProjectsView = ({ projects, variant }: ProjectsViewProps) => {
-  if (variant === "cards-flat") return <ProjectsFlatCards projects={projects} />;
-  if (variant === "cards-accent") return <ProjectsAccentCards projects={projects} />;
+  const entries = projects.map(toEntry);
+  if (variant === "cards-flat") return <ListFlatCards items={entries} />;
+  if (variant === "cards-accent") return <ListAccentCards items={entries} />;
   if (variant === "rows") return <ProjectsRows projects={projects} />;
-  if (variant === "rows-plain") return <ProjectsRowsPlain projects={projects} />;
-  if (variant === "timeline") return <ProjectsTimeline projects={projects} />;
-  return <ProjectsCards projects={projects} />;
+  if (variant === "rows-plain") return <ListRows items={entries} />;
+  if (variant === "timeline") return <ListTimeline items={entries} />;
+  return <ListCards items={entries} />;
 };

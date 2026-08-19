@@ -48,7 +48,7 @@ const normalizeColumns = <T extends CardColumnsMap | SkillColumnsMap>(
 ): T => {
   const out = { ...defaults, ...(raw ?? {}) } as T;
   (Object.keys(out) as (keyof T)[]).forEach((k) => {
-    if (out[k] !== 1 && out[k] !== 2 && out[k] !== 3) out[k] = defaults[k];
+    if (out[k] !== 1 && out[k] !== 2 && out[k] !== 3 && out[k] !== 4) out[k] = defaults[k];
   });
   return out;
 };

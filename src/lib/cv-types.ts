@@ -7,7 +7,7 @@ export type ListKey = "skills" | "experience" | "education" | "projects" | "hobb
 export type SectionKey = "hero" | "about" | "footer" | ListKey;
 
 /** How many columns the card designs render in for a list section. */
-export type CardColumns = 1 | 2 | 3;
+export type CardColumns = 1 | 2 | 3 | 4;
 
 export interface CardColumnsMap {
   experience: CardColumns;

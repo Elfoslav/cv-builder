@@ -25,8 +25,16 @@ export const cardGridClass = (
   gap = "gap-2",
 ): string => {
   if (columns === 1) return stackedClass;
-  const cols = columns === 2 ? "md:grid-cols-2" : "md:grid-cols-2 lg:grid-cols-3";
-  const print = columns === 3 ? "print-grid-3-tight" : "print-grid-2-tight";
+  const cols =
+    columns === 2
+      ? "md:grid-cols-2"
+      : columns === 3
+        ? "md:grid-cols-2 lg:grid-cols-3"
+        : "md:grid-cols-2 lg:grid-cols-4";
+  const print =
+    columns === 2 ? "print-grid-2-tight"
+      : columns === 3 ? "print-grid-3-tight"
+        : "print-grid-4-tight";
   return `grid ${gap} ${cols} ${print}`;
 };
 

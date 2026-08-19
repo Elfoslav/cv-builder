@@ -8,6 +8,7 @@ const OPTIONS: { value: CardColumns; name: string }[] = [
   { value: 1, name: "1 column" },
   { value: 2, name: "2 columns" },
   { value: 3, name: "3 columns" },
+  { value: 4, name: "4 columns" },
 ];
 
 interface CardColumnsPickerProps {

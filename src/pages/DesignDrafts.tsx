@@ -10,7 +10,11 @@ import { DraftLangIcon } from "@/components/cv/language-drafts/DraftLangIcon";
 import { DraftLangPills } from "@/components/cv/language-drafts/DraftLangPills";
 import { LanguageSwitcher } from "@/components/cv/LanguageSwitcher";
 import { useLangDraft, toDraftProps, type DraftLangProps } from "@/components/cv/language-drafts/useLangDraft";
-import { ArrowLeft, RotateCcw, MousePointerClick, Languages } from "lucide-react";
+import { CVShell } from "@/components/cv/editor/cv-shell";
+import { Fragment } from "react";
+import { type CVData } from "@/lib/cv-types";
+import { THEMES, type ThemeId } from "@/lib/themes";
+import { ArrowLeft, RotateCcw, MousePointerClick, Languages, Palette } from "lucide-react";
 
 const DRAFT_META = [
   {
@@ -96,6 +100,50 @@ const MockTopbar = ({ children }: { children: ReactNode }) => (
 const LangDraftDemo = ({ Draft }: { Draft: ComponentType<DraftLangProps> }) => {
   const m = useLangDraft();
   return <Draft {...toDraftProps(m)} />;
+};
+
+/** Renders a full resume in a given color theme, showcasing its curated section designs. */
+const ThemeCV = ({ data, theme }: { data: CVData; theme: ThemeId }) => {
+  const t = THEMES.find((x) => x.id === theme)!;
+  return (
+    <div
+      data-theme={theme}
+      className="cv-theme overflow-hidden rounded-xl border border-border bg-background shadow-sm"
+    >
+      <CVShell
+        data={data}
+        hideEmpty
+        designs={t.showcase}
+        wrap={(meta, content) => <Fragment key={meta.key}>{content}</Fragment>}
+      />
+    </div>
+  );
+};
+
+const ThemeMetaCard = ({ id }: { id: ThemeId }) => {
+  const t = THEMES.find((x) => x.id === id)!;
+  return (
+    <div className="rounded-lg border border-border bg-card p-3 text-xs">
+      <div className="mb-1 flex items-center justify-between gap-2">
+        <span className="font-semibold">{t.name}</span>
+        <span className="flex gap-1">
+          {t.swatches.map((c) => (
+            <span key={c} className="h-3 w-3 rounded-full border border-border" style={{ background: c }} />
+          ))}
+        </span>
+      </div>
+      <div className="mb-1 text-[11px] font-medium text-accent">{t.tagline}</div>
+      <p className="mb-2 text-muted-foreground">{t.desc}</p>
+      <ul className="space-y-0.5 text-muted-foreground">
+        {t.notes.map((note) => (
+          <li key={note} className="flex gap-1.5">
+            <MousePointerClick className="mt-0.5 h-3 w-3 shrink-0 text-primary" />
+            {note}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 };
 
 export const DesignDrafts = () => {
@@ -201,6 +249,43 @@ export const DesignDrafts = () => {
             <TabsContent value="lang-pills" className="rounded-xl border border-border bg-background shadow-sm">
               <MockTopbar><LangDraftDemo Draft={DraftLangPills} /></MockTopbar>
             </TabsContent>
+          </Tabs>
+        </section>
+
+        <section className="mt-12">
+          <div className="mb-4">
+            <h2 className="flex items-center gap-1.5 text-sm font-semibold">
+              <Palette className="h-4 w-4 text-primary" /> Resume themes — design drafts
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              Eight color themes re-skin the whole resume via `data-theme` tokens (picked from a selector in the
+              topbar). Section layouts are independent now — each section has its own design picker in the editor
+              (e.g. skills as bars, chips, or a dot list). These tabs showcase each palette with a curated combo of
+              section designs.
+            </p>
+          </div>
+
+          <div className="mb-6 grid gap-3 md:grid-cols-4">
+            {THEMES.map((t) => (
+              <ThemeMetaCard key={t.id} id={t.id} />
+            ))}
+          </div>
+
+          <Tabs defaultValue="indigo" className="w-full">
+            <TabsList className="mb-4">
+              {THEMES.map((t) => (
+                <TabsTrigger key={t.id} value={t.id}>{t.name}</TabsTrigger>
+              ))}
+            </TabsList>
+            {THEMES.map((t) => (
+              <TabsContent
+                key={t.id}
+                value={t.id}
+                className="rounded-xl border border-border bg-background shadow-sm"
+              >
+                <ThemeCV data={data} theme={t.id} />
+              </TabsContent>
+            ))}
           </Tabs>
         </section>
       </main>

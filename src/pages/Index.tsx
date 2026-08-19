@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { EditableCVPreview } from "@/components/cv/editor/EditableCVPreview";
 import { CVPreview } from "@/components/cv/CVPreview";
 import { LanguageSwitcher } from "@/components/cv/LanguageSwitcher";
+import { ThemeSwitcher } from "@/components/cv/ThemeSwitcher";
 import { useCVData } from "@/lib/use-cv-data";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +18,8 @@ import { exportElementToPDF } from "@/lib/export-pdf";
 import { toast as sonnerToast } from "sonner";
 import { toast as uiToast } from "@/hooks/use-toast";
 import { CVData, defaultLabels } from "@/lib/cv-types";
+import { DEFAULT_SECTION_DESIGNS } from "@/lib/section-designs";
+import { type ThemeId } from "@/lib/themes";
 
 const safeFileName = (name: string, fallback = "CV") =>
   (name?.trim() || fallback).replace(/[^a-z0-9-_ ]/gi, "").trim() || fallback;
@@ -26,6 +29,7 @@ const Index = () => {
     data, setData,
     languages, activeId, setActiveId,
     addLanguage, renameLanguage, deleteLanguage,
+    theme, setTheme,
   } = useCVData();
   const [exporting, setExporting] = useState(false);
 
@@ -55,7 +59,7 @@ const Index = () => {
   const handlePrint = () => window.print();
 
   // Render a clean CVData snapshot into an off-screen DOM node, export it, then unmount.
-  const exportCVOffscreen = async (langData: CVData, fileName: string) => {
+  const exportCVOffscreen = async (langData: CVData, fileName: string, themeId: ThemeId) => {
     const host = document.createElement("div");
     host.style.position = "fixed";
     host.style.left = "-10000px";
@@ -68,7 +72,7 @@ const Index = () => {
     const root = createRoot(host);
     try {
       await new Promise<void>((resolve) => {
-        root.render(<CVPreview data={langData} />);
+        root.render(<CVPreview data={langData} theme={themeId} />);
         // Wait two frames so layout settles before snapshotting.
         requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
       });
@@ -89,7 +93,7 @@ const Index = () => {
     setExporting(true);
     const safeName = safeFileName(data.name);
     try {
-      await exportCVOffscreen(data, `${safeName} - CV.pdf`);
+      await exportCVOffscreen(data, `${safeName} - CV.pdf`, theme);
       sonnerToast.success('Choose "Save as PDF" in the print dialog');
     } catch (err) {
       console.error("PDF export failed", err);
@@ -102,7 +106,7 @@ const Index = () => {
   const exportLanguage = async (langData: CVData, langName: string) => {
     const name = safeFileName(langData.name);
     const lang = safeFileName(langName, "lang");
-    await exportCVOffscreen(langData, `${name} - CV (${lang}).pdf`);
+    await exportCVOffscreen(langData, `${name} - CV (${lang}).pdf`, theme);
   };
 
   const handleDownloadAllPDFs = async () => {
@@ -145,6 +149,11 @@ const Index = () => {
           ...prev,
           ...parsed,
           labels: { ...defaultLabels, ...(parsed.labels ?? {}) },
+          sectionDesigns: {
+            ...DEFAULT_SECTION_DESIGNS,
+            ...prev.sectionDesigns,
+            ...(parsed.sectionDesigns ?? {}),
+          },
         }));
         uiToast({ title: "Imported", description: "CV data loaded successfully." });
       } catch {
@@ -174,6 +183,7 @@ const Index = () => {
               renameLanguage={renameLanguage}
               deleteLanguage={deleteLanguage}
             />
+            <ThemeSwitcher theme={theme} setTheme={setTheme} />
           </div>
 
           <div className="flex items-center gap-1">
@@ -225,7 +235,7 @@ const Index = () => {
       </header>
 
       <div className="flex-1 overflow-y-auto print:overflow-visible">
-        <EditableCVPreview data={data} setData={setData} onDownload={handleDownloadPDF} />
+        <EditableCVPreview data={data} setData={setData} onDownload={handleDownloadPDF} theme={theme} />
       </div>
     </div>
   );

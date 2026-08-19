@@ -22,7 +22,7 @@ describe("DesignDrafts", () => {
       </MemoryRouter>,
     );
     expect(screen.getByText("CV editor — design drafts")).toBeInTheDocument();
-    expect(screen.getAllByRole("tab").length).toBe(6);
+    expect(screen.getAllByRole("tab").length).toBe(14);
   });
 
   it("Draft A (inline) lets you add an entry and edit the section", async () => {

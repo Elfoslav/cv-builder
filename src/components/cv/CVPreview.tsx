@@ -1,9 +1,12 @@
 import { Fragment } from "react";
 import { CVData } from "@/lib/cv-types";
 import { CVShell } from "@/components/cv/editor/cv-shell";
+import { DEFAULT_THEME, type ThemeId } from "@/lib/themes";
 
 interface CVPreviewProps {
   data: CVData;
+  /** Global color theme applied via `data-theme` tokens. */
+  theme?: ThemeId;
   onDownload?: () => void;
 }
 
@@ -13,11 +16,13 @@ interface CVPreviewProps {
  * the footer keep the same layout as on the page — but hides empty sections
  * and carries no editing affordances.
  */
-export const CVPreview = ({ data, onDownload }: CVPreviewProps) => (
-  <CVShell
-    data={data}
-    onDownload={onDownload}
-    hideEmpty
-    wrap={(meta, content) => <Fragment key={meta.key}>{content}</Fragment>}
-  />
+export const CVPreview = ({ data, onDownload, theme = DEFAULT_THEME }: CVPreviewProps) => (
+  <div data-theme={theme} className="cv-theme">
+    <CVShell
+      data={data}
+      onDownload={onDownload}
+      hideEmpty
+      wrap={(meta, content) => <Fragment key={meta.key}>{content}</Fragment>}
+    />
+  </div>
 );

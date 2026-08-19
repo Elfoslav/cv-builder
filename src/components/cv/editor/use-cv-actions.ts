@@ -1,5 +1,6 @@
 import { useMemo, type Dispatch, type SetStateAction } from "react";
 import { CVData, CVLabels } from "@/lib/cv-types";
+import { type SectionDesigns } from "@/lib/section-designs";
 
 export type { ListKey, SectionKey } from "@/lib/cv-types";
 
@@ -12,6 +13,7 @@ export interface CVActions {
   moveItem: (key: ListKey, id: string, dir: -1 | 1) => void;
   setLabel: (key: keyof CVLabels, value: string) => void;
   moveSection: (key: SectionKey, dir: -1 | 1) => void;
+  setSectionDesign: <K extends keyof SectionDesigns>(key: K, design: SectionDesigns[K]) => void;
 }
 
 export const ITEM_LABEL: Record<ListKey, string> = {
@@ -90,6 +92,11 @@ export const useCVActions = (setData: Dispatch<SetStateAction<CVData>>): CVActio
           [order[idx], order[target]] = [order[target], order[idx]];
           return { ...prev, sectionOrder: order };
         }),
+      setSectionDesign: (key, design) =>
+        setData((prev) => ({
+          ...prev,
+          sectionDesigns: { ...prev.sectionDesigns, [key]: design },
+        })),
     }),
     [setData],
   );

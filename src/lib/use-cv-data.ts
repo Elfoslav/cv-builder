@@ -2,6 +2,8 @@ import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } fr
 import {
   CVData, CVLabels, defaultCV, defaultLabels, SkillGroup, SectionKey, SECTION_KEYS,
 } from "./cv-types";
+import { DEFAULT_SECTION_DESIGNS, type SectionDesigns } from "./section-designs";
+import { DEFAULT_THEME, THEME_IDS, type ThemeId } from "./themes";
 
 const STORAGE_KEY = "cv-builder-data-v1";
 const STORAGE_KEY_MULTI = "cv-builder-data-v2";
@@ -16,6 +18,8 @@ export interface CVLanguage {
 export interface MultiCVStore {
   languages: CVLanguage[];
   activeId: string;
+  /** Global color theme applied to the whole resume. */
+  theme: ThemeId;
 }
 
 const uid = () => Math.random().toString(36).slice(2, 9);
@@ -56,7 +60,22 @@ const migrateData = (parsed: Partial<CVData> & { skills?: Array<{ group?: string
     hobbies: parsed.hobbies ?? defaultCV.hobbies,
     labels: { ...defaultLabels, ...((parsed as { labels?: Partial<CVLabels> }).labels ?? {}) },
     sectionOrder: normalizeSectionOrder((parsed as { sectionOrder?: SectionKey[] }).sectionOrder),
+    sectionDesigns: {
+      ...DEFAULT_SECTION_DESIGNS,
+      ...((parsed as { sectionDesigns?: Partial<SectionDesigns> }).sectionDesigns ?? {}),
+    },
   } as CVData;
+
+  // Old design ids → the new variant naming.
+  if (merged.sectionDesigns.projects === "cards") {
+    merged.sectionDesigns.projects = "cards-gradient";
+  }
+  if (merged.sectionDesigns.experience === "cards") {
+    merged.sectionDesigns.experience = "cards-gradient";
+  }
+  if (merged.sectionDesigns.education === "cards") {
+    merged.sectionDesigns.education = "cards-gradient";
+  }
 
   const legacyMap: Record<string, { id: string; name: string }> = {
     languages: { id: "g_lang", name: "Programming Languages" },
@@ -88,10 +107,13 @@ const migrateData = (parsed: Partial<CVData> & { skills?: Array<{ group?: string
   return merged;
 };
 
+const normalizeTheme = (raw?: unknown): ThemeId =>
+  THEME_IDS.includes(raw as ThemeId) ? (raw as ThemeId) : DEFAULT_THEME;
+
 const loadStore = (): MultiCVStore => {
   if (typeof window === "undefined") {
     const id = uid();
-    return { languages: [{ id, name: "English", data: defaultCV }], activeId: id };
+    return { languages: [{ id, name: "English", data: defaultCV }], activeId: id, theme: DEFAULT_THEME };
   }
 
   const tryParseStore = (raw: string | null, source: string): MultiCVStore | null => {
@@ -106,7 +128,7 @@ const loadStore = (): MultiCVStore => {
         const activeId = languages.some((l) => l.id === parsed.activeId)
           ? parsed.activeId
           : languages[0].id;
-        return { languages, activeId };
+        return { languages, activeId, theme: normalizeTheme(parsed.theme) };
       }
       console.error(`[cv-store] ${source} is malformed (no languages array). Raw:`, raw);
       return null;
@@ -134,6 +156,7 @@ const loadStore = (): MultiCVStore => {
       return {
         languages: [{ id, name: "English", data: migrateData(parsed) }],
         activeId: id,
+        theme: DEFAULT_THEME,
       };
     }
   } catch (err) {
@@ -141,7 +164,7 @@ const loadStore = (): MultiCVStore => {
   }
 
   const id = uid();
-  return { languages: [{ id, name: "English", data: defaultCV }], activeId: id };
+  return { languages: [{ id, name: "English", data: defaultCV }], activeId: id, theme: DEFAULT_THEME };
 };
 
 export const useCVData = (): {
@@ -153,6 +176,8 @@ export const useCVData = (): {
   addLanguage: (name: string, copyFromActive: boolean) => void;
   renameLanguage: (id: string, name: string) => void;
   deleteLanguage: (id: string) => void;
+  theme: ThemeId;
+  setTheme: (theme: ThemeId) => void;
 } => {
   const [store, setStore] = useState<MultiCVStore>(() => loadStore());
   const loadedRef = useRef(false);
@@ -204,6 +229,10 @@ export const useCVData = (): {
     setStore((prev) => (prev.languages.some((l) => l.id === id) ? { ...prev, activeId: id } : prev));
   }, []);
 
+  const setTheme = useCallback((theme: ThemeId) => {
+    setStore((prev) => (prev.theme === theme ? prev : { ...prev, theme }));
+  }, []);
+
   const addLanguage = useCallback((name: string, copyFromActive: boolean) => {
     setStore((prev) => {
       const id = uid();
@@ -245,5 +274,7 @@ export const useCVData = (): {
     addLanguage,
     renameLanguage,
     deleteLanguage,
+    theme: store.theme,
+    setTheme,
   };
 };

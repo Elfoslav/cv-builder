@@ -1,5 +1,7 @@
 export type SkillColor = "green" | "cyan" | "purple" | "yellow" | "pink";
 
+import { DEFAULT_SECTION_DESIGNS, type SectionDesigns } from "./section-designs";
+
 export type ListKey = "skills" | "experience" | "education" | "projects" | "hobbies";
 
 export type SectionKey = "hero" | "about" | "footer" | ListKey;
@@ -118,6 +120,8 @@ export interface CVData {
   labels: CVLabels;
   /** Display order of the CV sections. Hero & footer are pinned at the ends. */
   sectionOrder: SectionKey[];
+  /** Per-section layout designs chosen in the editor. */
+  sectionDesigns: SectionDesigns;
 }
 
 export const defaultCV: CVData = {
@@ -211,6 +215,7 @@ export const defaultCV: CVData = {
   ],
   labels: defaultLabels,
   sectionOrder: DEFAULT_SECTION_ORDER,
+  sectionDesigns: { ...DEFAULT_SECTION_DESIGNS },
 };
 
 export const HOBBY_ICONS: Hobby["icon"][] = [

@@ -5,25 +5,34 @@ import { CVShell, SectionMeta } from "./cv-shell";
 import { buildForm } from "./section-forms";
 import { snapshotSection, restoreSection, type SectionSnapshot } from "./section-snapshot";
 import { Button } from "@/components/ui/button";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 import { ArrowDown, ArrowUp, Check, Pencil, Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DEFAULT_THEME, type ThemeId } from "@/lib/themes";
+import { type SectionDesigns, SECTION_DESIGN_OPTIONS } from "@/lib/section-designs";
 
 const LIST_KEYS: SectionKey[] = ["experience", "education", "projects", "hobbies"];
 
 interface EditableCVPreviewProps {
   data: CVData;
   setData: Dispatch<SetStateAction<CVData>>;
+  /** Global color theme applied via `data-theme` tokens. */
+  theme?: ThemeId;
   onDownload?: () => void;
 }
 
-export const EditableCVPreview = ({ data, setData, onDownload }: EditableCVPreviewProps) => {
+export const EditableCVPreview = ({ data, setData, onDownload, theme = DEFAULT_THEME }: EditableCVPreviewProps) => {
   const actions = useCVActions(setData);
   return (
-    <CVShell
-      data={data}
-      onDownload={onDownload}
-      wrap={(meta, content) => <EditableSection meta={meta} content={content} data={data} actions={actions} />}
-    />
+    <div data-theme={theme} className="cv-theme">
+      <CVShell
+        data={data}
+        onDownload={onDownload}
+        wrap={(meta, content) => <EditableSection meta={meta} content={content} data={data} actions={actions} />}
+      />
+    </div>
   );
 };
 
@@ -149,6 +158,7 @@ const EditableSection = ({
                 </Button>
               </div>
             </div>
+            <DesignPicker meta={meta} data={data} actions={actions} />
             {buildForm(meta.key, data, actions)}
           </div>
         </div>
@@ -164,6 +174,35 @@ const EditableSection = ({
           )}
         </>
       )}
+    </div>
+  );
+};
+
+const DesignPicker = ({
+  meta, data, actions,
+}: {
+  meta: SectionMeta;
+  data: CVData;
+  actions: ReturnType<typeof useCVActions>;
+}) => {
+  const key = meta.key as keyof SectionDesigns;
+  const options = SECTION_DESIGN_OPTIONS[key];
+  const value = data.sectionDesigns[key];
+  return (
+    <div className="mb-4 print:hidden">
+      <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+        Section design
+      </div>
+      <Select value={value} onValueChange={(v) => actions.setSectionDesign(key, v as typeof value)}>
+        <SelectTrigger className="h-9 text-xs" aria-label="Section design" title={options.find((o) => o.id === value)?.desc}>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((o) => (
+            <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 };

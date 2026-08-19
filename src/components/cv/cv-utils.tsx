@@ -2,7 +2,7 @@ import { type LucideIcon } from "lucide-react";
 import {
   Code2, Coffee, Gamepad2, Mountain, Music, Book, Camera, Bike, Plane, Dumbbell, Flower2,
 } from "lucide-react";
-import { type CVData } from "@/lib/cv-types";
+import { type CVData, type CardColumns } from "@/lib/cv-types";
 
 /** Maps hobby icon names to lucide icons. */
 export const ICON_MAP: Record<string, LucideIcon> = {
@@ -13,6 +13,16 @@ export const splitTags = (s: string) => s.split(",").map((t) => t.trim()).filter
 
 /** Splits an "about" block into non-empty paragraphs (blank-line separated). */
 export const splitParagraphs = (about: string): string[] => about.split("\n\n").filter(Boolean);
+
+/**
+ * Container class for a card grid. A single column stacks the cards; higher
+ * counts build a responsive CSS grid with a matching print layout.
+ */
+export const cardGridClass = (columns: CardColumns, stackedClass: string): string => {
+  if (columns === 1) return stackedClass;
+  if (columns === 2) return "grid gap-2 md:grid-cols-2 print-grid-2-tight";
+  return "grid gap-2 md:grid-cols-2 lg:grid-cols-3 print-grid-3-tight";
+};
 
 export const groupSkills = (data: CVData) =>
   data.skillGroups

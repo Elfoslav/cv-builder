@@ -1,17 +1,19 @@
 import { CVCard } from "@/components/cv/CVCard";
 import { cn } from "@/lib/utils";
+import { type CardColumns } from "@/lib/cv-types";
+import { cardGridClass } from "@/components/cv/cv-utils";
 import { type ListEntry } from "./types";
 import { ListCardContent } from "./ListCardContent";
 
 interface ListCardsProps {
   items: ListEntry[];
-  /** Stack full-width cards vertically (experience/education); default is a 2-col grid (projects). */
-  stacked?: boolean;
+  /** Number of columns for the card grid; 1 stacks the cards. */
+  columns?: CardColumns;
 }
 
 /** Gradient cards — the default card look for every list section. */
-export const ListCards = ({ items, stacked = false }: ListCardsProps) => (
-  <div className={cn(stacked ? "space-y-4" : "grid gap-2 md:grid-cols-2 print-grid-2-tight")}>
+export const ListCards = ({ items, columns = 1 }: ListCardsProps) => (
+  <div className={cardGridClass(columns, "space-y-4")}>
     {items.map((e) => {
       const withLinks = Boolean(e.links);
       return (

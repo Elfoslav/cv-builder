@@ -76,7 +76,7 @@ export const THEMES: ResumeTheme[] = [
       "2px rules replace glow-heavy borders",
       "Skills as dot lists, projects & timeline as rows",
     ],
-    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "dots", projects: "rows", experience: "rows", education: "rows", hobbies: "pills" },
+    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "dots", projects: "rows-gradient", experience: "rows", education: "rows", hobbies: "pills" },
   },
   {
     id: "earthy",
@@ -104,7 +104,7 @@ export const THEMES: ResumeTheme[] = [
       "Cool, fresh white-and-teal surfaces",
       "Skills as chips, projects as rows, interests as pills",
     ],
-    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "chips", projects: "rows", hobbies: "pills" },
+    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "chips", projects: "rows-gradient", hobbies: "pills" },
   },
   {
     id: "sunset",
@@ -132,7 +132,7 @@ export const THEMES: ResumeTheme[] = [
       "Slightly square corners",
       "Projects as rows, timeline as cards, interests as checklists",
     ],
-    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "bars", projects: "rows", experience: "cards-gradient", education: "cards-gradient", hobbies: "checks" },
+    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "bars", projects: "rows-gradient", experience: "cards-gradient", education: "cards-gradient", hobbies: "checks" },
   },
   {
     id: "slate",
@@ -146,6 +146,6 @@ export const THEMES: ResumeTheme[] = [
       "Calm, executive-report feel",
       "Skills as dot lists, projects & timeline as rows",
     ],
-    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "dots", projects: "rows", experience: "rows", education: "rows", hobbies: "pills" },
+    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "dots", projects: "rows-gradient", experience: "rows", education: "rows", hobbies: "pills" },
   },
 ];

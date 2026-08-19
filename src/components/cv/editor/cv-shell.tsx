@@ -1,5 +1,5 @@
 import { Fragment, type ReactNode } from "react";
-import { CVData, SectionKey } from "@/lib/cv-types";
+import { CVData, SectionKey, DEFAULT_CARD_COLUMNS, type CardColumnsMap } from "@/lib/cv-types";
 import { DEFAULT_SECTION_DESIGNS, type SectionDesigns } from "@/lib/section-designs";
 import { SectionHeader } from "@/components/cv/SectionHeader";
 import { Hero } from "@/components/cv/Hero";
@@ -37,6 +37,8 @@ export const CVShell = ({
   const L = data.labels;
 
   const d: SectionDesigns = { ...DEFAULT_SECTION_DESIGNS, ...data.sectionDesigns, ...designs };
+
+  const columns: CardColumnsMap = { ...DEFAULT_CARD_COLUMNS, ...(data.cardColumns ?? {}) };
 
   // Display order comes from persisted data; hero & footer are pinned at the ends.
   const order = Array.isArray(data.sectionOrder) && data.sectionOrder.length
@@ -111,11 +113,11 @@ export const CVShell = ({
           : section(<EmptyState label="Add a short introduction…" />);
       case "experience":
         return data.experience.length
-          ? section(<TimelineView items={data.experience.map(toListEntry)} variant={d.experience} />)
+          ? section(<TimelineView items={data.experience.map(toListEntry)} variant={d.experience} columns={columns.experience} />)
           : section(<EmptyState label="No experience entries yet" />);
       case "education":
         return data.education.length
-          ? section(<TimelineView items={data.education.map(toListEntry)} variant={d.education} />)
+          ? section(<TimelineView items={data.education.map(toListEntry)} variant={d.education} columns={columns.education} />)
           : section(<EmptyState label="No education entries yet" />);
       case "skills":
         return groupedSkills.length
@@ -123,7 +125,7 @@ export const CVShell = ({
           : section(<EmptyState label="No skills yet" />, "mb-12 avoid-break");
       case "projects":
         return data.projects.length
-          ? section(<ProjectsView projects={data.projects} variant={d.projects} />, "mb-12 avoid-break")
+          ? section(<ProjectsView projects={data.projects} variant={d.projects} columns={columns.projects} />, "mb-12 avoid-break")
           : section(<EmptyState label="No projects yet" />, "mb-12 avoid-break");
       case "hobbies":
         return data.hobbies.length

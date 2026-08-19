@@ -1,5 +1,5 @@
 import { useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
-import { CVData } from "@/lib/cv-types";
+import { CVData, type CardColumns, type CardColumnsMap } from "@/lib/cv-types";
 import { useCVActions, ListKey, SectionKey, ITEM_LABEL, blankItem } from "./use-cv-actions";
 import { CVShell, SectionMeta } from "./cv-shell";
 import { buildForm } from "./section-forms";
@@ -12,6 +12,7 @@ import { ArrowDown, ArrowUp, Check, Pencil, Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DEFAULT_THEME, type ThemeId } from "@/lib/themes";
 import { type SectionDesigns, SECTION_DESIGN_OPTIONS } from "@/lib/section-designs";
+import { CardColumnsPicker } from "./CardColumnsPicker";
 
 const LIST_KEYS: SectionKey[] = ["experience", "education", "projects", "hobbies"];
 
@@ -193,6 +194,12 @@ const EditableSection = ({
   );
 };
 
+/** Sections whose design select shares the card layouts with a columns setting. */
+const CARD_LAYOUT_KEYS: (keyof CardColumnsMap)[] = ["experience", "education", "projects"];
+
+const isCardDesign = (value: string) =>
+  value === "cards-gradient" || value === "cards-flat" || value === "cards-accent";
+
 const DesignPicker = ({
   meta, data, actions,
 }: {
@@ -203,6 +210,8 @@ const DesignPicker = ({
   const key = meta.key as keyof SectionDesigns;
   const options = SECTION_DESIGN_OPTIONS[key];
   const value = data.sectionDesigns[key];
+  const cardKey = CARD_LAYOUT_KEYS.find((k) => k === meta.key);
+  const showColumns = cardKey !== undefined && isCardDesign(value);
   return (
     <div className="mb-4 print:hidden">
       <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
@@ -218,6 +227,13 @@ const DesignPicker = ({
           ))}
         </SelectContent>
       </Select>
+      {showColumns && cardKey && (
+        <CardColumnsPicker
+          className="mt-3 mb-0"
+          value={data.cardColumns[cardKey]}
+          onChange={(columns: CardColumns) => actions.setCardColumns(cardKey, columns)}
+        />
+      )}
     </div>
   );
 };

@@ -1,6 +1,8 @@
 import { CVCard } from "@/components/cv/CVCard";
 import { TagPills } from "@/components/cv/TagPills";
 import { cn } from "@/lib/utils";
+import { type CardColumns } from "@/lib/cv-types";
+import { cardGridClass } from "@/components/cv/cv-utils";
 import { type ListEntry } from "./types";
 import { ListLinks } from "./ListLinks";
 import { MetaLine } from "./MetaLine";
@@ -44,13 +46,13 @@ const FlatCardItem = ({ entry }: { entry: ListEntry }) => {
 
 interface ListFlatCardsProps {
   items: ListEntry[];
-  /** Stack full-width cards vertically (experience/education); default is a 2-col grid (projects). */
-  stacked?: boolean;
+  /** Number of columns for the card grid; 1 stacks the cards. */
+  columns?: CardColumns;
 }
 
 /** Flat low-contrast cards — the print-friendly card look for every list section. */
-export const ListFlatCards = ({ items, stacked = false }: ListFlatCardsProps) => (
-  <div className={cn(stacked ? "space-y-2" : "grid gap-2 md:grid-cols-2 print-grid-2-tight")}>
+export const ListFlatCards = ({ items, columns = 1 }: ListFlatCardsProps) => (
+  <div className={cardGridClass(columns, "space-y-2")}>
     {items.map((e) => (
       <CVCard
         key={e.id}

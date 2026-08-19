@@ -1,17 +1,20 @@
 import { type Project } from "@/lib/cv-types";
-import { type ProjectLayout } from "@/lib/section-designs";
+import { type CardColumns } from "@/lib/cv-types";
+import { type ListLayout } from "@/lib/section-designs";
 import { splitTags } from "@/components/cv/cv-utils";
 import { type ListEntry } from "@/components/cv/themed/shared/types";
 import { ListCards } from "@/components/cv/themed/shared/ListCards";
 import { ListFlatCards } from "@/components/cv/themed/shared/ListFlatCards";
 import { ListAccentCards } from "@/components/cv/themed/shared/ListAccentCards";
 import { ListRows } from "@/components/cv/themed/shared/ListRows";
+import { ListCardRows } from "@/components/cv/themed/shared/ListCardRows";
 import { ListTimeline } from "@/components/cv/themed/shared/ListTimeline";
-import { ProjectsRows } from "./ProjectsRows";
 
 interface ProjectsViewProps {
   projects: Project[];
-  variant: ProjectLayout;
+  variant: ListLayout;
+  /** Columns for the card designs; 2 is the default for projects. */
+  columns?: CardColumns;
 }
 
 const toEntry = (p: Project): ListEntry => ({
@@ -24,12 +27,14 @@ const toEntry = (p: Project): ListEntry => ({
   links: { stars: p.stars, repo: p.repo, link: p.link },
 });
 
-export const ProjectsView = ({ projects, variant }: ProjectsViewProps) => {
+export const ProjectsView = ({ projects, variant, columns = 2 }: ProjectsViewProps) => {
   const entries = projects.map(toEntry);
-  if (variant === "cards-flat") return <ListFlatCards items={entries} />;
-  if (variant === "cards-accent") return <ListAccentCards items={entries} />;
-  if (variant === "rows") return <ProjectsRows projects={projects} />;
-  if (variant === "rows-plain") return <ListRows items={entries} />;
+  if (variant === "cards-flat") return <ListFlatCards items={entries} columns={columns} />;
+  if (variant === "cards-accent") return <ListAccentCards items={entries} columns={columns} />;
+  if (variant === "rows") return <ListRows items={entries} />;
+  if (variant === "rows-gradient") return <ListCardRows items={entries} />;
+  if (variant === "rows-flat") return <ListCardRows items={entries} tone="flat" />;
+  if (variant === "rows-accent") return <ListCardRows items={entries} tone="accent" />;
   if (variant === "timeline") return <ListTimeline items={entries} />;
-  return <ListCards items={entries} />;
+  return <ListCards items={entries} columns={columns} />;
 };

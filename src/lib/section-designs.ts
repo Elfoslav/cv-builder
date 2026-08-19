@@ -11,19 +11,20 @@
 export type HeroLayout = "gradient" | "plain" | "center";
 export type AboutLayout = "paragraphs" | "highlights" | "columns";
 export type SkillLayout = "bars" | "chips" | "dots";
-export type ProjectLayout =
-  | "cards-gradient"
-  | "cards-flat"
-  | "cards-accent"
-  | "rows"
-  | "rows-plain"
-  | "timeline";
-export type TimelineLayout =
+/**
+ * Shared layout id for every list-style section (experience, education,
+ * projects): cards (gradient/flat/accent), card rows (gradient/flat/accent),
+ * plain rows, or a vertical timeline.
+ */
+export type ListLayout =
   | "timeline"
   | "cards-gradient"
   | "cards-flat"
   | "cards-accent"
-  | "rows";
+  | "rows"
+  | "rows-gradient"
+  | "rows-flat"
+  | "rows-accent";
 export type HobbyLayout =
   | "cards"
   | "cards-flat"
@@ -36,10 +37,10 @@ export type FooterLayout = "split" | "center";
 export interface SectionDesigns {
   hero: HeroLayout;
   about: AboutLayout;
-  experience: TimelineLayout;
-  education: TimelineLayout;
+  experience: ListLayout;
+  education: ListLayout;
   skills: SkillLayout;
-  projects: ProjectLayout;
+  projects: ListLayout;
   hobbies: HobbyLayout;
   footer: FooterLayout;
 }
@@ -61,13 +62,20 @@ export interface DesignOption {
   desc: string;
 }
 
-const TIMELINE_OPTIONS: { id: TimelineLayout; name: string; desc: string }[] = [
+const LIST_DESIGN_OPTIONS = [
   { id: "timeline", name: "Timeline", desc: "Vertical timeline with a glowing dot per entry." },
-  { id: "cards-gradient", name: "Gradient cards", desc: "Warm elevated cards, one per entry." },
-  { id: "cards-flat", name: "Flat cards", desc: "Minimal, low-contrast cards for clean print output." },
+  { id: "cards-gradient", name: "Gradient cards", desc: "Elevated cards with a gradient accent line and soft glow." },
+  { id: "cards-flat", name: "Flat cards", desc: "Minimal, low-contrast cards — no shadows or gradients, great for print." },
   { id: "cards-accent", name: "Accent cards", desc: "Cards with a colored accent bar along the left edge." },
-  { id: "rows", name: "Rows", desc: "Compact rows with a fixed period column on the left." },
-];
+  { id: "rows-gradient", name: "Gradient card rows", desc: "Stacked card rows with a gradient glow — one entry per line." },
+  { id: "rows-flat", name: "Flat card rows", desc: "Minimal card rows — clean, low-contrast, great for print." },
+  { id: "rows-accent", name: "Accent card rows", desc: "Card rows with a colored accent bar along the left edge." },
+  { id: "rows", name: "Plain rows", desc: "Border-separated rows, period above the title — no card." },
+] as const satisfies readonly {
+  id: ListLayout;
+  name: string;
+  desc: string;
+}[];
 
 /** Options shown by each section's design picker, keyed by section. */
 export const SECTION_DESIGN_OPTIONS: {
@@ -83,21 +91,14 @@ export const SECTION_DESIGN_OPTIONS: {
     { id: "highlights", name: "Key highlights", desc: "Each paragraph becomes a marked highlight line." },
     { id: "columns", name: "Two columns", desc: "Paragraphs flow into two balanced columns." },
   ],
-  experience: TIMELINE_OPTIONS,
-  education: TIMELINE_OPTIONS,
+  experience: LIST_DESIGN_OPTIONS,
+  education: LIST_DESIGN_OPTIONS,
   skills: [
     { id: "bars", name: "Progress bars", desc: "Classic animated bars with percentages." },
     { id: "chips", name: "Chips", desc: "Compact pill tags per group." },
     { id: "dots", name: "Dot list", desc: "Type-driven list with a percentage at the end." },
   ],
-  projects: [
-    { id: "cards-gradient", name: "Gradient cards", desc: "Elevated cards with a gradient accent line and soft glow." },
-    { id: "cards-flat", name: "Flat cards", desc: "Minimal, low-contrast cards — no shadows or gradients, great for print." },
-    { id: "cards-accent", name: "Accent cards", desc: "Featured cards with a colored accent bar along the left edge." },
-    { id: "rows", name: "Card rows", desc: "Stacked card rows — one project per line." },
-    { id: "rows-plain", name: "Plain rows", desc: "Education-style: fixed period column with border separators, no card." },
-    { id: "timeline", name: "Timeline", desc: "Glowing-dot entries with the period on the line." },
-  ],
+  projects: LIST_DESIGN_OPTIONS,
   hobbies: [
     { id: "cards", name: "Icon cards", desc: "Big rounded icon cards in a row." },
     { id: "cards-flat", name: "Flat tiles", desc: "Compact horizontal tiles with an icon badge and label." },

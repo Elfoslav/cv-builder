@@ -4,8 +4,8 @@ import { type ListEntry } from "./types";
 import { ListLinks } from "./ListLinks";
 import { MetaLine } from "./MetaLine";
 
-/** Bordered rows with the period above the title — used by experience/education
- * (`cv-timeline-row`) and projects `rows-plain` (`cv-project-row`: compact pills + links). */
+/** Bordered rows with the period above the title — experience/education
+ * (`cv-timeline-row`) and projects (`cv-project-row`: compact pills + links). */
 export const ListRows = ({ items }: { items: ListEntry[] }) => (
   <div>
     {items.map((e) => (

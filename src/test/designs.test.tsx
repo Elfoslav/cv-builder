@@ -128,6 +128,26 @@ describe("color theme + section designs", () => {
     });
   });
 
+  it("expands the CV to full width while a section is being edited", async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+
+    const wrapper = document.querySelector(".cv-theme")!;
+    expect(wrapper).not.toHaveClass("cv-editing");
+
+    const editButtons = screen.getAllByRole("button", { name: /^Edit$/ });
+    await user.click(editButtons[3]); // education
+
+    await waitFor(() => {
+      expect(wrapper).toHaveClass("cv-editing");
+    });
+
+    await user.click(screen.getByRole("button", { name: /^Done$/ }));
+    await waitFor(() => {
+      expect(wrapper).not.toHaveClass("cv-editing");
+    });
+  });
+
   it("switches experience to accent cards", async () => {
     const user = userEvent.setup();
     render(<Harness />);

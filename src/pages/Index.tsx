@@ -235,7 +235,7 @@ const Index = () => {
       </header>
 
       <div className="flex-1 overflow-y-auto print:overflow-visible">
-        <EditableCVPreview data={data} setData={setData} onDownload={handleDownloadPDF} theme={theme} />
+        <EditableCVPreview data={data} setData={setData} theme={theme} />
       </div>
     </div>
   );

@@ -1,17 +1,15 @@
-import { Github, Linkedin, Mail, MapPin, Phone, Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Github, Linkedin, Mail, MapPin, Phone } from "lucide-react";
 import { CVData } from "@/lib/cv-types";
 import { type HeroLayout } from "@/lib/section-designs";
 import { cn } from "@/lib/utils";
 
 interface HeroProps {
 	data: CVData;
-	onDownload?: () => void;
 	/** Section design: gradient (default), plain header, or centered. */
 	variant?: HeroLayout;
 }
 
-export const Hero = ({ data, onDownload, variant = "gradient" }: HeroProps) => {
+export const Hero = ({ data, variant = "gradient" }: HeroProps) => {
 	const centered = variant === "center";
 	const plain = variant === "plain";
 
@@ -23,8 +21,8 @@ export const Hero = ({ data, onDownload, variant = "gradient" }: HeroProps) => {
 					<div className="absolute inset-0 bg-gradient-glow" />
 				</>
 			)}
-			<div className={cn("container relative mx-auto px-6", plain ? "py-8 print:py-5" : "py-10 md:py-6 print:py-4")}>
-				<div className={cn("mx-auto max-w-4xl", centered && "flex flex-col items-center text-center")}>
+			<div className={cn("container relative mx-auto max-w-5xl px-6", plain ? "py-8 print:py-5" : "py-10 md:py-6 print:py-4")}>
+				<div className={cn(centered && "flex flex-col items-center text-center")}>
 					<h1 className="mb-3 text-5xl font-extrabold tracking-tight text-foreground md:text-5xl">
 						{data.name || "Your Name"}
 					</h1>
@@ -36,27 +34,6 @@ export const Hero = ({ data, onDownload, variant = "gradient" }: HeroProps) => {
 					<p className={cn("max-w-2xl text-base leading-relaxed text-muted-foreground", centered && "mx-auto")}>
 						{data.bio}
 					</p>
-
-					{!plain && (
-						<div className={cn("mt-8 flex flex-wrap gap-3 print:hidden", centered && "items-center justify-center")}>
-							<Button
-								size="lg"
-								onClick={onDownload}
-								className="gap-2 bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90"
-							>
-								<Download className="h-4 w-4" />
-								Download CV
-							</Button>
-							{data.email && (
-								<Button size="lg" variant="outline" className="gap-2 border-border" asChild>
-									<a href={`mailto:${data.email}`}>
-										<Mail className="h-4 w-4" />
-										Get in touch
-									</a>
-								</Button>
-							)}
-						</div>
-					)}
 
 					<div
 						className={cn(

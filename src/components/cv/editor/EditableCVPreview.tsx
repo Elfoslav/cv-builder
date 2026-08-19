@@ -20,34 +20,43 @@ interface EditableCVPreviewProps {
   setData: Dispatch<SetStateAction<CVData>>;
   /** Global color theme applied via `data-theme` tokens. */
   theme?: ThemeId;
-  onDownload?: () => void;
 }
 
-export const EditableCVPreview = ({ data, setData, onDownload, theme = DEFAULT_THEME }: EditableCVPreviewProps) => {
+export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: EditableCVPreviewProps) => {
   const actions = useCVActions(setData);
+  // Tracks which section (if any) is being edited so the CV can expand to
+  // use the full width while a section is open, giving the preview more room.
+  const [editingKey, setEditingKey] = useState<SectionKey | null>(null);
   return (
-    <div data-theme={theme} className="cv-theme">
+    <div data-theme={theme} className={cn("cv-theme", editingKey && "cv-editing")}>
       <CVShell
         data={data}
-        onDownload={onDownload}
-        wrap={(meta, content) => <EditableSection meta={meta} content={content} data={data} actions={actions} />}
+        wrap={(meta, content) => (
+          <EditableSection
+            meta={meta}
+            content={content}
+            data={data}
+            actions={actions}
+            onEditingChange={setEditingKey}
+          />
+        )}
       />
     </div>
   );
 };
 
 const EditableSection = ({
-  meta, content, data, actions,
+  meta, content, data, actions, onEditingChange,
 }: {
   meta: SectionMeta;
   content: ReactNode;
   data: CVData;
   actions: ReturnType<typeof useCVActions>;
+  onEditingChange: (key: SectionKey | null) => void;
 }) => {
   const [editing, setEditing] = useState(false);
   const [snapshot, setSnapshot] = useState<SectionSnapshot | null>(null);
   const isList = LIST_KEYS.includes(meta.key);
-  const isHero = meta.key === "hero";
 
   // A section with no content is still shown on screen (so you can add to it),
   // but it is hidden in print/export output via the `.empty-section` rule.
@@ -69,6 +78,7 @@ const EditableSection = ({
   const startEditing = () => {
     setSnapshot(snapshotSection(data, meta.key));
     setEditing(true);
+    onEditingChange(meta.key);
   };
 
   const add = () => {
@@ -77,17 +87,20 @@ const EditableSection = ({
     setSnapshot(snapshotSection(data, meta.key));
     actions.appendItem(k, blankItem(k));
     setEditing(true);
+    onEditingChange(meta.key);
   };
 
   const done = () => {
     setEditing(false);
     setSnapshot(null);
+    onEditingChange(null);
   };
 
   const cancel = () => {
     if (snapshot) actions.setData((prev) => restoreSection(prev, meta.key, snapshot));
     setEditing(false);
     setSnapshot(null);
+    onEditingChange(null);
   };
 
   return (
@@ -102,8 +115,10 @@ const EditableSection = ({
       {!editing && (
         <div
           className={cn(
-            "absolute right-0 top-0 z-20 flex items-center gap-0.5 rounded-full border border-border bg-background/90 p-0.5 shadow-sm backdrop-blur print:hidden",
-            isHero && "top-4 right-6",
+            "absolute z-20 flex items-center gap-0.5 rounded-full border border-border bg-background/90 p-0.5 shadow-sm backdrop-blur print:hidden",
+            meta.key === "hero"
+              ? "top-10 lg:right-[calc((100%-64rem)/2+1.5rem)]"
+              : "right-0 top-0",
           )}
         >
           {meta.key !== "hero" && meta.key !== "footer" && (
@@ -142,7 +157,7 @@ const EditableSection = ({
       )}
 
       {editing ? (
-        <div className="grid gap-6 lg:grid-cols-2 print:block">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px] print:block">
           <div className="min-w-0">{content}</div>
           <div className="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm print:hidden">
             <div className="mb-3 flex items-center justify-between gap-2">

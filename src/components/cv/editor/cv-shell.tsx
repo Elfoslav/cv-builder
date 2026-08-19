@@ -24,11 +24,10 @@ export interface SectionMeta {
 export type WrapSection = (meta: SectionMeta, content: ReactNode) => ReactNode;
 
 export const CVShell = ({
-  data, wrap, onDownload, hideEmpty, designs,
+  data, wrap, hideEmpty, designs,
 }: {
   data: CVData;
   wrap: WrapSection;
-  onDownload?: () => void;
   /** When true (print/export), empty sections are omitted entirely. */
   hideEmpty?: boolean;
   /** Optional per-section design overrides (used by the drafts showcase). */
@@ -104,7 +103,7 @@ export const CVShell = ({
     );
     switch (meta.key) {
       case "hero":
-        return <Hero data={data} onDownload={onDownload} variant={d.hero} />;
+        return <Hero data={data} variant={d.hero} />;
       case "about":
         return data.about
           ? section(<AboutView about={data.about} variant={d.about} />)

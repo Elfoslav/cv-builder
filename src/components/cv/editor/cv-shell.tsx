@@ -4,12 +4,12 @@ import { DEFAULT_SECTION_DESIGNS, type SectionDesigns } from "@/lib/section-desi
 import { SectionHeader } from "@/components/cv/SectionHeader";
 import { Hero } from "@/components/cv/Hero";
 import { EmptyState, groupSkills, splitTags } from "@/components/cv/cv-utils";
-import { SkillsView } from "@/components/cv/themed/skills";
-import { ProjectsView } from "@/components/cv/themed/projects";
-import { TimelineView, type TimelineEntry } from "@/components/cv/themed/timeline";
-import { HobbiesView } from "@/components/cv/themed/hobbies";
-import { AboutView } from "@/components/cv/themed/AboutView";
-import { FooterView } from "@/components/cv/themed/FooterView";
+import { SkillsView } from "@/components/cv/themed/skills/SkillsView";
+import { ProjectsView } from "@/components/cv/themed/projects/ProjectsView";
+import { TimelineView, type TimelineEntry } from "@/components/cv/themed/timeline/TimelineView";
+import { HobbiesView } from "@/components/cv/themed/hobbies/HobbiesView";
+import { AboutView } from "@/components/cv/themed/about/AboutView";
+import { FooterView } from "@/components/cv/themed/footer/FooterView";
 
 export interface SectionMeta {
   key: SectionKey;

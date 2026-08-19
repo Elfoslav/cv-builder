@@ -11,6 +11,9 @@ export const ICON_MAP: Record<string, LucideIcon> = {
 
 export const splitTags = (s: string) => s.split(",").map((t) => t.trim()).filter(Boolean);
 
+/** Splits an "about" block into non-empty paragraphs (blank-line separated). */
+export const splitParagraphs = (about: string): string[] => about.split("\n\n").filter(Boolean);
+
 export const groupSkills = (data: CVData) =>
   data.skillGroups
     .map((g) => ({ group: g, items: data.skills.filter((s) => s.group === g.id) }))

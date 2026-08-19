@@ -7,6 +7,8 @@ interface TimelineItemProps {
 	location?: string;
 	children: ReactNode;
 	tags?: string[];
+	/** Optional right-aligned content next to the period (e.g. project links). */
+	links?: ReactNode;
 }
 
 export const TimelineItem = ({
@@ -16,12 +18,16 @@ export const TimelineItem = ({
 	location,
 	children,
 	tags,
+	links,
 }: TimelineItemProps) => {
 	return (
 		<div className="cv-timeline-item relative pl-8 pb-8 last:pb-0">
 			<div className="cv-dot absolute left-0 top-2 h-3 w-3 rounded-full bg-primary shadow-glow" />
 			<div className="cv-line absolute left-[5px] top-5 h-full w-px bg-border" />
-			<div className="text-xs font-semibold uppercase tracking-wider text-primary">{period}</div>
+			<div className="flex items-center justify-between gap-2">
+				<div className="text-xs font-semibold uppercase tracking-wider text-primary">{period}</div>
+				{links}
+			</div>
 			<h3 className="mt-2 text-xl font-semibold text-foreground">{title}</h3>
 			{(subtitle || location) && (
 				<div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">

@@ -13,15 +13,9 @@ export const ListTimeline = ({ items }: { items: ListEntry[] }) => (
         subtitle={e.subtitle}
         location={e.location}
         tags={e.tags}
+        links={e.links && <ListLinks links={e.links} />}
       >
-        <span>
-          {e.description}
-          {e.links && (
-            <span className="mt-2 block">
-              <ListLinks links={e.links} />
-            </span>
-          )}
-        </span>
+        {e.description}
       </TimelineItem>
     ))}
   </div>

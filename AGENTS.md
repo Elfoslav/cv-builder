@@ -9,7 +9,7 @@
   and is the only component other modules import.
 - All repeated building blocks must be extracted into separate re-usable components — never
   copy markup between files. Shared pieces live in `src/components/cv/`
-  (e.g. `CVCard`, `PeriodRow`, `TagPills`); repeated helpers live in `cv-utils`.
+  (e.g. `CVCard`, `TagPills`, `ListLinks`); repeated helpers live in `cv-utils`.
 - Prefer `cn(...)` (clsx + tailwind-merge) when composing class names.
 
 ## Architecture

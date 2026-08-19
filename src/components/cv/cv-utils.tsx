@@ -15,13 +15,19 @@ export const splitTags = (s: string) => s.split(",").map((t) => t.trim()).filter
 export const splitParagraphs = (about: string): string[] => about.split("\n\n").filter(Boolean);
 
 /**
- * Container class for a card grid. A single column stacks the cards; higher
- * counts build a responsive CSS grid with a matching print layout.
+ * Container class for a card/skill grid. A single column stacks the content;
+ * higher counts build a responsive CSS grid with a matching print layout.
+ * `gap` lets callers tune the spacing (e.g. roomier skill-group gutters).
  */
-export const cardGridClass = (columns: CardColumns, stackedClass: string): string => {
+export const cardGridClass = (
+  columns: CardColumns,
+  stackedClass: string,
+  gap = "gap-2",
+): string => {
   if (columns === 1) return stackedClass;
-  if (columns === 2) return "grid gap-2 md:grid-cols-2 print-grid-2-tight";
-  return "grid gap-2 md:grid-cols-2 lg:grid-cols-3 print-grid-3-tight";
+  const cols = columns === 2 ? "md:grid-cols-2" : "md:grid-cols-2 lg:grid-cols-3";
+  const print = columns === 3 ? "print-grid-3-tight" : "print-grid-2-tight";
+  return `grid ${gap} ${cols} ${print}`;
 };
 
 export const groupSkills = (data: CVData) =>

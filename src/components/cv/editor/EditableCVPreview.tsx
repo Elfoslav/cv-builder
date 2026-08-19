@@ -234,6 +234,22 @@ const DesignPicker = ({
           onChange={(columns: CardColumns) => actions.setCardColumns(cardKey, columns)}
         />
       )}
+      {meta.key === "skills" && (
+        <>
+          <CardColumnsPicker
+            className="mt-3 mb-0"
+            label="Skill group columns"
+            value={data.skillColumns.groups}
+            onChange={(columns: CardColumns) => actions.setSkillColumns("groups", columns)}
+          />
+          <CardColumnsPicker
+            className="mt-3 mb-0"
+            label="Skill columns"
+            value={data.skillColumns.skills}
+            onChange={(columns: CardColumns) => actions.setSkillColumns("skills", columns)}
+          />
+        </>
+      )}
     </div>
   );
 };

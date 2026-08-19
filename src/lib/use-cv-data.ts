@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import {
   CVData, CVLabels, defaultCV, defaultLabels, SkillGroup, SectionKey, SECTION_KEYS,
-  DEFAULT_CARD_COLUMNS, type CardColumnsMap,
+  DEFAULT_CARD_COLUMNS, DEFAULT_SKILL_COLUMNS, type CardColumnsMap, type SkillColumnsMap,
 } from "./cv-types";
 import { DEFAULT_SECTION_DESIGNS, type SectionDesigns } from "./section-designs";
 import { DEFAULT_THEME, THEME_IDS, type ThemeId } from "./themes";
@@ -42,10 +42,13 @@ const normalizeSectionOrder = (stored?: SectionKey[]): SectionKey[] => {
 };
 
 /** Coerces stored columns per section into valid card column counts. */
-const normalizeCardColumns = (raw?: Partial<CardColumnsMap>): CardColumnsMap => {
-  const out = { ...DEFAULT_CARD_COLUMNS, ...(raw ?? {}) } as CardColumnsMap;
-  (Object.keys(out) as (keyof CardColumnsMap)[]).forEach((k) => {
-    if (out[k] !== 1 && out[k] !== 2 && out[k] !== 3) out[k] = DEFAULT_CARD_COLUMNS[k];
+const normalizeColumns = <T extends CardColumnsMap | SkillColumnsMap>(
+  defaults: T,
+  raw?: Partial<T>,
+): T => {
+  const out = { ...defaults, ...(raw ?? {}) } as T;
+  (Object.keys(out) as (keyof T)[]).forEach((k) => {
+    if (out[k] !== 1 && out[k] !== 2 && out[k] !== 3) out[k] = defaults[k];
   });
   return out;
 };
@@ -74,7 +77,8 @@ const migrateData = (parsed: Partial<CVData> & { skills?: Array<{ group?: string
       ...DEFAULT_SECTION_DESIGNS,
       ...((parsed as { sectionDesigns?: Partial<SectionDesigns> }).sectionDesigns ?? {}),
     },
-    cardColumns: normalizeCardColumns((parsed as { cardColumns?: Partial<CardColumnsMap> }).cardColumns),
+    cardColumns: normalizeColumns(DEFAULT_CARD_COLUMNS, (parsed as { cardColumns?: Partial<CardColumnsMap> }).cardColumns),
+    skillColumns: normalizeColumns(DEFAULT_SKILL_COLUMNS, (parsed as { skillColumns?: Partial<SkillColumnsMap> }).skillColumns),
   } as CVData;
 
   // Old design ids → the new variant naming.

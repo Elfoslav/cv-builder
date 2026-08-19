@@ -1,4 +1,4 @@
-import { type Skill, type SkillGroup } from "@/lib/cv-types";
+import { type Skill, type SkillGroup, type SkillColumnsMap } from "@/lib/cv-types";
 import { type SkillLayout } from "@/lib/section-designs";
 import { SkillBars } from "./SkillBars";
 import { SkillChips } from "./SkillChips";
@@ -12,10 +12,12 @@ export interface SkillGroupWithItems {
 interface SkillsViewProps {
   groups: SkillGroupWithItems[];
   variant: SkillLayout;
+  /** Column counts for the skill groups and the skills inside them. */
+  columns: SkillColumnsMap;
 }
 
-export const SkillsView = ({ groups, variant }: SkillsViewProps) => {
-  if (variant === "chips") return <SkillChips groups={groups} />;
-  if (variant === "dots") return <SkillDots groups={groups} />;
-  return <SkillBars groups={groups} />;
+export const SkillsView = ({ groups, variant, columns }: SkillsViewProps) => {
+  if (variant === "chips") return <SkillChips groups={groups} columns={columns} />;
+  if (variant === "dots") return <SkillDots groups={groups} columns={columns} />;
+  return <SkillBars groups={groups} columns={columns} />;
 };

@@ -18,6 +18,15 @@ export interface CardColumnsMap {
 /** Default number of columns per card layout: projects default to 2, history lists to 1. */
 export const DEFAULT_CARD_COLUMNS: CardColumnsMap = { experience: 1, education: 1, projects: 2 };
 
+/** Column counts for the skills section: the skill groups and the skills inside them. */
+export interface SkillColumnsMap {
+  groups: CardColumns;
+  skills: CardColumns;
+}
+
+/** Default to the classic two-column skills layout. */
+export const DEFAULT_SKILL_COLUMNS: SkillColumnsMap = { groups: 2, skills: 2 };
+
 export const SECTION_KEYS: SectionKey[] = [
   "hero", "about", "experience", "education", "skills", "projects", "hobbies", "footer",
 ];
@@ -136,6 +145,8 @@ export interface CVData {
   sectionDesigns: SectionDesigns;
   /** Number of columns for the card designs, per list section. */
   cardColumns: CardColumnsMap;
+  /** Column counts for skill groups and the skills inside them. */
+  skillColumns: SkillColumnsMap;
 }
 
 export const defaultCV: CVData = {
@@ -231,6 +242,7 @@ export const defaultCV: CVData = {
   sectionOrder: DEFAULT_SECTION_ORDER,
   sectionDesigns: { ...DEFAULT_SECTION_DESIGNS },
   cardColumns: { ...DEFAULT_CARD_COLUMNS },
+  skillColumns: { ...DEFAULT_SKILL_COLUMNS },
 };
 
 export const HOBBY_ICONS: Hobby["icon"][] = [

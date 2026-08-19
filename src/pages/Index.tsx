@@ -17,7 +17,7 @@ import {
 import { exportElementToPDF } from "@/lib/export-pdf";
 import { toast as sonnerToast } from "sonner";
 import { toast as uiToast } from "@/hooks/use-toast";
-import { CVData, defaultLabels, DEFAULT_CARD_COLUMNS, type CardColumnsMap } from "@/lib/cv-types";
+import { CVData, defaultLabels, DEFAULT_CARD_COLUMNS, DEFAULT_SKILL_COLUMNS, type CardColumnsMap, type SkillColumnsMap } from "@/lib/cv-types";
 import { DEFAULT_SECTION_DESIGNS } from "@/lib/section-designs";
 import { type ThemeId } from "@/lib/themes";
 
@@ -157,6 +157,10 @@ const Index = () => {
           cardColumns: {
             ...DEFAULT_CARD_COLUMNS,
             ...(parsed.cardColumns as Partial<CardColumnsMap> | undefined),
+          },
+          skillColumns: {
+            ...DEFAULT_SKILL_COLUMNS,
+            ...(parsed.skillColumns as Partial<SkillColumnsMap> | undefined),
           },
         }));
         uiToast({ title: "Imported", description: "CV data loaded successfully." });

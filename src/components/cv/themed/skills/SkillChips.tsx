@@ -1,13 +1,15 @@
+import { type SkillColumnsMap } from "@/lib/cv-types";
+import { cardGridClass } from "@/components/cv/cv-utils";
 import type { SkillGroupWithItems } from "./SkillsView";
 import { SkillGroupHeading } from "./SkillGroupHeading";
 
-/** Compact pill tags, one row per group. */
-export const SkillChips = ({ groups }: { groups: SkillGroupWithItems[] }) => (
-  <div className="space-y-6">
+/** Compact pill tags, grouped in a configurable number of columns. */
+export const SkillChips = ({ groups, columns }: { groups: SkillGroupWithItems[]; columns: SkillColumnsMap }) => (
+  <div className={cardGridClass(columns.groups, "space-y-6", "gap-x-8 gap-y-6")}>
     {groups.map(({ group, items }) => (
       <div key={group.id} className="avoid-break">
         <SkillGroupHeading name={group.name} />
-        <div className="flex flex-wrap gap-2">
+        <div className={cardGridClass(columns.skills, "flex flex-wrap gap-2", "gap-2")}>
           {items.map((s) => (
             <span
               key={s.id}

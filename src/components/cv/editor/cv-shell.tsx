@@ -1,5 +1,5 @@
 import { Fragment, type ReactNode } from "react";
-import { CVData, SectionKey, DEFAULT_CARD_COLUMNS, type CardColumnsMap } from "@/lib/cv-types";
+import { CVData, SectionKey, DEFAULT_CARD_COLUMNS, DEFAULT_SKILL_COLUMNS, type CardColumnsMap, type SkillColumnsMap } from "@/lib/cv-types";
 import { DEFAULT_SECTION_DESIGNS, type SectionDesigns } from "@/lib/section-designs";
 import { SectionHeader } from "@/components/cv/SectionHeader";
 import { Hero } from "@/components/cv/Hero";
@@ -39,6 +39,7 @@ export const CVShell = ({
   const d: SectionDesigns = { ...DEFAULT_SECTION_DESIGNS, ...data.sectionDesigns, ...designs };
 
   const columns: CardColumnsMap = { ...DEFAULT_CARD_COLUMNS, ...(data.cardColumns ?? {}) };
+  const skillColumns: SkillColumnsMap = { ...DEFAULT_SKILL_COLUMNS, ...(data.skillColumns ?? {}) };
 
   // Display order comes from persisted data; hero & footer are pinned at the ends.
   const order = Array.isArray(data.sectionOrder) && data.sectionOrder.length
@@ -121,7 +122,7 @@ export const CVShell = ({
           : section(<EmptyState label="No education entries yet" />);
       case "skills":
         return groupedSkills.length
-          ? section(<SkillsView groups={groupedSkills} variant={d.skills} />, "mb-12 avoid-break")
+          ? section(<SkillsView groups={groupedSkills} variant={d.skills} columns={skillColumns} />, "mb-12 avoid-break")
           : section(<EmptyState label="No skills yet" />, "mb-12 avoid-break");
       case "projects":
         return data.projects.length

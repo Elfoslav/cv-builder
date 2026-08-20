@@ -85,10 +85,10 @@ export const CVShell = ({
     footer: { key: "footer", title: "Footer", subtitle: "Closing message & copyright" },
   };
 
-  // In export mode the numbering follows only the sections that will be shown.
-  const numbered = hideEmpty
-    ? headerOrder.filter((k) => !isSectionEmpty(k))
-    : headerOrder;
+  // Numbering always follows only the sections that have content — empty
+  // (placeholder) sections don't consume an index, on screen or in export,
+  // so the first visible section is always "01".
+  const numbered = headerOrder.filter((k) => !isSectionEmpty(k));
   numbered.forEach((k, i) => {
     metas[k].index = String(i + 1).padStart(2, "0");
     metas[k].canMoveUp = i > 0;

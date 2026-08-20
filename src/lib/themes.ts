@@ -62,7 +62,7 @@ export const THEMES: ResumeTheme[] = [
       "Diamond timeline markers, square corners",
       "Print-friendly paper palette",
     ],
-    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "bars", projects: "cards-gradient" },
+    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "bars", projects: "cards-gradient-border" },
   },
   {
     id: "minimal",
@@ -90,7 +90,7 @@ export const THEMES: ResumeTheme[] = [
       "Cream paper background",
       "Skills as chips, timeline as warm cards, interests as pills",
     ],
-    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "chips", experience: "cards-gradient", education: "cards-gradient", hobbies: "pills" },
+    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "chips", experience: "cards-gradient-corner", education: "cards-gradient-corner", hobbies: "pills" },
   },
   {
     id: "ocean",
@@ -118,7 +118,7 @@ export const THEMES: ResumeTheme[] = [
       "Large rounded corners",
       "Skills as dot lists, timeline as cards, interests as pills",
     ],
-    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "dots", experience: "cards-gradient", education: "cards-gradient", hobbies: "pills" },
+    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "dots", experience: "cards-gradient-headline", education: "cards-gradient-headline", hobbies: "pills" },
   },
   {
     id: "forest",
@@ -132,7 +132,7 @@ export const THEMES: ResumeTheme[] = [
       "Slightly square corners",
       "Projects as rows, timeline as cards, interests as checklists",
     ],
-    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "bars", projects: "rows-gradient", experience: "cards-gradient", education: "cards-gradient", hobbies: "checks" },
+    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "bars", projects: "rows-gradient", experience: "cards-gradient-band", education: "cards-gradient-soft", hobbies: "checks" },
   },
   {
     id: "slate",

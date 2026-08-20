@@ -83,14 +83,14 @@ const migrateData = (parsed: Partial<CVData> & { skills?: Array<{ group?: string
 
   // Old design ids → the new variant naming.
   const projects = merged.sectionDesigns.projects as string;
-  if (projects === "cards") merged.sectionDesigns.projects = "cards-gradient";
+  if (projects === "cards" || projects === "cards-gradient") merged.sectionDesigns.projects = "cards-gradient-soft";
   else if (projects === "rows-plain") merged.sectionDesigns.projects = "rows";
   else if (projects === "rows") merged.sectionDesigns.projects = "rows-gradient";
-  if (merged.sectionDesigns.experience === "cards") {
-    merged.sectionDesigns.experience = "cards-gradient";
+  if (merged.sectionDesigns.experience === "cards" || merged.sectionDesigns.experience === "cards-gradient") {
+    merged.sectionDesigns.experience = "cards-gradient-soft";
   }
-  if (merged.sectionDesigns.education === "cards") {
-    merged.sectionDesigns.education = "cards-gradient";
+  if (merged.sectionDesigns.education === "cards" || merged.sectionDesigns.education === "cards-gradient") {
+    merged.sectionDesigns.education = "cards-gradient-soft";
   }
 
   const legacyMap: Record<string, { id: string; name: string }> = {

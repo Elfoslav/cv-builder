@@ -94,6 +94,15 @@
 	}
 }
 
+/* Gradient-filled text, used by the gradient-headline card design. */
+.text-gradient-primary {
+	background-image: var(--gradient-primary);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	color: transparent;
+}
+
 @media print {
 	/* Force backgrounds & colors to render in print/PDF */
 	html,

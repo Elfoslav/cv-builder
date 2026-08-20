@@ -198,7 +198,7 @@ const EditableSection = ({
 const CARD_LAYOUT_KEYS: (keyof CardColumnsMap)[] = ["experience", "education", "projects"];
 
 const isCardDesign = (value: string) =>
-  value === "cards-gradient" || value === "cards-flat" || value === "cards-accent";
+  value.startsWith("cards-gradient") || value === "cards-flat" || value === "cards-accent";
 
 const DesignPicker = ({
   meta, data, actions,

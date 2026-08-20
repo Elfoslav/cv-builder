@@ -13,12 +13,16 @@ export type AboutLayout = "paragraphs" | "highlights" | "columns";
 export type SkillLayout = "bars" | "chips" | "dots";
 /**
  * Shared layout id for every list-style section (experience, education,
- * projects): cards (gradient/flat/accent), card rows (gradient/flat/accent),
- * plain rows, or a vertical timeline.
+ * projects): the five gradient card looks, flat/accent cards, card rows
+ * (gradient/flat/accent), plain rows, or a vertical timeline.
  */
 export type ListLayout =
   | "timeline"
-  | "cards-gradient"
+  | "cards-gradient-soft"
+  | "cards-gradient-border"
+  | "cards-gradient-band"
+  | "cards-gradient-corner"
+  | "cards-gradient-headline"
   | "cards-flat"
   | "cards-accent"
   | "rows"
@@ -51,7 +55,7 @@ export const DEFAULT_SECTION_DESIGNS: SectionDesigns = {
   experience: "timeline",
   education: "timeline",
   skills: "bars",
-  projects: "cards-gradient",
+  projects: "cards-gradient-soft",
   hobbies: "cards",
   footer: "split",
 };
@@ -64,7 +68,11 @@ export interface DesignOption {
 
 const LIST_DESIGN_OPTIONS = [
   { id: "timeline", name: "Timeline", desc: "Vertical timeline with a glowing dot per entry." },
-  { id: "cards-gradient", name: "Gradient cards", desc: "Elevated cards with a gradient accent line and soft glow." },
+  { id: "cards-gradient-soft", name: "Soft gradient cards", desc: "Gradient-filled cards with a gentle glow — the default card look." },
+  { id: "cards-gradient-border", name: "Gradient border cards", desc: "Cards framed by a thin primary-to-accent gradient outline." },
+  { id: "cards-gradient-band", name: "Gradient band cards", desc: "Cards topped with a gradient accent band." },
+  { id: "cards-gradient-corner", name: "Gradient corner cards", desc: "Cards with a soft gradient corner glow." },
+  { id: "cards-gradient-headline", name: "Gradient headline cards", desc: "Flat print-friendly cards with gradient-text headings." },
   { id: "cards-flat", name: "Flat cards", desc: "Minimal, low-contrast cards — no shadows or gradients, great for print." },
   { id: "cards-accent", name: "Accent cards", desc: "Cards with a colored accent bar along the left edge." },
   { id: "rows-gradient", name: "Gradient card rows", desc: "Stacked card rows with a gradient glow — one entry per line." },

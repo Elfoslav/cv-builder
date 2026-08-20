@@ -8,12 +8,10 @@ import { DraftDrawer } from "@/components/cv/drafts/DraftDrawer";
 import { DraftFloating } from "@/components/cv/drafts/DraftFloating";
 import { DraftLangIcon } from "@/components/cv/language-drafts/DraftLangIcon";
 import { DraftLangPills } from "@/components/cv/language-drafts/DraftLangPills";
-import { DraftSkillsTree } from "@/components/cv/skills-drafts/DraftSkillsTree";
-import { DraftSkillsCompact } from "@/components/cv/skills-drafts/DraftSkillsCompact";
-import { DraftSkillsCollapsible } from "@/components/cv/skills-drafts/DraftSkillsCollapsible";
-import { DraftSkillsQuickAdd } from "@/components/cv/skills-drafts/DraftSkillsQuickAdd";
-import { DraftSkillsTwoPane } from "@/components/cv/skills-drafts/DraftSkillsTwoPane";
-import { DraftSkillsTable } from "@/components/cv/skills-drafts/DraftSkillsTable";
+import { DraftPanelTabs } from "@/components/cv/panel-drafts/DraftPanelTabs";
+import { DraftPanelCollapsible } from "@/components/cv/panel-drafts/DraftPanelCollapsible";
+import { DraftPanelDrawer } from "@/components/cv/panel-drafts/DraftPanelDrawer";
+import { DraftPanelSplit } from "@/components/cv/panel-drafts/DraftPanelSplit";
 import { LanguageSwitcher } from "@/components/cv/LanguageSwitcher";
 import { useLangDraft, toDraftProps, type DraftLangProps } from "@/components/cv/language-drafts/useLangDraft";
 import { CVShell } from "@/components/cv/editor/cv-shell";
@@ -89,65 +87,45 @@ const LANG_DRAFT_META = [
   },
 ];
 
-const SKILLS_DRAFT_META = [
+const PANEL_DRAFT_META = [
   {
-    id: "skills-tree",
-    name: "A · Single hierarchy list",
-    desc: "One unified tree: group rows with their skills directly beneath. The separate group-manager box and the duplicated group headings are gone — rename, reorder, and delete from a single place.",
+    id: "panel-tabs",
+    name: "A · Content & Design tabs",
+    desc: "Two tabs inside the edit panel: Content (what you type) and Design (section design + columns). Clean separation, one context at a time.",
     hints: [
-      "Groups rename inline (pencil)",
-      "Skills sit under their group — no redundant dropdown",
-      "Move groups and skills with arrows",
+      "Switch, don't scroll",
+      "Design changes preview live in the CV",
+      "Most clutter-free option",
     ],
   },
   {
-    id: "skills-compact",
-    name: "B · Compact rows",
-    desc: "The thinnest footprint: each skill is one line — name, proficiency, delete — inside a slim divider list. No cards, no sliders, no per-skill group select.",
+    id: "panel-collapsible",
+    name: "B · Collapsible design block",
+    desc: "A foldable “Design options” group sits below the content fields and stays collapsed by default; expand it only when you want to tune the layout.",
     hints: [
-      "Skills read as a clean divider list",
-      "Proficiency is a select, not a slider",
-      "Far shorter than the current card-per-skill layout",
+      "Design controls hidden until needed",
+      "One accordion — no extra navigation",
+      "Content stays the primary focus",
     ],
   },
   {
-    id: "skills-collapsible",
-    name: "C · Collapsible groups",
-    desc: "An accordion: only the focused group expands; the rest collapse to name + count. Long skill lists never become a wall of inputs.",
+    id: "panel-drawer",
+    name: "C · Design slide-over",
+    desc: "Content inputs take the whole panel; a “Design” button in the header opens section design + columns in a right-side slide-over that keeps the form visible underneath.",
     hints: [
-      "Click a group to expand it",
-      "Collapsed groups show a count badge",
-      "Reorder skills inside an expanded group",
+      "Content always visible underneath",
+      "Design is clearly a separate concern",
+      "A little more chrome: button + overlay",
     ],
   },
   {
-    id: "skills-quick-add",
-    name: "D · Quick-add composer",
-    desc: "Type a skill and press Enter (or a comma) to add it as a chip. Skills read as tags rather than inputs, so the list stays short while you type many quickly.",
+    id: "panel-split",
+    name: "D · Divided fieldset",
+    desc: "A single scrollable panel where a clearly labeled “Design” group sits below the content, separated by a heading and a divider.",
     hints: [
-      "Enter or comma adds a chip instantly",
-      "Chips reorder and delete with one click",
-      "One proficiency select applies to new skills",
-    ],
-  },
-  {
-    id: "skills-two-pane",
-    name: "E · Two-pane editor",
-    desc: "Groups live in a slim left rail; the focused group's skills fill the right pane. You always edit one group at a time, so there is never a long wall of inputs.",
-    hints: [
-      "Click a group in the rail to focus it",
-      "Active group is highlighted with a ring",
-      "Reorder groups and skills with arrows",
-    ],
-  },
-  {
-    id: "skills-table",
-    name: "F · Table editor",
-    desc: "A spreadsheet-like grid — Skill | Group | Level — with order arrows. Moving a skill between groups is a single dropdown change and bulk scanning is effortless.",
-    hints: [
-      "Group is a real column: reassign with a click",
-      "Rows reorder within their group",
-      "Best for large, flat skill lists",
+      "Everything visible in one scroll",
+      "Simplest to implement — no state",
+      "Keeps some vertical length",
     ],
   },
 ];
@@ -329,16 +307,17 @@ export const DesignDrafts = () => {
         <section className="mt-12">
           <div className="mb-4">
             <h2 className="flex items-center gap-1.5 text-sm font-semibold">
-              <Layers className="h-4 w-4 text-primary" /> Skills editor — UX drafts
+              <Layers className="h-4 w-4 text-primary" /> Edit panel — separating design from content
             </h2>
             <p className="text-xs text-muted-foreground">
-              Six concepts for the skills edit panel, which today is a separate group manager plus tall
-              card-per-skill forms. All are demo-only — try renaming, reordering, collapsing, and adding.
+              Today “Section design”, “Skill group columns” and “Skill columns” sit directly above the content
+              inputs inside the same panel. These drafts show different ways to separate those design controls
+              from what you type. All are demo-only mocks.
             </p>
           </div>
 
-          <div className="mb-6 grid gap-3 md:grid-cols-3">
-            {SKILLS_DRAFT_META.map((d) => (
+          <div className="mb-6 grid gap-3 md:grid-cols-4">
+            {PANEL_DRAFT_META.map((d) => (
               <div key={d.id} className="rounded-lg border border-border bg-card p-3 text-xs">
                 <div className="mb-1 font-semibold">{d.name}</div>
                 <p className="mb-2 text-muted-foreground">{d.desc}</p>
@@ -354,29 +333,23 @@ export const DesignDrafts = () => {
             ))}
           </div>
 
-          <Tabs defaultValue="skills-tree" className="w-full">
+          <Tabs defaultValue="panel-tabs" className="w-full">
             <TabsList className="mb-4">
-              {SKILLS_DRAFT_META.map((d) => (
+              {PANEL_DRAFT_META.map((d) => (
                 <TabsTrigger key={d.id} value={d.id}>{d.name}</TabsTrigger>
               ))}
             </TabsList>
-            <TabsContent value="skills-tree" className="rounded-xl border border-border bg-muted/40 p-6 shadow-sm">
-              <DraftSkillsTree />
+            <TabsContent value="panel-tabs" className="rounded-xl border border-border bg-muted/40 p-6 shadow-sm">
+              <DraftPanelTabs />
             </TabsContent>
-            <TabsContent value="skills-compact" className="rounded-xl border border-border bg-muted/40 p-6 shadow-sm">
-              <DraftSkillsCompact />
+            <TabsContent value="panel-collapsible" className="rounded-xl border border-border bg-muted/40 p-6 shadow-sm">
+              <DraftPanelCollapsible />
             </TabsContent>
-            <TabsContent value="skills-collapsible" className="rounded-xl border border-border bg-muted/40 p-6 shadow-sm">
-              <DraftSkillsCollapsible />
+            <TabsContent value="panel-drawer" className="rounded-xl border border-border bg-muted/40 p-6 shadow-sm">
+              <DraftPanelDrawer />
             </TabsContent>
-            <TabsContent value="skills-quick-add" className="rounded-xl border border-border bg-muted/40 p-6 shadow-sm">
-              <DraftSkillsQuickAdd />
-            </TabsContent>
-            <TabsContent value="skills-two-pane" className="rounded-xl border border-border bg-muted/40 p-6 shadow-sm">
-              <DraftSkillsTwoPane />
-            </TabsContent>
-            <TabsContent value="skills-table" className="rounded-xl border border-border bg-muted/40 p-6 shadow-sm">
-              <DraftSkillsTable />
+            <TabsContent value="panel-split" className="rounded-xl border border-border bg-muted/40 p-6 shadow-sm">
+              <DraftPanelSplit />
             </TabsContent>
           </Tabs>
         </section>

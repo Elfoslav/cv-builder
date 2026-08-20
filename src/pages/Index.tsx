@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Link } from "react-router-dom";
 import { EditableCVPreview } from "@/components/cv/editor/EditableCVPreview";
@@ -8,7 +8,7 @@ import { ThemeSwitcher } from "@/components/cv/ThemeSwitcher";
 import { useCVData } from "@/lib/use-cv-data";
 import { Button } from "@/components/ui/button";
 import {
-  Printer, Download, Loader2, Languages, Palette, Upload, FileJson,
+  Printer, Download, Loader2, Languages, Palette, Upload, FileJson, Menu,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -33,6 +33,7 @@ const Index = () => {
     theme, setTheme,
   } = useCVData();
   const [exporting, setExporting] = useState(false);
+  const importInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     document.title = APP_TITLE;
@@ -173,12 +174,14 @@ const Index = () => {
       <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur-md print:hidden">
         <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2">
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="ghost" className="gap-2" asChild title="Editor design drafts">
-              <Link to="/drafts">
-                <Palette className="h-4 w-4" />
-                <span className="text-xs font-medium">Drafts</span>
-              </Link>
-            </Button>
+            {import.meta.env.DEV && (
+              <Button size="sm" variant="ghost" className="gap-2" asChild title="Editor design drafts">
+                <Link to="/drafts">
+                  <Palette className="h-4 w-4" />
+                  <span className="text-xs font-medium">Drafts</span>
+                </Link>
+              </Button>
+            )}
             <LanguageSwitcher
               languages={languages}
               activeId={activeId}
@@ -191,49 +194,95 @@ const Index = () => {
           </div>
 
           <div className="flex items-center gap-1">
-            <Button size="sm" variant="ghost" title="Export JSON" onClick={exportJSON}>
-              <FileJson className="h-4 w-4" />
-              <span className="text-xs font-medium">JSON</span>
-            </Button>
-            <label className="inline-flex">
-              <Button size="sm" variant="ghost" asChild title="Import JSON">
-                <span className="cursor-pointer">
-                  <Upload className="h-4 w-4" />
-                  <span className="text-xs font-medium">Import</span>
-                </span>
+            <div className="hidden items-center gap-1 md:flex">
+              <Button size="sm" variant="ghost" title="Export JSON" onClick={exportJSON}>
+                <FileJson className="h-4 w-4" />
+                <span className="text-xs font-medium">JSON</span>
               </Button>
-              <input type="file" accept="application/json" className="hidden" onChange={importJSON} />
-            </label>
-            <Button size="sm" variant="ghost" className="gap-2" onClick={handlePrint}>
-              <Printer className="h-4 w-4" />
-              <span className="text-xs font-medium">Print</span>
-            </Button>
+              <Button size="sm" variant="ghost" title="Import JSON" onClick={() => importInput.current?.click()}>
+                <Upload className="h-4 w-4" />
+                <span className="text-xs font-medium">Import</span>
+              </Button>
+              <Button size="sm" variant="ghost" className="gap-2" onClick={handlePrint}>
+                <Printer className="h-4 w-4" />
+                <span className="text-xs font-medium">Print</span>
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" className="gap-2" disabled={exporting}>
+                    {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                    <span className="text-xs font-medium">{exporting ? "Generating…" : "Download PDF"}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem onClick={handleDownloadPDF} disabled={exporting}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Current language
+                  </DropdownMenuItem>
+                  {languages.length > 1 && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuLabel className="text-xs text-muted-foreground">
+                        All languages
+                      </DropdownMenuLabel>
+                      <DropdownMenuItem onClick={handleDownloadAllPDFs} disabled={exporting}>
+                        <Languages className="mr-2 h-4 w-4" />
+                        Download all ({languages.length})
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="sm" className="gap-2" disabled={exporting}>
-                  {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-                  <span className="text-xs font-medium">{exporting ? "Generating…" : "Download PDF"}</span>
+                <Button size="sm" variant="ghost" className="md:hidden" aria-label="Menu">
+                  <Menu className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-60">
+                {import.meta.env.DEV && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/drafts">
+                      <Palette className="mr-2 h-4 w-4" />
+                      Design drafts
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={exportJSON}>
+                  <FileJson className="mr-2 h-4 w-4" />
+                  Export JSON
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => importInput.current?.click()}>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Import JSON
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handlePrint}>
+                  <Printer className="mr-2 h-4 w-4" />
+                  Print
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleDownloadPDF} disabled={exporting}>
-                  <Download className="mr-2 h-4 w-4" />
-                  Current language
+                  {exporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+                  {exporting ? "Generating…" : "Download PDF"}
                 </DropdownMenuItem>
                 {languages.length > 1 && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuLabel className="text-xs text-muted-foreground">
-                      All languages
-                    </DropdownMenuLabel>
-                    <DropdownMenuItem onClick={handleDownloadAllPDFs} disabled={exporting}>
-                      <Languages className="mr-2 h-4 w-4" />
-                      Download all ({languages.length})
-                    </DropdownMenuItem>
-                  </>
+                  <DropdownMenuItem onClick={handleDownloadAllPDFs} disabled={exporting}>
+                    <Languages className="mr-2 h-4 w-4" />
+                    Download all ({languages.length})
+                  </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <input
+              ref={importInput}
+              type="file"
+              accept="application/json"
+              className="hidden"
+              onChange={importJSON}
+            />
           </div>
         </div>
       </header>

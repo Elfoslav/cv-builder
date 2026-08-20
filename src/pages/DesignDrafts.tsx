@@ -8,6 +8,12 @@ import { DraftDrawer } from "@/components/cv/drafts/DraftDrawer";
 import { DraftFloating } from "@/components/cv/drafts/DraftFloating";
 import { DraftLangIcon } from "@/components/cv/language-drafts/DraftLangIcon";
 import { DraftLangPills } from "@/components/cv/language-drafts/DraftLangPills";
+import { DraftSkillsTree } from "@/components/cv/skills-drafts/DraftSkillsTree";
+import { DraftSkillsCompact } from "@/components/cv/skills-drafts/DraftSkillsCompact";
+import { DraftSkillsCollapsible } from "@/components/cv/skills-drafts/DraftSkillsCollapsible";
+import { DraftSkillsQuickAdd } from "@/components/cv/skills-drafts/DraftSkillsQuickAdd";
+import { DraftSkillsTwoPane } from "@/components/cv/skills-drafts/DraftSkillsTwoPane";
+import { DraftSkillsTable } from "@/components/cv/skills-drafts/DraftSkillsTable";
 import { LanguageSwitcher } from "@/components/cv/LanguageSwitcher";
 import { useLangDraft, toDraftProps, type DraftLangProps } from "@/components/cv/language-drafts/useLangDraft";
 import { CVShell } from "@/components/cv/editor/cv-shell";
@@ -15,7 +21,7 @@ import { Fragment } from "react";
 import { type CVData } from "@/lib/cv-types";
 import { THEMES, type ThemeId } from "@/lib/themes";
 import { APP_NAME } from "@/lib/app";
-import { ArrowLeft, RotateCcw, MousePointerClick, Languages, Palette } from "lucide-react";
+import { ArrowLeft, RotateCcw, MousePointerClick, Languages, Palette, Layers } from "lucide-react";
 
 const DRAFT_META = [
   {
@@ -79,6 +85,69 @@ const LANG_DRAFT_META = [
       "One click to switch languages",
       "Single row, still compact",
       "Gear menu for management",
+    ],
+  },
+];
+
+const SKILLS_DRAFT_META = [
+  {
+    id: "skills-tree",
+    name: "A · Single hierarchy list",
+    desc: "One unified tree: group rows with their skills directly beneath. The separate group-manager box and the duplicated group headings are gone — rename, reorder, and delete from a single place.",
+    hints: [
+      "Groups rename inline (pencil)",
+      "Skills sit under their group — no redundant dropdown",
+      "Move groups and skills with arrows",
+    ],
+  },
+  {
+    id: "skills-compact",
+    name: "B · Compact rows",
+    desc: "The thinnest footprint: each skill is one line — name, proficiency, delete — inside a slim divider list. No cards, no sliders, no per-skill group select.",
+    hints: [
+      "Skills read as a clean divider list",
+      "Proficiency is a select, not a slider",
+      "Far shorter than the current card-per-skill layout",
+    ],
+  },
+  {
+    id: "skills-collapsible",
+    name: "C · Collapsible groups",
+    desc: "An accordion: only the focused group expands; the rest collapse to name + count. Long skill lists never become a wall of inputs.",
+    hints: [
+      "Click a group to expand it",
+      "Collapsed groups show a count badge",
+      "Reorder skills inside an expanded group",
+    ],
+  },
+  {
+    id: "skills-quick-add",
+    name: "D · Quick-add composer",
+    desc: "Type a skill and press Enter (or a comma) to add it as a chip. Skills read as tags rather than inputs, so the list stays short while you type many quickly.",
+    hints: [
+      "Enter or comma adds a chip instantly",
+      "Chips reorder and delete with one click",
+      "One proficiency select applies to new skills",
+    ],
+  },
+  {
+    id: "skills-two-pane",
+    name: "E · Two-pane editor",
+    desc: "Groups live in a slim left rail; the focused group's skills fill the right pane. You always edit one group at a time, so there is never a long wall of inputs.",
+    hints: [
+      "Click a group in the rail to focus it",
+      "Active group is highlighted with a ring",
+      "Reorder groups and skills with arrows",
+    ],
+  },
+  {
+    id: "skills-table",
+    name: "F · Table editor",
+    desc: "A spreadsheet-like grid — Skill | Group | Level — with order arrows. Moving a skill between groups is a single dropdown change and bulk scanning is effortless.",
+    hints: [
+      "Group is a real column: reassign with a click",
+      "Rows reorder within their group",
+      "Best for large, flat skill lists",
     ],
   },
 ];
@@ -253,6 +322,61 @@ export const DesignDrafts = () => {
             </TabsContent>
             <TabsContent value="lang-pills" className="rounded-xl border border-border bg-background shadow-sm">
               <MockTopbar><LangDraftDemo Draft={DraftLangPills} /></MockTopbar>
+            </TabsContent>
+          </Tabs>
+        </section>
+
+        <section className="mt-12">
+          <div className="mb-4">
+            <h2 className="flex items-center gap-1.5 text-sm font-semibold">
+              <Layers className="h-4 w-4 text-primary" /> Skills editor — UX drafts
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              Six concepts for the skills edit panel, which today is a separate group manager plus tall
+              card-per-skill forms. All are demo-only — try renaming, reordering, collapsing, and adding.
+            </p>
+          </div>
+
+          <div className="mb-6 grid gap-3 md:grid-cols-3">
+            {SKILLS_DRAFT_META.map((d) => (
+              <div key={d.id} className="rounded-lg border border-border bg-card p-3 text-xs">
+                <div className="mb-1 font-semibold">{d.name}</div>
+                <p className="mb-2 text-muted-foreground">{d.desc}</p>
+                <ul className="space-y-0.5 text-muted-foreground">
+                  {d.hints.map((hint) => (
+                    <li key={hint} className="flex gap-1.5">
+                      <MousePointerClick className="mt-0.5 h-3 w-3 shrink-0 text-primary" />
+                      {hint}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          <Tabs defaultValue="skills-tree" className="w-full">
+            <TabsList className="mb-4">
+              {SKILLS_DRAFT_META.map((d) => (
+                <TabsTrigger key={d.id} value={d.id}>{d.name}</TabsTrigger>
+              ))}
+            </TabsList>
+            <TabsContent value="skills-tree" className="rounded-xl border border-border bg-muted/40 p-6 shadow-sm">
+              <DraftSkillsTree />
+            </TabsContent>
+            <TabsContent value="skills-compact" className="rounded-xl border border-border bg-muted/40 p-6 shadow-sm">
+              <DraftSkillsCompact />
+            </TabsContent>
+            <TabsContent value="skills-collapsible" className="rounded-xl border border-border bg-muted/40 p-6 shadow-sm">
+              <DraftSkillsCollapsible />
+            </TabsContent>
+            <TabsContent value="skills-quick-add" className="rounded-xl border border-border bg-muted/40 p-6 shadow-sm">
+              <DraftSkillsQuickAdd />
+            </TabsContent>
+            <TabsContent value="skills-two-pane" className="rounded-xl border border-border bg-muted/40 p-6 shadow-sm">
+              <DraftSkillsTwoPane />
+            </TabsContent>
+            <TabsContent value="skills-table" className="rounded-xl border border-border bg-muted/40 p-6 shadow-sm">
+              <DraftSkillsTable />
             </TabsContent>
           </Tabs>
         </section>

@@ -20,6 +20,7 @@ import { toast as uiToast } from "@/hooks/use-toast";
 import { CVData, defaultLabels, DEFAULT_CARD_COLUMNS, DEFAULT_SKILL_COLUMNS, type CardColumnsMap, type SkillColumnsMap } from "@/lib/cv-types";
 import { DEFAULT_SECTION_DESIGNS } from "@/lib/section-designs";
 import { type ThemeId } from "@/lib/themes";
+import { APP_NAME, APP_TITLE, APP_DESCRIPTION } from "@/lib/app";
 
 const safeFileName = (name: string, fallback = "CV") =>
   (name?.trim() || fallback).replace(/[^a-z0-9-_ ]/gi, "").trim() || fallback;
@@ -34,12 +35,7 @@ const Index = () => {
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
-    const name = data.name?.trim() || "CV";
-    const role = data.role?.trim();
-    const title = role ? `${name} — ${role} CV` : `${name} — CV`;
-    document.title = title;
-
-    const desc = `CV of ${name}${role ? `, ${role.toLowerCase()}` : ""}. Skills, experience, projects, and education.`;
+    document.title = APP_TITLE;
     const setMeta = (selector: string, attr: string, value: string) => {
       let el = document.head.querySelector<HTMLMetaElement>(selector);
       if (!el) {
@@ -50,11 +46,11 @@ const Index = () => {
       }
       el.setAttribute("content", value);
     };
-    setMeta('meta[name="description"]', 'name="description"', desc);
-    setMeta('meta[name="author"]', 'name="author"', name);
-    setMeta('meta[property="og:title"]', 'property="og:title"', title);
-    setMeta('meta[property="og:description"]', 'property="og:description"', desc);
-  }, [data.name, data.role]);
+    setMeta('meta[name="description"]', 'name="description"', APP_DESCRIPTION);
+    setMeta('meta[name="author"]', 'name="author"', APP_NAME);
+    setMeta('meta[property="og:title"]', 'property="og:title"', APP_TITLE);
+    setMeta('meta[property="og:description"]', 'property="og:description"', APP_DESCRIPTION);
+  }, []);
 
   const handlePrint = () => window.print();
 

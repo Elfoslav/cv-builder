@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { type ReactNode, type ComponentType } from "react";
+import { type ReactNode, type ComponentType, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useDraftData } from "@/components/cv/drafts/useDraftData";
@@ -14,6 +14,7 @@ import { CVShell } from "@/components/cv/editor/cv-shell";
 import { Fragment } from "react";
 import { type CVData } from "@/lib/cv-types";
 import { THEMES, type ThemeId } from "@/lib/themes";
+import { APP_NAME } from "@/lib/app";
 import { ArrowLeft, RotateCcw, MousePointerClick, Languages, Palette } from "lucide-react";
 
 const DRAFT_META = [
@@ -148,6 +149,10 @@ const ThemeMetaCard = ({ id }: { id: ThemeId }) => {
 
 export const DesignDrafts = () => {
   const { data, helpers, reset } = useDraftData();
+
+  useEffect(() => {
+    document.title = `Design drafts — ${APP_NAME}`;
+  }, []);
 
   return (
     <div className="min-h-screen bg-muted/30 print:hidden">

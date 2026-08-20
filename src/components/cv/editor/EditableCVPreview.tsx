@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { ArrowDown, ArrowUp, Check, Pencil, Plus, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Pencil, Plus, X, SlidersHorizontal, PenLine } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DEFAULT_THEME, type ThemeId } from "@/lib/themes";
 import { type SectionDesigns, SECTION_DESIGN_OPTIONS } from "@/lib/section-designs";
@@ -175,8 +175,24 @@ const EditableSection = ({
                 </Button>
               </div>
             </div>
-            <DesignPicker meta={meta} data={data} actions={actions} />
-            {buildForm(meta.key, data, actions)}
+
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="h-3.5 w-3.5 text-primary" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Design
+              </span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+            <DesignPicker className="mt-3 mb-0" meta={meta} data={data} actions={actions} />
+
+            <div className="mt-4 flex items-center gap-2 border-t pt-4">
+              <PenLine className="h-3.5 w-3.5 text-primary" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Content
+              </span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+            <div className="mt-3">{buildForm(meta.key, data, actions)}</div>
           </div>
         </div>
       ) : (
@@ -202,11 +218,12 @@ const isCardDesign = (value: string) =>
   value.startsWith("cards-gradient") || value === "cards-flat" || value === "cards-accent";
 
 const DesignPicker = ({
-  meta, data, actions,
+  meta, data, actions, className,
 }: {
   meta: SectionMeta;
   data: CVData;
   actions: ReturnType<typeof useCVActions>;
+  className?: string;
 }) => {
   const key = meta.key as keyof SectionDesigns;
   const options = SECTION_DESIGN_OPTIONS[key];
@@ -214,7 +231,7 @@ const DesignPicker = ({
   const cardKey = CARD_LAYOUT_KEYS.find((k) => k === meta.key);
   const showColumns = cardKey !== undefined && isCardDesign(value);
   return (
-    <div className="mb-4 print:hidden">
+    <div className={cn("mb-4 print:hidden", className)}>
       <FieldLabel label="Section design" />
       <Select value={value} onValueChange={(v) => actions.setSectionDesign(key, v as typeof value)}>
         <SelectTrigger className="h-9 text-xs" aria-label="Section design" title={options.find((o) => o.id === value)?.desc}>

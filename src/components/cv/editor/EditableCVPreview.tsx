@@ -6,7 +6,7 @@ import { buildForm } from "./section-forms";
 import { snapshotSection, restoreSection, type SectionSnapshot } from "./section-snapshot";
 import { Button } from "@/components/ui/button";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select, SelectGroup, SelectContent, SelectItem, SelectLabel, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { ArrowDown, ArrowUp, Check, Pencil, Plus, X, SlidersHorizontal, PenLine } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -217,6 +217,26 @@ const CARD_LAYOUT_KEYS: (keyof CardColumnsMap)[] = ["experience", "education", "
 const isCardDesign = (value: string) =>
   value.startsWith("cards-gradient") || value === "cards-flat" || value === "cards-accent";
 
+/** Select items, grouped by `group` label when the options carry one. */
+const renderOptions = <T extends { id: string; name: string; group?: string }>(
+  options: readonly T[],
+): ReactNode => {
+  const groups = Array.from(new Set(options.map((o) => o.group).filter((g): g is string => Boolean(g))));
+  if (groups.length === 0) {
+    return options.map((o) => (
+      <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+    ));
+  }
+  return groups.map((group) => (
+    <SelectGroup key={group}>
+      <SelectLabel>{group}</SelectLabel>
+      {options.filter((o) => o.group === group).map((o) => (
+        <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+      ))}
+    </SelectGroup>
+  ));
+};
+
 const DesignPicker = ({
   meta, data, actions, className,
 }: {
@@ -238,9 +258,7 @@ const DesignPicker = ({
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {options.map((o) => (
-            <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
-          ))}
+          {renderOptions(options)}
         </SelectContent>
       </Select>
       {showColumns && cardKey && (

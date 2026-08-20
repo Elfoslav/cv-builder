@@ -8,7 +8,17 @@
  * structured. Designs are stored on the CV data and picked from the editor.
  */
 
-export type HeroLayout = "gradient" | "center" | "plain" | "split" | "compact";
+export type HeroLayout =
+  | "gradient"
+  | "center"
+  | "gradient-banner"
+  | "gradient-border"
+  | "gradient-headline"
+  | "plain"
+  | "split"
+  | "compact"
+  | "flat-center"
+  | "card";
 export type AboutLayout = "paragraphs" | "highlights" | "columns";
 export type SkillLayout = "bars" | "chips" | "dots";
 /**
@@ -64,6 +74,8 @@ export interface DesignOption {
   id: string;
   name: string;
   desc: string;
+  /** Optional group label shown in the pickup so related options stand apart. */
+  group?: string;
 }
 
 const LIST_DESIGN_OPTIONS = [
@@ -87,14 +99,19 @@ const LIST_DESIGN_OPTIONS = [
 
 /** Options shown by each section's design picker, keyed by section. */
 export const SECTION_DESIGN_OPTIONS: {
-  [K in keyof SectionDesigns]: { id: SectionDesigns[K]; name: string; desc: string }[];
+  [K in keyof SectionDesigns]: { id: SectionDesigns[K]; name: string; desc: string; group?: string }[];
 } = {
   hero: [
-    { id: "gradient", name: "Gradient hero", desc: "Reference look: gradient glow with a keyboard-grid backdrop." },
-    { id: "center", name: "Centered", desc: "Name, role and bio centered, contact inline below." },
-    { id: "plain", name: "Plain header", desc: "Editorial flat header — accent rule, kicker role, no decorations." },
-    { id: "split", name: "Split header", desc: "Identity on the left, contact stacked in a side column." },
-    { id: "compact", name: "Compact header", desc: "Name and contact on one line, bio underneath — tight spacing." },
+    { group: "Gradient", id: "gradient", name: "Gradient glow", desc: "Reference look: gradient glow with a keyboard-grid backdrop." },
+    { group: "Gradient", id: "center", name: "Centered glow", desc: "Centered identity over a gradient glow and grid backdrop." },
+    { group: "Gradient", id: "gradient-banner", name: "Gradient banner", desc: "Name and role sit on a vivid gradient banner; bio and contact below." },
+    { group: "Gradient", id: "gradient-border", name: "Gradient frame", desc: "The header framed by a thin primary→accent gradient outline." },
+    { group: "Gradient", id: "gradient-headline", name: "Gradient headline", desc: "Flat header with the name set in gradient text under a gradient rule." },
+    { group: "Non-gradient", id: "plain", name: "Editorial", desc: "Editorial flat header — accent rule, kicker role, no decorations." },
+    { group: "Non-gradient", id: "split", name: "Split header", desc: "Identity on the left, contact stacked in a side column." },
+    { group: "Non-gradient", id: "compact", name: "Compact header", desc: "Name and contact on one line, bio underneath — tight spacing." },
+    { group: "Non-gradient", id: "flat-center", name: "Centered flat", desc: "Plain centered header — no glow, contact in a row below." },
+    { group: "Non-gradient", id: "card", name: "Card header", desc: "The whole header enclosed in a flat bordered card." },
   ],
   about: [
     { id: "paragraphs", name: "Paragraphs", desc: "Split into paragraphs, one after the other." },

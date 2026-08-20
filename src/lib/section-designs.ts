@@ -8,7 +8,7 @@
  * structured. Designs are stored on the CV data and picked from the editor.
  */
 
-export type HeroLayout = "gradient" | "plain" | "center";
+export type HeroLayout = "gradient" | "center" | "plain" | "split" | "compact";
 export type AboutLayout = "paragraphs" | "highlights" | "columns";
 export type SkillLayout = "bars" | "chips" | "dots";
 /**
@@ -83,8 +83,10 @@ export const SECTION_DESIGN_OPTIONS: {
 } = {
   hero: [
     { id: "gradient", name: "Gradient hero", desc: "Reference look: gradient glow with a keyboard-grid backdrop." },
-    { id: "plain", name: "Plain header", desc: "No decorative overlays — name, role and bio on a clean background." },
     { id: "center", name: "Centered", desc: "Name, role and bio centered, contact inline below." },
+    { id: "plain", name: "Plain header", desc: "Editorial flat header — accent rule, kicker role, no decorations." },
+    { id: "split", name: "Split header", desc: "Identity on the left, contact stacked in a side column." },
+    { id: "compact", name: "Compact header", desc: "Name and contact on one line, bio underneath — tight spacing." },
   ],
   about: [
     { id: "paragraphs", name: "Paragraphs", desc: "Split into paragraphs, one after the other." },

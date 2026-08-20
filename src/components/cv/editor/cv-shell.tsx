@@ -2,7 +2,7 @@ import { Fragment, type ReactNode } from "react";
 import { CVData, SectionKey, DEFAULT_CARD_COLUMNS, DEFAULT_SKILL_COLUMNS, type CardColumnsMap, type SkillColumnsMap } from "@/lib/cv-types";
 import { DEFAULT_SECTION_DESIGNS, type SectionDesigns } from "@/lib/section-designs";
 import { SectionHeader } from "@/components/cv/SectionHeader";
-import { Hero } from "@/components/cv/Hero";
+import { HeroView } from "@/components/cv/themed/hero/HeroView";
 import { EmptyState, groupSkills, splitTags } from "@/components/cv/cv-utils";
 import { SkillsView } from "@/components/cv/themed/skills/SkillsView";
 import { ProjectsView } from "@/components/cv/themed/projects/ProjectsView";
@@ -107,7 +107,7 @@ export const CVShell = ({
     );
     switch (meta.key) {
       case "hero":
-        return <Hero data={data} variant={d.hero} />;
+        return <HeroView data={data} variant={d.hero} />;
       case "about":
         return data.about
           ? section(<AboutView about={data.about} variant={d.about} />)

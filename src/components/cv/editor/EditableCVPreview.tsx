@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { DEFAULT_THEME, type ThemeId } from "@/lib/themes";
 import { type SectionDesigns, SECTION_DESIGN_OPTIONS } from "@/lib/section-designs";
 import { CardColumnsPicker } from "./CardColumnsPicker";
+import { FieldLabel } from "@/components/cv/FieldLabel";
 
 const LIST_KEYS: SectionKey[] = ["experience", "education", "projects", "hobbies"];
 
@@ -214,9 +215,7 @@ const DesignPicker = ({
   const showColumns = cardKey !== undefined && isCardDesign(value);
   return (
     <div className="mb-4 print:hidden">
-      <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-        Section design
-      </div>
+      <FieldLabel label="Section design" />
       <Select value={value} onValueChange={(v) => actions.setSectionDesign(key, v as typeof value)}>
         <SelectTrigger className="h-9 text-xs" aria-label="Section design" title={options.find((o) => o.id === value)?.desc}>
           <SelectValue />

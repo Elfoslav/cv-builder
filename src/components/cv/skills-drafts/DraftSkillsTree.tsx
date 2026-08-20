@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Folder, Pencil, Check, X, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import { useSkillsDraft } from "./useSkillsDraft";
 import { LevelSelect } from "@/components/cv/LevelSelect";
+import { FieldLabel } from "@/components/cv/FieldLabel";
 
 /**
  * Draft A — single hierarchy list.
@@ -21,7 +22,9 @@ export const DraftSkillsTree = () => {
         Section — Skills
       </div>
 
-      <div className="space-y-4">
+      <div>
+        <FieldLabel label="Skill categories" />
+        <div className="space-y-4">
         {m.groups.map((g, idx) => {
           const items = m.skillsIn(g.id);
           const isEditing = renaming === g.id;
@@ -106,6 +109,7 @@ export const DraftSkillsTree = () => {
         <Button variant="outline" size="sm" className="h-7 w-full gap-1.5 border-dashed text-xs" onClick={() => m.addGroup(`Group ${m.groups.length + 1}`)}>
           <Plus className="h-3.5 w-3.5" /> Add group
         </Button>
+        </div>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Folder, Pencil, Check, X, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import { LevelSelect } from "@/components/cv/LevelSelect";
+import { FieldLabel } from "@/components/cv/FieldLabel";
 import { toast } from "@/hooks/use-toast";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
@@ -106,8 +107,10 @@ export const SkillsSection = ({ data, setData }: Props) => {
     }));
 
   return (
-    <div className="space-y-4">
-      {data.skillGroups.map((g, idx) => {
+    <div>
+      <FieldLabel label="Skill categories" />
+      <div className="space-y-4">
+        {data.skillGroups.map((g, idx) => {
         const items = data.skills.filter((s) => s.group === g.id);
         const isEditing = renaming === g.id;
         return (
@@ -193,6 +196,7 @@ export const SkillsSection = ({ data, setData }: Props) => {
       <Button variant="outline" size="sm" className="h-7 w-full gap-1.5 border-dashed text-xs" onClick={addGroup}>
         <Plus className="h-3.5 w-3.5" /> Add group
       </Button>
+      </div>
     </div>
   );
 };

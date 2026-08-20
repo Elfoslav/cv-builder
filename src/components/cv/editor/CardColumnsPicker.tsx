@@ -2,6 +2,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { FieldLabel } from "@/components/cv/FieldLabel";
 import { type CardColumns } from "@/lib/cv-types";
 
 const OPTIONS: { value: CardColumns; name: string }[] = [
@@ -23,9 +24,7 @@ export const CardColumnsPicker = ({
   value, onChange, label = "Columns", className,
 }: CardColumnsPickerProps) => (
   <div className={cn("mb-4", className)}>
-    <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-      {label}
-    </div>
+    <FieldLabel label={label} />
     <Select value={String(value)} onValueChange={(v) => onChange(Number(v) as CardColumns)}>
       <SelectTrigger className="h-9 text-xs" aria-label={label}>
         <SelectValue />

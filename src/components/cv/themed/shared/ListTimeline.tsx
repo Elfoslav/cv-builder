@@ -6,17 +6,18 @@ import { ListLinks } from "./ListLinks";
 export const ListTimeline = ({ items }: { items: ListEntry[] }) => (
   <div>
     {items.map((e) => (
-      <TimelineItem
-        key={e.id}
-        period={e.period ?? ""}
-        title={e.title}
-        subtitle={e.subtitle}
-        location={e.location}
-        tags={e.tags}
-        links={e.links && <ListLinks links={e.links} />}
-      >
-        {e.description}
-      </TimelineItem>
+      <div key={e.id} className="page-gutter">
+        <TimelineItem
+          period={e.period ?? ""}
+          title={e.title}
+          subtitle={e.subtitle}
+          location={e.location}
+          tags={e.tags}
+          links={e.links && <ListLinks links={e.links} />}
+        >
+          {e.description}
+        </TimelineItem>
+      </div>
     ))}
   </div>
 );

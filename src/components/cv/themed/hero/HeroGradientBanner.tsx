@@ -4,7 +4,7 @@ import { HeroContact } from "./HeroContact";
 /** Name and role sit on a vivid gradient banner; bio and contact below. */
 export const HeroGradientBanner = ({ data }: { data: CVData }) => (
   <section className="cv-hero border-b border-border">
-    <div className="container mx-auto max-w-5xl px-6 py-10 print:py-5">
+    <div className="mx-auto max-w-[703px] px-6 py-10 print:py-5">
       <div className="rounded-xl bg-gradient-primary px-6 py-8 shadow-card">
         <h1 className="text-4xl font-extrabold tracking-tight text-white md:text-5xl">
           {data.name || "Your Name"}

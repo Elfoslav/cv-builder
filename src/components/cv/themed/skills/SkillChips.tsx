@@ -7,7 +7,7 @@ import { SkillGroupHeading } from "./SkillGroupHeading";
 export const SkillChips = ({ groups, columns }: { groups: SkillGroupWithItems[]; columns: SkillColumnsMap }) => (
   <div className={cardGridClass(columns.groups, "space-y-6", "gap-x-8 gap-y-6")}>
     {groups.map(({ group, items }) => (
-      <div key={group.id} className="avoid-break">
+      <div key={group.id} className="cv-skill-group">
         <SkillGroupHeading name={group.name} />
         <div className={cardGridClass(columns.skills, "flex flex-wrap gap-2", "gap-2")}>
           {items.map((s) => (

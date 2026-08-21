@@ -4,9 +4,9 @@ import { HeroContact } from "./HeroContact";
 /** Name, role and bio centered, contact inline below. */
 export const HeroCentered = ({ data }: { data: CVData }) => (
   <section className="cv-hero relative overflow-hidden border-b border-border">
-    <div className="grid-bg absolute inset-0" />
-    <div className="absolute inset-0 bg-gradient-glow" />
-    <div className="container relative mx-auto max-w-5xl px-6 py-10 md:py-6 print:py-4">
+    <div className="grid-bg pointer-events-none absolute inset-0" />
+    <div className="pointer-events-none absolute inset-0 bg-gradient-glow" />
+    <div className="relative mx-auto max-w-[703px] px-6 py-10 md:py-6 print:py-4">
       <div className="flex flex-col items-center text-center">
         <h1 className="mb-3 text-5xl font-extrabold tracking-tight text-foreground md:text-5xl">
           {data.name || "Your Name"}

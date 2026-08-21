@@ -53,10 +53,11 @@ const Index = () => {
     setMeta('meta[property="og:description"]', 'property="og:description"', APP_DESCRIPTION);
   }, []);
 
-  const handlePrint = () => window.print();
-
-  // Render a clean CVData snapshot into an off-screen DOM node, export it, then unmount.
-  const exportCVOffscreen = async (langData: CVData, fileName: string, themeId: ThemeId) => {
+  // Render a clean CVData snapshot into an off-screen DOM node, hand the CV
+  // root to `fn` (which must trigger the native print dialog), then unmount.
+  // Both Print and Download PDF go through this fixed-width pipeline so the
+  // editor's live viewport width never reflows the grid or flex items.
+  const runCVPrintFlow = async (langData: CVData, themeId: ThemeId, fn: (cvRoot: HTMLElement) => Promise<void>) => {
     const host = document.createElement("div");
     host.style.position = "fixed";
     host.style.left = "-10000px";
@@ -78,10 +79,29 @@ const Index = () => {
       // print page and produce a blank PDF.
       const cvRoot = host.firstElementChild as HTMLElement | null;
       if (!cvRoot) throw new Error("CV failed to render off-screen");
-      await exportElementToPDF(cvRoot, fileName);
+      await fn(cvRoot);
     } finally {
       root.unmount();
       host.remove();
+    }
+  };
+
+  const printCV = async (langData: CVData, fileName: string, themeId: ThemeId) => {
+    await runCVPrintFlow(langData, themeId, (cvRoot) => exportElementToPDF(cvRoot, fileName));
+  };
+
+  const handlePrint = async () => {
+    if (exporting) return;
+    setExporting(true);
+    const safeName = safeFileName(data.name);
+    try {
+      await printCV(data, `${safeName} - CV.pdf`, theme);
+      sonnerToast.success('Opened the print dialog for "' + safeName + '"');
+    } catch (err) {
+      console.error("Print failed", err);
+      sonnerToast.error("Print failed. Try Download PDF instead.");
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -90,7 +110,7 @@ const Index = () => {
     setExporting(true);
     const safeName = safeFileName(data.name);
     try {
-      await exportCVOffscreen(data, `${safeName} - CV.pdf`, theme);
+      await printCV(data, `${safeName} - CV.pdf`, theme);
       sonnerToast.success('Choose "Save as PDF" in the print dialog');
     } catch (err) {
       console.error("PDF export failed", err);
@@ -103,7 +123,7 @@ const Index = () => {
   const exportLanguage = async (langData: CVData, langName: string) => {
     const name = safeFileName(langData.name);
     const lang = safeFileName(langName, "lang");
-    await exportCVOffscreen(langData, `${name} - CV (${lang}).pdf`, theme);
+    await printCV(langData, `${name} - CV (${lang}).pdf`, theme);
   };
 
   const handleDownloadAllPDFs = async () => {

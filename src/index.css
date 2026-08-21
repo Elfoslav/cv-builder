@@ -131,9 +131,24 @@
 	.bg-gradient-glow {
 		background: transparent !important;
 	}
+	/* The page has no margin (`.cv-theme` fills the sheet edge-to-edge), so
+	   put the page gutter *inside* the theme: pad the wrapper and give it the
+	   themed background. Content gets breathing room while every visible edge
+	   stays theme-colored (no white un-themed border around the CV). */
+	.cv-theme {
+		background: hsl(var(--background));
+		padding: 12mm;
+	}
 	.bg-gradient-card {
 		background: hsl(var(--card)) !important;
 		background-image: none !important;
+	}
+	/* Preserve hobby card gradients and shadows in print so accent / soft
+	   gradient variants match their on-screen appearance. */
+	.cv-hobby-card.bg-gradient-card {
+		background: var(--gradient-card) !important;
+		background-image: var(--gradient-card) !important;
+		box-shadow: var(--shadow-card) !important;
 	}
 	/* Remove decorative grid background in print */
 	.grid-bg {
@@ -144,37 +159,13 @@
 	.glow-text {
 		text-shadow: none !important;
 	}
-	/* Force two-column layouts even on narrow print page widths */
-	.print-grid-2 {
-		display: grid !important;
-		grid-template-columns: 1fr 1fr !important;
-		gap: 1.5rem 2rem !important;
-	}
-	/* Inner two-column skill grid in print */
-	.print-grid-2 .grid.sm\:grid-cols-2 {
-		display: grid !important;
-		grid-template-columns: 1fr 1fr !important;
-		gap: 0.5rem 1.25rem !important;
-	}
+	/* Force two-column layouts even on narrow print page widths.
+	   The card grid now uses a fixed (non-responsive) column count, so
+	   this print override is only referenced by the checks list. */
 	.print-grid-2-tight {
 		display: grid !important;
 		grid-template-columns: 1fr 1fr !important;
 		gap: 0.5rem !important;
-	}
-	.print-grid-3-tight {
-		display: grid !important;
-		grid-template-columns: repeat(3, 1fr) !important;
-		gap: 0.5rem !important;
-	}
-	.print-grid-4-tight {
-		display: grid !important;
-		grid-template-columns: repeat(4, 1fr) !important;
-		gap: 0.5rem !important;
-	}
-	.print-grid-5 {
-		display: grid !important;
-		grid-template-columns: repeat(5, 1fr) !important;
-		gap: 1rem !important;
 	}
 	/* Avoid awkward page breaks inside small items only.
      Sections themselves must be allowed to break so they can flow up
@@ -189,16 +180,52 @@
 	}
 	/* Tighten section spacing in print so the first page fills naturally */
 	main > section {
+		/* Every page can start on a section, so give each section its own
+		   top gutter: `.cv-theme` padding only pads the document start (page 1)
+		   and end (last page), not the tops of later pages. 12mm matches the
+		   side gutters, keeping the same themed margin on all pages. */
+		padding-top: 12mm !important;
 		margin-bottom: 2rem !important;
 	}
 	main {
-		padding-top: 1rem !important;
+		padding-top: 0 !important;
 		padding-bottom: 1rem !important;
+	}
+	/* Keep each discrete item on one page so a break lands between items,
+	   not through the middle of one: skill groups already carry `.avoid-break`,
+	   and everything below is a per-entry block (timeline entries, bordered &
+	   card rows, card grids, skill bars/chips, hobby pills/checks). */
+	.cv-timeline-item,
+	.cv-timeline-row,
+	.cv-project-row,
+	.cv-timeline-card,
+	.cv-project-card,
+	.cv-hobby-card,
+	.cv-skillbar,
+	.cv-skill-chip,
+	.cv-skill-dot,
+	.cv-hobby-pill,
+	.cv-hobby-check {
+		break-inside: avoid;
+		page-break-inside: avoid;
+	}
+
+	/* Gutter on continuation pages: an invisible wrapper around each breakable
+	   item carries the page gutter. A negative margin cancels the padding on
+	   pages where the item stays put (no double spacing), while at the top of a
+	   new page the top margin is dropped and the padding renders as breathing
+	   room below the page edge. */
+	.page-gutter,
+	.cv-skill-group {
+		break-inside: avoid;
+		page-break-inside: avoid;
+		padding-top: 12mm;
+		margin-top: -12mm;
 	}
 }
 
 @page {
-	margin: 12mm;
+	margin: 0;
 	/* Hide browser-injected headers/footers (URL, date, page numbers) */
 	marks: none;
 	@top-left {
@@ -251,6 +278,16 @@
 
 .cv-theme {
 	--theme-heading: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* The CV is a fixed-size print artifact: the editor canvas renders at the
+   same width as the printed/PDF page so grid item widths (and therefore
+   text wrapping) match exactly between view and export. A4 at 96dpi is
+   ~794px wide, but the print page adds 12mm themed padding per side inside
+   `.cv-theme`, so the live canvas compresses to ~703px to match the print
+   content box. */
+.cv-main {
+	max-width: 703px;
 }
 
 .cv-theme h1,

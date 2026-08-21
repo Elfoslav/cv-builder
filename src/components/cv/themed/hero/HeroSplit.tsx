@@ -4,7 +4,7 @@ import { HeroContact } from "./HeroContact";
 /** Identity on the left, contact stacked in a side column. */
 export const HeroSplit = ({ data }: { data: CVData }) => (
   <section className="cv-hero border-b border-border">
-    <div className="container mx-auto max-w-5xl px-6 py-10 print:py-5">
+    <div className="mx-auto max-w-[703px] px-6 py-10 print:py-5">
       <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,240px)] md:items-start">
         <div>
           <h1 className="text-5xl font-extrabold tracking-tight text-foreground md:text-5xl">

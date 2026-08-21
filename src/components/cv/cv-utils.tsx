@@ -25,17 +25,18 @@ export const cardGridClass = (
   gap = "gap-2",
 ): string => {
   if (columns === 1) return stackedClass;
+  // Literal class names below (not dynamic) so Tailwind emits them in CSS.
   const cols =
-    columns === 2
-      ? "md:grid-cols-2"
-      : columns === 3
-        ? "md:grid-cols-2 lg:grid-cols-3"
-        : "md:grid-cols-2 lg:grid-cols-4";
-  const print =
-    columns === 2 ? "print-grid-2-tight"
-      : columns === 3 ? "print-grid-3-tight"
-        : "print-grid-4-tight";
-  return `grid ${gap} ${cols} ${print}`;
+    columns === 2 ? "grid-cols-2"
+      : columns === 3 ? "grid-cols-3"
+        : columns === 4 ? "grid-cols-4"
+          : columns === 5 ? "grid-cols-5"
+            : "grid-cols-6";
+  // A CV is a fixed-size print artifact, so a fixed (non-responsive) column
+  // count renders identically in the editor canvas and the print/PDF page.
+  // Responsive `md:`/`lg:` breakpoints would reflow the editor differently
+  // (wide viewport) than the ~794px print page, causing text wraps to diverge.
+  return `grid ${gap} ${cols} [&>*]:min-w-0`;
 };
 
 export const groupSkills = (data: CVData) =>

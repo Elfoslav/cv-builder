@@ -15,6 +15,7 @@ export const ListGradientHeadlineCards = ({ items, columns = 1 }: ListGradientHe
   <ListCardGrid
     items={items}
     columns={columns}
+    getKey={(e) => e.id}
     render={(e: ListEntry) => (
       <CVCard
         tone="flat"

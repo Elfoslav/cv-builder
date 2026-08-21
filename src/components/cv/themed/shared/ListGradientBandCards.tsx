@@ -15,6 +15,7 @@ export const ListGradientBandCards = ({ items, columns = 1 }: ListGradientBandCa
   <ListCardGrid
     items={items}
     columns={columns}
+    getKey={(e) => e.id}
     render={(e: ListEntry) => (
       <CVCard
         className={cn(

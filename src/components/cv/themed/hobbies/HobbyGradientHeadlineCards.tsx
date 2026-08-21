@@ -4,16 +4,15 @@ import { CVCard } from "@/components/cv/CVCard";
 import { ListCardGrid } from "@/components/cv/themed/shared/ListCardGrid";
 import { HobbyCardContent } from "./HobbyCardContent";
 
-/** Icon tiles with the same gradient accent bar as the list accent cards. */
-export const HobbyAccentCards = ({ hobbies, columns = 4 }: { hobbies: Hobby[]; columns?: CardColumns }) => (
+/** Flat icon cards whose label is set in gradient text — the hobby analogue of gradient-headline cards. */
+export const HobbyGradientHeadlineCards = ({ hobbies, columns = 4 }: { hobbies: Hobby[]; columns?: CardColumns }) => (
   <ListCardGrid
     items={hobbies}
     columns={columns}
     getKey={(h) => h.id}
-    stackedClass="space-y-2"
     render={(hb) => (
-      <CVCard accent className="cv-hobby-card rounded-md px-3 py-2.5">
-        <HobbyCardContent hobby={hb} horizontal />
+      <CVCard tone="flat" className="cv-hobby-card flex flex-col rounded-lg p-5">
+        <HobbyCardContent hobby={hb} labelClass="text-gradient-primary" />
       </CVCard>
     )}
   />

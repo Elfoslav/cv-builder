@@ -9,21 +9,22 @@ import { MetaLine } from "./MetaLine";
 export const ListRows = ({ items }: { items: ListEntry[] }) => (
   <div>
     {items.map((e) => (
-      <div
-        key={e.id}
-        className={cn(
-          "border-b border-border py-4 last:border-0",
-          e.compact ? "cv-project-row" : "cv-timeline-row",
-        )}
-      >
-        <div className="text-[11px] font-semibold uppercase tracking-wider text-primary">{e.period}</div>
-        <div className="mt-1 flex flex-wrap items-center gap-2">
-          <h3 className="text-base font-semibold text-foreground">{e.title}</h3>
-          {e.links && <ListLinks links={e.links} />}
+      <div key={e.id} className="page-gutter">
+        <div
+          className={cn(
+            "border-b border-border py-4 last:border-0",
+            e.compact ? "cv-project-row" : "cv-timeline-row",
+          )}
+        >
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-primary">{e.period}</div>
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <h3 className="text-base font-semibold text-foreground">{e.title}</h3>
+            {e.links && <ListLinks links={e.links} />}
+          </div>
+          {(e.subtitle || e.location) && <MetaLine subtitle={e.subtitle} location={e.location} />}
+          <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{e.description}</p>
+          <TagPills tags={e.tags} compact={e.compact} />
         </div>
-        {(e.subtitle || e.location) && <MetaLine subtitle={e.subtitle} location={e.location} />}
-        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{e.description}</p>
-        <TagPills tags={e.tags} compact={e.compact} />
       </div>
     ))}
   </div>

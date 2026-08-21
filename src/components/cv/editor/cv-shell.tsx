@@ -130,7 +130,7 @@ export const CVShell = ({
           : section(<EmptyState label="No projects yet" />, "mb-12 avoid-break");
       case "hobbies":
         return data.hobbies.length
-          ? section(<HobbiesView hobbies={data.hobbies} variant={d.hobbies} />, "mb-12 avoid-break")
+          ? section(<HobbiesView hobbies={data.hobbies} variant={d.hobbies} columns={columns.hobbies} />, "mb-12 avoid-break")
           : section(<EmptyState label="No hobbies yet" />, "mb-12 avoid-break");
       case "footer":
         return (
@@ -146,7 +146,7 @@ export const CVShell = ({
   return (
     <div className="bg-background">
       <Fragment key="hero">{wrap(metas.hero, content(metas.hero))}</Fragment>
-      <main className="cv-main container mx-auto max-w-5xl px-6 pt-8 pb-20">
+      <main className="cv-main mx-auto px-4 pt-8 pb-20">
         {order.filter((k) => k !== "hero").map((k) => {
           const meta = metas[k];
           return <Fragment key={k}>{wrap(meta, content(meta))}</Fragment>;

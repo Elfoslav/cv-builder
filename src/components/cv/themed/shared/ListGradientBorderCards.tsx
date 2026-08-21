@@ -14,6 +14,7 @@ export const ListGradientBorderCards = ({ items, columns = 1 }: ListGradientBord
   <ListCardGrid
     items={items}
     columns={columns}
+    getKey={(e) => e.id}
     render={(e: ListEntry) => (
       <div
         className={cn(

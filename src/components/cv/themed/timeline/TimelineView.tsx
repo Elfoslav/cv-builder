@@ -4,7 +4,6 @@ import { type ListEntry } from "@/components/cv/themed/shared/types";
 import { ListGradientSoftCards } from "@/components/cv/themed/shared/ListGradientSoftCards";
 import { ListGradientBorderCards } from "@/components/cv/themed/shared/ListGradientBorderCards";
 import { ListGradientBandCards } from "@/components/cv/themed/shared/ListGradientBandCards";
-import { ListGradientCornerCards } from "@/components/cv/themed/shared/ListGradientCornerCards";
 import { ListGradientHeadlineCards } from "@/components/cv/themed/shared/ListGradientHeadlineCards";
 import { ListFlatCards } from "@/components/cv/themed/shared/ListFlatCards";
 import { ListAccentCards } from "@/components/cv/themed/shared/ListAccentCards";
@@ -23,7 +22,6 @@ export const TimelineView = ({ items, variant, columns = 1 }: TimelineViewProps)
   if (variant === "cards-gradient-soft") return <ListGradientSoftCards items={items} columns={columns} />;
   if (variant === "cards-gradient-border") return <ListGradientBorderCards items={items} columns={columns} />;
   if (variant === "cards-gradient-band") return <ListGradientBandCards items={items} columns={columns} />;
-  if (variant === "cards-gradient-corner") return <ListGradientCornerCards items={items} columns={columns} />;
   if (variant === "cards-gradient-headline") return <ListGradientHeadlineCards items={items} columns={columns} />;
   if (variant === "cards-flat") return <ListFlatCards items={items} columns={columns} />;
   if (variant === "cards-accent") return <ListAccentCards items={items} columns={columns} />;

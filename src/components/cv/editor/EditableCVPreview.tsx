@@ -212,7 +212,7 @@ const EditableSection = ({
 };
 
 /** Sections whose design select shares the card layouts with a columns setting. */
-const CARD_LAYOUT_KEYS: (keyof CardColumnsMap)[] = ["experience", "education", "projects"];
+const CARD_LAYOUT_KEYS: (keyof CardColumnsMap)[] = ["experience", "education", "projects", "hobbies"];
 
 const isCardDesign = (value: string) =>
   value.startsWith("cards-gradient") || value === "cards-flat" || value === "cards-accent";
@@ -266,6 +266,7 @@ const DesignPicker = ({
           className="mt-3 mb-0"
           value={data.cardColumns[cardKey]}
           onChange={(columns: CardColumns) => actions.setCardColumns(cardKey, columns)}
+          maxColumns={cardKey === "hobbies" ? 6 : 4}
         />
       )}
       {meta.key === "skills" && (

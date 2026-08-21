@@ -22,29 +22,25 @@ export type HeroLayout =
 export type AboutLayout = "paragraphs" | "highlights" | "columns";
 export type SkillLayout = "bars" | "chips" | "dots";
 /**
- * Shared layout id for every list-style section (experience, education,
- * projects): the five gradient card looks, flat/accent cards, card rows
- * (gradient/flat/accent), plain rows, or a vertical timeline.
+ * The shared "card tile" family used by every card-style section (experience,
+ * education, projects, hobbies). Picking e.g. "Soft gradient cards" in one
+ * section renders the same treatment in the others.
  */
-export type ListLayout =
-  | "timeline"
+export type CardLayout =
   | "cards-gradient-soft"
   | "cards-gradient-border"
   | "cards-gradient-band"
-  | "cards-gradient-corner"
   | "cards-gradient-headline"
   | "cards-flat"
-  | "cards-accent"
-  | "rows"
-  | "rows-gradient"
-  | "rows-flat"
-  | "rows-accent";
-export type HobbyLayout =
-  | "cards"
-  | "cards-flat"
-  | "cards-accent"
-  | "pills"
-  | "checks";
+  | "cards-accent";
+/**
+ * Shared layout id for every list-style section (experience, education,
+ * projects): the card family plus card rows (gradient/flat/accent), plain
+ * rows, or a vertical timeline.
+ */
+export type ListLayout = CardLayout | "timeline" | "rows" | "rows-gradient" | "rows-flat" | "rows-accent";
+/** Hobbies render as cards from the shared family, or pill / checklist lists. */
+export type HobbyLayout = CardLayout | "pills" | "checks";
 export type FooterLayout = "split" | "center";
 
 /** Layout id for every editable CV section. */
@@ -66,7 +62,7 @@ export const DEFAULT_SECTION_DESIGNS: SectionDesigns = {
   education: "timeline",
   skills: "bars",
   projects: "cards-gradient-soft",
-  hobbies: "cards",
+  hobbies: "cards-gradient-soft",
   footer: "split",
 };
 
@@ -78,23 +74,33 @@ export interface DesignOption {
   group?: string;
 }
 
+/** The shared card-family options reused by every card-style section. */
+export const CARD_DESIGN_OPTIONS = [
+  { group: "Gradient", id: "cards-gradient-soft", name: "Soft gradient cards", desc: "Gradient-filled cards with a gentle glow — the default card look." },
+  { group: "Gradient", id: "cards-gradient-border", name: "Gradient border cards", desc: "Cards framed by a thin primary-to-accent gradient outline." },
+  { group: "Gradient", id: "cards-gradient-band", name: "Gradient band cards", desc: "Cards topped with a gradient accent band." },
+  { group: "Gradient", id: "cards-gradient-headline", name: "Gradient headline cards", desc: "Flat print-friendly cards with gradient-text headings." },
+  { group: "Non-gradient", id: "cards-flat", name: "Flat cards", desc: "Minimal, low-contrast cards — no shadows or gradients, great for print." },
+  { group: "Non-gradient", id: "cards-accent", name: "Accent cards", desc: "Cards with a colored accent bar along the left edge." },
+] as const satisfies readonly {
+  id: CardLayout;
+  name: string;
+  desc: string;
+  group: "Gradient" | "Non-gradient";
+}[];
+
 const LIST_DESIGN_OPTIONS = [
-  { id: "timeline", name: "Timeline", desc: "Vertical timeline with a glowing dot per entry." },
-  { id: "cards-gradient-soft", name: "Soft gradient cards", desc: "Gradient-filled cards with a gentle glow — the default card look." },
-  { id: "cards-gradient-border", name: "Gradient border cards", desc: "Cards framed by a thin primary-to-accent gradient outline." },
-  { id: "cards-gradient-band", name: "Gradient band cards", desc: "Cards topped with a gradient accent band." },
-  { id: "cards-gradient-corner", name: "Gradient corner cards", desc: "Cards with a soft gradient corner glow." },
-  { id: "cards-gradient-headline", name: "Gradient headline cards", desc: "Flat print-friendly cards with gradient-text headings." },
-  { id: "cards-flat", name: "Flat cards", desc: "Minimal, low-contrast cards — no shadows or gradients, great for print." },
-  { id: "cards-accent", name: "Accent cards", desc: "Cards with a colored accent bar along the left edge." },
-  { id: "rows-gradient", name: "Gradient card rows", desc: "Stacked card rows with a gradient glow — one entry per line." },
-  { id: "rows-flat", name: "Flat card rows", desc: "Minimal card rows — clean, low-contrast, great for print." },
-  { id: "rows-accent", name: "Accent card rows", desc: "Card rows with a colored accent bar along the left edge." },
-  { id: "rows", name: "Plain rows", desc: "Border-separated rows, period above the title — no card." },
+  { group: "Non-gradient", id: "timeline", name: "Timeline", desc: "Vertical timeline with a glowing dot per entry." },
+  ...CARD_DESIGN_OPTIONS,
+  { group: "Gradient", id: "rows-gradient", name: "Gradient card rows", desc: "Stacked card rows with a gradient glow — one entry per line." },
+  { group: "Non-gradient", id: "rows-flat", name: "Flat card rows", desc: "Minimal card rows — clean, low-contrast, great for print." },
+  { group: "Non-gradient", id: "rows-accent", name: "Accent card rows", desc: "Card rows with a colored accent bar along the left edge." },
+  { group: "Non-gradient", id: "rows", name: "Plain rows", desc: "Border-separated rows, period above the title — no card." },
 ] as const satisfies readonly {
   id: ListLayout;
   name: string;
   desc: string;
+  group: "Gradient" | "Non-gradient";
 }[];
 
 /** Options shown by each section's design picker, keyed by section. */
@@ -114,27 +120,25 @@ export const SECTION_DESIGN_OPTIONS: {
     { group: "Non-gradient", id: "card", name: "Card header", desc: "The whole header enclosed in a flat bordered card." },
   ],
   about: [
-    { id: "paragraphs", name: "Paragraphs", desc: "Split into paragraphs, one after the other." },
-    { id: "highlights", name: "Key highlights", desc: "Each paragraph becomes a marked highlight line." },
-    { id: "columns", name: "Two columns", desc: "Paragraphs flow into two balanced columns." },
+    { group: "Stacked", id: "paragraphs", name: "Paragraphs", desc: "Split into paragraphs, one after the other." },
+    { group: "Stacked", id: "highlights", name: "Key highlights", desc: "Each paragraph becomes a marked highlight line." },
+    { group: "Columns", id: "columns", name: "Two columns", desc: "Paragraphs flow into two balanced columns." },
   ],
   experience: LIST_DESIGN_OPTIONS,
   education: LIST_DESIGN_OPTIONS,
   skills: [
-    { id: "bars", name: "Progress bars", desc: "Classic animated bars with percentages." },
-    { id: "chips", name: "Chips", desc: "Compact pill tags per group." },
-    { id: "dots", name: "Dot list", desc: "Type-driven list with a percentage at the end." },
+    { group: "Progress", id: "bars", name: "Progress bars", desc: "Classic animated bars with percentages." },
+    { group: "Compact", id: "chips", name: "Chips", desc: "Compact pill tags per group." },
+    { group: "Compact", id: "dots", name: "Dot list", desc: "Type-driven list with a percentage at the end." },
   ],
   projects: LIST_DESIGN_OPTIONS,
   hobbies: [
-    { id: "cards", name: "Icon cards", desc: "Big rounded icon cards in a row." },
-    { id: "cards-flat", name: "Flat tiles", desc: "Compact horizontal tiles with an icon badge and label." },
-    { id: "cards-accent", name: "Accent cards", desc: "Icon cards with a gradient underline." },
-    { id: "pills", name: "Pills", desc: "Icon + label pills, wrapped to multiple lines." },
-    { id: "checks", name: "Checklist", desc: "Checkbox-style list, two columns." },
+    ...CARD_DESIGN_OPTIONS,
+    { group: "Non-gradient", id: "pills", name: "Pills", desc: "Icon + label pills, wrapped to multiple lines." },
+    { group: "Non-gradient", id: "checks", name: "Checklist", desc: "Checkbox-style list, two columns." },
   ],
   footer: [
-    { id: "split", name: "Split", desc: "Thanks left, copyright right (centered on small screens)." },
-    { id: "center", name: "Centered", desc: "Both lines centered and stacked." },
+    { group: "Alignment", id: "split", name: "Split", desc: "Thanks left, copyright right (centered on small screens)." },
+    { group: "Alignment", id: "center", name: "Centered", desc: "Both lines centered and stacked." },
   ],
 };

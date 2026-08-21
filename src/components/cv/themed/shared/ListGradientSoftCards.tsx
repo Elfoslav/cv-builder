@@ -15,6 +15,7 @@ export const ListGradientSoftCards = ({ items, columns = 1 }: ListGradientSoftCa
   <ListCardGrid
     items={items}
     columns={columns}
+    getKey={(e) => e.id}
     render={(e: ListEntry) => (
       <CVCard
         tone="gradient"

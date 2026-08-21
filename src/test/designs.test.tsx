@@ -171,7 +171,7 @@ describe("color theme + section designs", () => {
     });
   });
 
-  it("switches hobbies to flat tiles", async () => {
+  it("switches hobbies to flat cards", async () => {
     const user = userEvent.setup();
     render(<Harness />);
 
@@ -184,7 +184,7 @@ describe("color theme + section designs", () => {
 
     const combobox = screen.getByRole("combobox", { name: "Section design" });
     await user.click(combobox);
-    await user.click(await screen.findByRole("option", { name: "Flat tiles" }));
+    await user.click(await screen.findByRole("option", { name: "Flat cards" }));
 
     await waitFor(() => {
       const hobbiesSection = screen.getByText("Interests").closest("section");

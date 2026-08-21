@@ -3,7 +3,7 @@ import { type Hobby } from "@/lib/cv-types";
 
 /** Checkbox-style list, two columns. */
 export const HobbyChecks = ({ hobbies }: { hobbies: Hobby[] }) => (
-  <ul className="grid grid-cols-1 gap-2 md:grid-cols-2 print-grid-2">
+  <ul className="grid grid-cols-1 gap-2.5 md:grid-cols-2 print-grid-2-tight">
     {hobbies.map((hb) => (
       <li
         key={hb.id}

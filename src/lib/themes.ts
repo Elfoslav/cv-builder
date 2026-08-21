@@ -90,7 +90,7 @@ export const THEMES: ResumeTheme[] = [
       "Cream paper background",
       "Skills as chips, timeline as warm cards, interests as pills",
     ],
-    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "chips", experience: "cards-gradient-corner", education: "cards-gradient-corner", hobbies: "pills" },
+    showcase: { ...DEFAULT_SECTION_DESIGNS, skills: "chips", experience: "cards-gradient-band", education: "cards-gradient-band", hobbies: "pills" },
   },
   {
     id: "ocean",

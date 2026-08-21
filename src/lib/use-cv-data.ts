@@ -48,7 +48,7 @@ const normalizeColumns = <T extends CardColumnsMap | SkillColumnsMap>(
 ): T => {
   const out = { ...defaults, ...(raw ?? {}) } as T;
   (Object.keys(out) as (keyof T)[]).forEach((k) => {
-    if (out[k] !== 1 && out[k] !== 2 && out[k] !== 3 && out[k] !== 4) out[k] = defaults[k];
+    if (![1, 2, 3, 4, 5, 6].includes(out[k] as number)) out[k] = defaults[k];
   });
   return out;
 };
@@ -92,6 +92,7 @@ const migrateData = (parsed: Partial<CVData> & { skills?: Array<{ group?: string
   if (merged.sectionDesigns.education === "cards" || merged.sectionDesigns.education === "cards-gradient") {
     merged.sectionDesigns.education = "cards-gradient-soft";
   }
+  if (merged.sectionDesigns.hobbies === "cards") merged.sectionDesigns.hobbies = "cards-gradient-soft";
 
   const legacyMap: Record<string, { id: string; name: string }> = {
     languages: { id: "g_lang", name: "Programming Languages" },

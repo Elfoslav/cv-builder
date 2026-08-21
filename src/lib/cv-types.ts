@@ -7,16 +7,22 @@ export type ListKey = "skills" | "experience" | "education" | "projects" | "hobb
 export type SectionKey = "hero" | "about" | "footer" | ListKey;
 
 /** How many columns the card designs render in for a list section. */
-export type CardColumns = 1 | 2 | 3 | 4;
+export type CardColumns = 1 | 2 | 3 | 4 | 5 | 6;
 
 export interface CardColumnsMap {
   experience: CardColumns;
   education: CardColumns;
   projects: CardColumns;
+  hobbies: CardColumns;
 }
 
-/** Default number of columns per card layout: projects default to 2, history lists to 1. */
-export const DEFAULT_CARD_COLUMNS: CardColumnsMap = { experience: 1, education: 1, projects: 2 };
+/** Default number of columns per card layout: projects and hobbies tile, history lists stack. */
+export const DEFAULT_CARD_COLUMNS: CardColumnsMap = {
+  experience: 1,
+  education: 1,
+  projects: 2,
+  hobbies: 4,
+};
 
 /** Column counts for the skills section: the skill groups and the skills inside them. */
 export interface SkillColumnsMap {

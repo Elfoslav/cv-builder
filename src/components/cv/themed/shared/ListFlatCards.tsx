@@ -54,17 +54,16 @@ interface ListFlatCardsProps {
 export const ListFlatCards = ({ items, columns = 1 }: ListFlatCardsProps) => (
   <div className={cardGridClass(columns, "space-y-2")}>
     {items.map((e) => (
-      <div key={e.id} className="page-gutter">
-        <CVCard
-          tone="flat"
-          className={cn(
-            "flex flex-col",
-            e.links ? "cv-project-card p-3.5" : "cv-timeline-card cv-timeline-flat p-4",
-          )}
-        >
-          <FlatCardItem entry={e} />
-        </CVCard>
-      </div>
+      <CVCard
+        key={e.id}
+        tone="flat"
+        className={cn(
+          "flex flex-col",
+          e.links ? "cv-project-card p-3.5" : "cv-timeline-card cv-timeline-flat p-4",
+        )}
+      >
+        <FlatCardItem entry={e} />
+      </CVCard>
     ))}
   </div>
 );

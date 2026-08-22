@@ -15,14 +15,13 @@ interface ListAccentCardsProps {
 export const ListAccentCards = ({ items, columns = 1 }: ListAccentCardsProps) => (
   <div className={cardGridClass(columns, "space-y-3")}>
     {items.map((e) => (
-      <div key={e.id} className="page-gutter">
-        <CVCard
-          accent
-          className={cn("flex flex-col", e.links ? "cv-project-card p-3.5" : "cv-timeline-card p-4")}
-        >
-          <ListCardContent entry={e} />
-        </CVCard>
-      </div>
+      <CVCard
+        key={e.id}
+        accent
+        className={cn("flex flex-col", e.links ? "cv-project-card p-3.5" : "cv-timeline-card p-4")}
+      >
+        <ListCardContent entry={e} />
+      </CVCard>
     ))}
   </div>
 );

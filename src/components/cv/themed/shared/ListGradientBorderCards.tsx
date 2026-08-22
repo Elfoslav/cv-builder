@@ -16,7 +16,7 @@ export const ListGradientBorderCards = ({ items, columns = 1 }: ListGradientBord
     columns={columns}
     getKey={(e) => e.id}
     render={(e: ListEntry) => (
-      <div
+        <div
         className={cn(
           "rounded-lg bg-gradient-primary p-px shadow-card transition-all hover:shadow-glow",
           e.links ? "cv-project-card" : "cv-timeline-card",

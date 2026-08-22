@@ -5,7 +5,7 @@ import { HeroContact } from "./HeroContact";
 export const HeroGradientBorder = ({ data }: { data: CVData }) => (
   <section className="cv-hero border-b border-border">
     <div className="mx-auto max-w-[703px] px-6 py-10 print:py-5">
-      <div className="rounded-xl bg-gradient-primary p-px shadow-card">
+      <div className="rounded-lg bg-gradient-primary p-px shadow-card">
         <div className="rounded-[calc(var(--radius)-2px)] bg-card p-6">
           <h1 className="text-4xl font-extrabold tracking-tight text-foreground md:text-5xl">
             {data.name || "Your Name"}

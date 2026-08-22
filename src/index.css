@@ -139,6 +139,16 @@
 		background: hsl(var(--background));
 		padding: 12mm;
 	}
+	/* Fixed background covering the entire page (including last page gaps).
+	   `position: fixed` repeats on every printed page. `inset: -12mm` extends
+	   into the @page margin area so the theme colour fills the whole sheet. */
+	.cv-theme::before {
+		content: "";
+		position: fixed;
+		inset: -12mm;
+		background: hsl(var(--background));
+		z-index: -1;
+	}
 	.bg-gradient-card {
 		background: hsl(var(--card)) !important;
 		background-image: none !important;
@@ -183,8 +193,13 @@
 		/* Every page can start on a section, so give each section its own
 		   top gutter: `.cv-theme` padding only pads the document start (page 1)
 		   and end (last page), not the tops of later pages. 12mm matches the
-		   side gutters, keeping the same themed margin on all pages. */
+		   side gutters, keeping the same themed margin on all pages.
+		   The negative margin cancels the padding on pages where the section
+		   stays put (no double spacing), while at the top of a new page the
+		   top margin is dropped and the padding renders as breathing room
+		   below the page edge. */
 		padding-top: 12mm !important;
+		margin-top: -12mm !important;
 		margin-bottom: 2rem !important;
 	}
 	main {

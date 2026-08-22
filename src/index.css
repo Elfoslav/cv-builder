@@ -307,8 +307,10 @@
 
 /* Editing section breaks out of .cv-main to fit preview + sidebar inline */
 .cv-editing .cv-section-edit {
-	margin-right: -400px;
-	width: calc(100% + 400px);
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+	width: calc(703px + 400px);
 }
 
 .cv-theme h1,

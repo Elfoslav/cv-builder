@@ -305,12 +305,12 @@
 	max-width: 703px;
 }
 
-/* Editing section breaks out of .cv-main to fit preview + sidebar inline */
+/* Editing section breaks out of .cv-main, centered on the page */
 .cv-editing .cv-section-edit {
 	position: relative;
-	margin-left: auto;
-	margin-right: auto;
 	width: calc(703px + 400px);
+	margin-left: 50%;
+	transform: translateX(-50%);
 }
 
 .cv-theme h1,

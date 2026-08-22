@@ -305,9 +305,10 @@
 	max-width: 703px;
 }
 
-/* Push preview left so it doesn't hide behind the fixed edit sidebar */
+/* While a section is being edited, let the CV container use the full page
+   width so the preview column has room next to the side form. */
 .cv-editing .cv-main {
-	padding-right: calc(400px + 1rem) !important;
+	max-width: none !important;
 }
 
 .cv-theme h1,

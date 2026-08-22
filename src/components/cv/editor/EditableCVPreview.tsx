@@ -160,7 +160,7 @@ const EditableSection = ({
 
       {editing ? (
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px] print:block">
-          <div className="min-w-0">{content}</div>
+          <div className="min-w-0 max-w-[703px] mx-auto">{content}</div>
           <div className="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm print:hidden">
             <div className="mb-3 flex items-center justify-between gap-2">
               <span className="truncate text-xs font-semibold uppercase tracking-wider text-muted-foreground">

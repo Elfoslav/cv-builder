@@ -159,9 +159,9 @@ const EditableSection = ({
       )}
 
       {editing ? (
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px] print:block">
-          <div className="min-w-0 max-w-[703px]">{content}</div>
-          <div className="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm print:hidden">
+        <>
+          <div className="max-w-[703px]">{content}</div>
+          <div className="fixed right-0 top-0 z-40 h-dvh w-[380px] overflow-y-auto border-l border-border bg-card p-4 shadow-sm print:hidden">
             <div className="mb-3 flex items-center justify-between gap-2">
               <span className="truncate text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Editing — {meta.title}
@@ -194,7 +194,7 @@ const EditableSection = ({
             </div>
             <div className="mt-3">{buildForm(meta.key, data, actions)}</div>
           </div>
-        </div>
+        </>
       ) : (
         <>
           {content}

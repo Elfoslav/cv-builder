@@ -119,9 +119,7 @@ const EditableSection = ({
         <div
           className={cn(
             "absolute z-20 flex items-center gap-0.5 rounded-full border border-border bg-background/90 p-0.5 shadow-sm backdrop-blur print:hidden",
-            meta.key === "hero"
-              ? "top-10 lg:right-[calc((100%-64rem)/2+1.5rem)]"
-              : "right-0 top-0",
+            "right-0 top-0",
           )}
         >
           {meta.key !== "hero" && meta.key !== "footer" && (

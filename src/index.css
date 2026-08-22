@@ -311,12 +311,6 @@
 	font-family: var(--theme-heading);
 }
 
-/* While a section is being edited, let the CV container use the full page
-   width so the preview column has room next to the side form. */
-.cv-editing .cv-main {
-	max-width: none !important;
-}
-
 /* --- The reference design: vivid indigo → cyan -------------------------- */
 [data-theme="indigo"] {
 	--background: 0 0% 100%;

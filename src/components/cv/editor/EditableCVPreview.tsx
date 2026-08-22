@@ -107,12 +107,13 @@ const EditableSection = ({
 
   return (
     <div
-      className={cn(
-        "group/section relative transition-all",
-        isEmpty && "empty-section",
-        editing &&
-          "mb-12 rounded-2xl border-2 border-dashed border-primary/50 bg-primary/[0.02] p-3 pt-4 print:mb-0 print:border-0 print:bg-transparent print:p-0",
-      )}
+        className={cn(
+          "group/section relative transition-all",
+          isEmpty && "empty-section",
+          editing && "cv-section-edit",
+          editing &&
+            "mb-12 rounded-2xl border-2 border-dashed border-primary/50 bg-primary/[0.02] p-3 pt-4 print:mb-0 print:border-0 print:bg-transparent print:p-0",
+        )}
     >
       {!editing && (
         <div

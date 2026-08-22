@@ -90,9 +90,9 @@ export const CARD_DESIGN_OPTIONS = [
 }[];
 
 const LIST_DESIGN_OPTIONS = [
-  { group: "Non-gradient", id: "timeline", name: "Timeline", desc: "Vertical timeline with a glowing dot per entry." },
   ...CARD_DESIGN_OPTIONS,
   { group: "Gradient", id: "rows-gradient", name: "Gradient card rows", desc: "Stacked card rows with a gradient glow — one entry per line." },
+  { group: "Non-gradient", id: "timeline", name: "Timeline", desc: "Vertical timeline with a glowing dot per entry." },
   { group: "Non-gradient", id: "rows-flat", name: "Flat card rows", desc: "Minimal card rows — clean, low-contrast, great for print." },
   { group: "Non-gradient", id: "rows-accent", name: "Accent card rows", desc: "Card rows with a colored accent bar along the left edge." },
   { group: "Non-gradient", id: "rows", name: "Plain rows", desc: "Border-separated rows, period above the title — no card." },

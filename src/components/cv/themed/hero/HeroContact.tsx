@@ -41,7 +41,7 @@ export const HeroContact = ({ data, className }: { data: CVData; className?: str
             target="_blank"
             rel="noreferrer"
             aria-label="GitHub"
-            className="text-muted-foreground transition-colors hover:text-primary"
+            className="text-primary transition-colors hover:text-primary/80"
           >
             <Github className="h-5 w-5" />
           </a>
@@ -52,7 +52,7 @@ export const HeroContact = ({ data, className }: { data: CVData; className?: str
             target="_blank"
             rel="noreferrer"
             aria-label="LinkedIn"
-            className="text-muted-foreground transition-colors hover:text-primary"
+            className="text-primary transition-colors hover:text-primary/80"
           >
             <Linkedin className="h-5 w-5" />
           </a>

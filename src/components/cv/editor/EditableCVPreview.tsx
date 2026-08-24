@@ -142,10 +142,10 @@ const EditableSection = ({
   return (
     <div
       className={cn(
-        "group/section relative transition-[background-color,border-color,box-shadow] duration-300",
+        "group/section relative transition-[outline-color] duration-300",
         isEmpty && "empty-section",
         isEditing &&
-          "cv-section-edit mb-12 rounded-2xl border-2 border-dashed border-primary/50 bg-primary/[0.02] p-3 pt-4 shadow-[0_0_0_1px_hsl(var(--primary)/0.08)] print:mb-0 print:border-0 print:bg-transparent print:p-0 print:shadow-none",
+          "cv-section-edit mb-12 rounded-2xl outline-2 outline-dashed outline-offset-[8px] outline-primary/50 print:mb-0 print:outline-none",
       )}
     >
       {!isEditing && (

@@ -9,9 +9,9 @@ export const HobbyPills = ({ hobbies }: { hobbies: Hobby[] }) => (
       return (
         <span
           key={hb.id}
-          className="cv-hobby-pill flex min-w-0 items-center gap-2 rounded-full border border-primary bg-primary px-4 py-2 text-sm text-primary-foreground"
+          className="cv-hobby-pill flex min-w-0 items-center gap-2 rounded-full border border-primary bg-primary/5 px-4 py-2 text-sm text-primary"
         >
-          <Icon className="h-4 w-4 shrink-0 text-primary-foreground" />
+          <Icon className="h-4 w-4 shrink-0 text-primary" />
           <span className="min-w-0 break-words">{hb.label}</span>
         </span>
       );

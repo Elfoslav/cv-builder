@@ -14,7 +14,7 @@ export const TagPills = ({ tags, compact = false }: TagPillsProps) => {
         <span
           key={tag}
           className={cn(
-            "rounded-full border border-primary py-0.5 bg-primary text-primary-foreground",
+            "rounded-full border border-primary py-0.5 bg-primary/5 text-primary",
             compact
               ? "px-2 text-[10px]"
               : "px-3 text-xs",

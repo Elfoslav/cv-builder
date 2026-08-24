@@ -9,6 +9,8 @@ interface TimelineItemProps {
 	tags?: string[];
 	/** Optional right-aligned content next to the period (e.g. project links). */
 	links?: ReactNode;
+	/** Set on the final item so it doesn't render trailing spacing. */
+	isLast?: boolean;
 }
 
 export const TimelineItem = ({
@@ -19,9 +21,10 @@ export const TimelineItem = ({
 	children,
 	tags,
 	links,
+	isLast,
 }: TimelineItemProps) => {
 	return (
-		<div className="cv-timeline-item relative pl-8 pb-8 last:pb-0">
+		<div className={`cv-timeline-item relative pl-8 ${isLast ? "pb-0" : "pb-8"}`}>
 			<div className="cv-dot absolute left-0 top-2 h-3 w-3 rounded-full bg-primary shadow-glow" />
 			<div className="cv-line absolute left-[5px] top-5 h-full w-px bg-border" />
 			<div className="flex items-center justify-between gap-2">
@@ -46,7 +49,7 @@ export const TimelineItem = ({
 					{tags.map((tag) => (
 						<span
 							key={tag}
-							className="rounded-full border border-border bg-secondary/50 px-3 py-0.5 text-xs text-foreground"
+							className="rounded-full border border-primary bg-primary/5 px-3 py-0.5 text-xs text-primary"
 						>
 							{tag}
 						</span>

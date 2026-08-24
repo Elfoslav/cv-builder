@@ -145,11 +145,8 @@ export const CVShell = ({
 
   return (
     <div className="bg-background">
-      <div className="cv-main mx-auto px-4">
-        <Fragment key="hero">{wrap(metas.hero, content(metas.hero))}</Fragment>
-      </div>
       <main className="cv-main mx-auto px-4 pt-8 pb-20">
-        {order.filter((k) => k !== "hero").map((k) => {
+        {order.map((k) => {
           const meta = metas[k];
           return <Fragment key={k}>{wrap(meta, content(meta))}</Fragment>;
         })}

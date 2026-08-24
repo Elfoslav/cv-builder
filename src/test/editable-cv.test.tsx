@@ -194,6 +194,23 @@ describe("EditableCVPreview", () => {
     expect(cancel.compareDocumentPosition(done) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
+  it("keeps the drawer mounted for the reverse close animation", async () => {
+    const { container } = render(<Harness />);
+    fireEvent.click(screen.getAllByRole("button", { name: /^Edit$/ })[2]);
+
+    await waitFor(() => {
+      expect(screen.getByRole("dialog", { name: /Edit Work Experience/ })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /^Done$/ }));
+
+    expect(container.querySelector('[role="dialog"]')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(container.querySelector('[role="dialog"]')).not.toBeInTheDocument();
+    });
+  });
+
   it("cancel discards edits made while the section was open", async () => {
     const { container } = render(<Harness />);
 

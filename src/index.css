@@ -305,12 +305,10 @@
 	max-width: 703px;
 }
 
-/* Editing section breaks out of .cv-main, centered on the page */
+/* Editing keeps the selected section highlighted while the drawer lives
+   separately as a fixed overlay, so the preview never reflows. */
 .cv-editing .cv-section-edit {
 	position: relative;
-	width: calc(703px + 400px);
-	margin-left: 50%;
-	transform: translateX(-50%);
 }
 
 .cv-theme h1,

@@ -1,4 +1,4 @@
-import { useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
+import { useEffect, useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import { CVData, type CardColumns, type CardColumnsMap } from "@/lib/cv-types";
 import { useCVActions, ListKey, SectionKey, ITEM_LABEL, blankItem } from "./use-cv-actions";
 import { CVShell, SectionMeta } from "./cv-shell";
@@ -16,6 +16,7 @@ import { CardColumnsPicker } from "./CardColumnsPicker";
 import { FieldLabel } from "@/components/cv/FieldLabel";
 
 const LIST_KEYS: SectionKey[] = ["experience", "education", "projects", "hobbies"];
+const DRAWER_TRANSITION_MS = 300;
 
 interface EditableCVPreviewProps {
   data: CVData;
@@ -26,9 +27,60 @@ interface EditableCVPreviewProps {
 
 export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: EditableCVPreviewProps) => {
   const actions = useCVActions(setData);
-  // Tracks which section (if any) is being edited so the CV can expand to
-  // use the full width while a section is open, giving the preview more room.
+  const closeTimerRef = useRef<number | null>(null);
   const [editingKey, setEditingKey] = useState<SectionKey | null>(null);
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [snapshot, setSnapshot] = useState<SectionSnapshot | null>(null);
+
+  useEffect(() => () => {
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+    }
+  }, []);
+
+  const openEditor = (key: SectionKey, nextSnapshot: SectionSnapshot | null) => {
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    setSnapshot(nextSnapshot);
+    setEditingKey(key);
+    setDrawerVisible(false);
+    window.requestAnimationFrame(() => setDrawerVisible(true));
+  };
+
+  const closeEditor = () => {
+    setDrawerVisible(false);
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+    }
+    closeTimerRef.current = window.setTimeout(() => {
+      setEditingKey(null);
+      setSnapshot(null);
+      closeTimerRef.current = null;
+    }, DRAWER_TRANSITION_MS);
+  };
+
+  const handleStartEditing = (key: SectionKey) => {
+    openEditor(key, snapshotSection(data, key));
+  };
+
+  const handleAddAndEdit = (key: ListKey) => {
+    openEditor(key, snapshotSection(data, key));
+    actions.appendItem(key, blankItem(key));
+  };
+
+  const handleDone = () => {
+    closeEditor();
+  };
+
+  const handleCancel = () => {
+    if (editingKey && snapshot) {
+      actions.setData((prev) => restoreSection(prev, editingKey, snapshot));
+    }
+    closeEditor();
+  };
+
   return (
     <div data-theme={theme} className={cn("cv-theme", editingKey && "cv-editing")}>
       <CVShell
@@ -39,25 +91,35 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
             content={content}
             data={data}
             actions={actions}
-            onEditingChange={setEditingKey}
+            isEditing={editingKey === meta.key}
+            onStartEditing={handleStartEditing}
+            onAddAndEdit={handleAddAndEdit}
           />
         )}
+      />
+      <EditorDrawer
+        editingKey={editingKey}
+        visible={drawerVisible}
+        data={data}
+        actions={actions}
+        onDone={handleDone}
+        onCancel={handleCancel}
       />
     </div>
   );
 };
 
 const EditableSection = ({
-  meta, content, data, actions, onEditingChange,
+  meta, content, data, actions, isEditing, onStartEditing, onAddAndEdit,
 }: {
   meta: SectionMeta;
   content: ReactNode;
   data: CVData;
   actions: ReturnType<typeof useCVActions>;
-  onEditingChange: (key: SectionKey | null) => void;
+  isEditing: boolean;
+  onStartEditing: (key: SectionKey) => void;
+  onAddAndEdit: (key: ListKey) => void;
 }) => {
-  const [editing, setEditing] = useState(false);
-  const [snapshot, setSnapshot] = useState<SectionSnapshot | null>(null);
   const isList = LIST_KEYS.includes(meta.key);
 
   // A section with no content is still shown on screen (so you can add to it),
@@ -77,49 +139,19 @@ const EditableSection = ({
                 ? data.hobbies.length === 0
                 : false;
 
-  const startEditing = () => {
-    setSnapshot(snapshotSection(data, meta.key));
-    setEditing(true);
-    onEditingChange(meta.key);
-  };
-
-  const add = () => {
-    const k = meta.key as ListKey;
-    // Snapshot before appending so Cancel discards the freshly added entry.
-    setSnapshot(snapshotSection(data, meta.key));
-    actions.appendItem(k, blankItem(k));
-    setEditing(true);
-    onEditingChange(meta.key);
-  };
-
-  const done = () => {
-    setEditing(false);
-    setSnapshot(null);
-    onEditingChange(null);
-  };
-
-  const cancel = () => {
-    if (snapshot) actions.setData((prev) => restoreSection(prev, meta.key, snapshot));
-    setEditing(false);
-    setSnapshot(null);
-    onEditingChange(null);
-  };
-
   return (
     <div
-        className={cn(
-          "group/section relative transition-all",
-          isEmpty && "empty-section",
-          editing && "cv-section-edit",
-          editing &&
-            "mb-12 rounded-2xl border-2 border-dashed border-primary/50 bg-primary/[0.02] p-3 pt-4 print:mb-0 print:border-0 print:bg-transparent print:p-0",
-        )}
+      className={cn(
+        "group/section relative transition-[background-color,border-color,box-shadow] duration-300",
+        isEmpty && "empty-section",
+        isEditing &&
+          "cv-section-edit mb-12 rounded-2xl border-2 border-dashed border-primary/50 bg-primary/[0.02] p-3 pt-4 shadow-[0_0_0_1px_hsl(var(--primary)/0.08)] print:mb-0 print:border-0 print:bg-transparent print:p-0 print:shadow-none",
+      )}
     >
-      {!editing && (
+      {!isEditing && (
         <div
           className={cn(
-            "absolute z-20 flex items-center gap-0.5 rounded-full border border-border bg-background/90 p-0.5 shadow-sm backdrop-blur print:hidden",
-            "right-0 top-0",
+            "absolute right-0 top-0 z-20 flex items-center gap-0.5 rounded-full border border-border bg-background/90 p-0.5 shadow-sm backdrop-blur print:hidden",
           )}
         >
           {meta.key !== "hero" && meta.key !== "footer" && (
@@ -149,7 +181,7 @@ const EditableSection = ({
           <Button
             size="sm"
             variant="ghost"
-            onClick={startEditing}
+            onClick={() => onStartEditing(meta.key)}
             className="h-6 gap-1 rounded-full px-2 text-[11px] text-foreground hover:bg-muted hover:text-primary"
           >
             <Pencil className="h-3 w-3" /> Edit
@@ -157,57 +189,120 @@ const EditableSection = ({
         </div>
       )}
 
-      {editing ? (
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px] print:block">
-          <div className="min-w-0 max-w-[703px]">{content}</div>
-          <div className="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm print:hidden">
-            <div className="mb-3 flex items-center justify-between gap-2">
-              <span className="truncate text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Editing — {meta.title}
-              </span>
-              <div className="flex shrink-0 items-center gap-1.5">
-                <Button size="sm" variant="ghost" className="h-7" onClick={cancel}>
-                  <X className="h-3.5 w-3.5" /> Cancel
-                </Button>
-                <Button size="sm" className="h-7" onClick={done}>
-                  <Check className="h-3.5 w-3.5" /> Done
-                </Button>
-              </div>
-            </div>
+      {content}
 
-            <div className="flex items-center gap-2">
-              <SlidersHorizontal className="h-3.5 w-3.5 text-primary" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Design
-              </span>
-              <div className="h-px flex-1 bg-border" />
-            </div>
-            <DesignPicker className="mt-3 mb-0" meta={meta} data={data} actions={actions} />
-
-            <div className="mt-4 flex items-center gap-2 border-t pt-4">
-              <PenLine className="h-3.5 w-3.5 text-primary" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Content
-              </span>
-              <div className="h-px flex-1 bg-border" />
-            </div>
-            <div className="mt-3">{buildForm(meta.key, data, actions)}</div>
-          </div>
+      {!isEditing && isList && (
+        <div className="mt-3 print:hidden">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onAddAndEdit(meta.key as ListKey)}
+            className="w-full gap-1.5 border-dashed"
+          >
+            <Plus className="h-3.5 w-3.5" /> Add {ITEM_LABEL[meta.key as ListKey]}
+          </Button>
         </div>
-      ) : (
-        <>
-          {content}
-          {isList && (
-            <div className="mt-3 print:hidden">
-              <Button variant="outline" size="sm" onClick={add} className="w-full gap-1.5 border-dashed">
-                <Plus className="h-3.5 w-3.5" /> Add {ITEM_LABEL[meta.key as ListKey]}
-              </Button>
-            </div>
-          )}
-        </>
       )}
     </div>
   );
+};
+
+const EditorDrawer = ({
+  editingKey, visible, data, actions, onDone, onCancel,
+}: {
+  editingKey: SectionKey | null;
+  visible: boolean;
+  data: CVData;
+  actions: ReturnType<typeof useCVActions>;
+  onDone: () => void;
+  onCancel: () => void;
+}) => {
+  if (!editingKey) return null;
+
+  const meta = getEditorMeta(editingKey, data);
+
+  return (
+    <div
+      className="pointer-events-none fixed inset-0 z-40 print:hidden"
+      aria-hidden={!visible}
+    >
+      <div
+        className={cn(
+          "absolute inset-0 bg-background/40 backdrop-blur-[2px] transition-opacity duration-300",
+          visible ? "opacity-100" : "opacity-0",
+        )}
+      />
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Edit ${meta.title}`}
+        className={cn(
+          "pointer-events-auto absolute inset-y-0 right-0 flex w-full max-w-[440px] flex-col border-l border-border bg-card shadow-2xl transition-transform duration-300 ease-out sm:w-[420px]",
+          visible ? "translate-x-0" : "translate-x-full",
+        )}
+      >
+        <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+              Editing
+            </p>
+            <h3 className="truncate text-sm font-semibold text-foreground">Editing — {meta.title}</h3>
+          </div>
+          <div className="flex shrink-0 items-center gap-1.5">
+            <Button size="sm" variant="ghost" className="h-8" onClick={onCancel}>
+              <X className="h-3.5 w-3.5" /> Cancel
+            </Button>
+            <Button size="sm" className="h-8" onClick={onDone}>
+              <Check className="h-3.5 w-3.5" /> Done
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-5 py-5">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="h-3.5 w-3.5 text-primary" />
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Design
+            </span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+          <DesignPicker className="mb-0 mt-3" meta={meta} data={data} actions={actions} />
+
+          <div className="mt-5 flex items-center gap-2 border-t border-border pt-5">
+            <PenLine className="h-3.5 w-3.5 text-primary" />
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Content
+            </span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+          <div className="mt-3">{buildForm(meta.key, data, actions)}</div>
+        </div>
+      </aside>
+    </div>
+  );
+};
+
+const getEditorMeta = (key: SectionKey, data: CVData): SectionMeta => {
+  const L = data.labels;
+
+  switch (key) {
+    case "hero":
+      return { key, title: "Profile header", subtitle: "Name, role, bio & contact" };
+    case "about":
+      return { key, title: L.aboutTitle, subtitle: L.aboutSubtitle };
+    case "experience":
+      return { key, title: L.experienceTitle, subtitle: L.experienceSubtitle, count: data.experience.length };
+    case "education":
+      return { key, title: L.educationTitle, subtitle: L.educationSubtitle, count: data.education.length };
+    case "skills":
+      return { key, title: L.skillsTitle, subtitle: L.skillsSubtitle, count: data.skills.length };
+    case "projects":
+      return { key, title: L.projectsTitle, subtitle: L.projectsSubtitle, count: data.projects.length };
+    case "hobbies":
+      return { key, title: L.hobbiesTitle, subtitle: L.hobbiesSubtitle, count: data.hobbies.length };
+    case "footer":
+      return { key, title: "Footer", subtitle: "Closing message & copyright" };
+  }
 };
 
 /** Sections whose design select shares the card layouts with a columns setting. */
@@ -253,37 +348,36 @@ const DesignPicker = ({
     <div className={cn("mb-4 print:hidden", className)}>
       <FieldLabel label="Section design" />
       <Select value={value} onValueChange={(v) => actions.setSectionDesign(key, v as typeof value)}>
-        <SelectTrigger className="h-9 text-xs" aria-label="Section design" title={options.find((o) => o.id === value)?.desc}>
+        <SelectTrigger aria-label="Section design">
           <SelectValue />
         </SelectTrigger>
-        <SelectContent>
-          {renderOptions(options)}
-        </SelectContent>
+        <SelectContent>{renderOptions(options)}</SelectContent>
       </Select>
+
       {showColumns && cardKey && (
-        <CardColumnsPicker
-          className="mt-3 mb-0"
-          value={data.cardColumns[cardKey]}
-          onChange={(columns: CardColumns) => actions.setCardColumns(cardKey, columns)}
-          maxColumns={cardKey === "hobbies" ? 6 : 4}
+        <CardColumnsField
+          section={cardKey}
+          value={(data.cardColumns?.[cardKey] ?? 2) as CardColumns}
+          onChange={(cols) => actions.setCardColumns(cardKey, cols)}
         />
-      )}
-      {meta.key === "skills" && (
-        <>
-          <CardColumnsPicker
-            className="mt-3 mb-0"
-            label="Skill group columns"
-            value={data.skillColumns.groups}
-            onChange={(columns: CardColumns) => actions.setSkillColumns("groups", columns)}
-          />
-          <CardColumnsPicker
-            className="mt-3 mb-0"
-            label="Skill columns"
-            value={data.skillColumns.skills}
-            onChange={(columns: CardColumns) => actions.setSkillColumns("skills", columns)}
-          />
-        </>
       )}
     </div>
   );
 };
+
+const CardColumnsField = ({
+  section, value, onChange,
+}: {
+  section: keyof CardColumnsMap;
+  value: CardColumns;
+  onChange: (cols: CardColumns) => void;
+}) => (
+  <div className="mt-3">
+    <FieldLabel label="Card columns" />
+    <CardColumnsPicker
+      section={section}
+      value={value}
+      onChange={onChange}
+    />
+  </div>
+);

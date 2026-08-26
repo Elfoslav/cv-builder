@@ -5,6 +5,7 @@ import { CVShell, SectionMeta } from "./cv-shell";
 import { buildForm } from "./section-forms";
 import { snapshotSection, restoreSection, type SectionSnapshot } from "./section-snapshot";
 import { Button } from "@/components/ui/button";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import {
   Select, SelectGroup, SelectContent, SelectItem, SelectLabel, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -31,6 +32,9 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
   const [editingKey, setEditingKey] = useState<SectionKey | null>(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [snapshot, setSnapshot] = useState<SectionSnapshot | null>(null);
+  // On wide viewports the edit panel docks beside a live, print-width preview
+  // so edits are visible as they happen; on narrow screens it overlays instead.
+  const isWide = useMediaQuery("(min-width: 1280px)");
 
   useEffect(() => () => {
     if (closeTimerRef.current !== null) {
@@ -83,28 +87,33 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
 
   return (
     <div data-theme={theme} className={cn("cv-theme", editingKey && "cv-editing")}>
-      <CVShell
-        data={data}
-        wrap={(meta, content) => (
-          <EditableSection
-            meta={meta}
-            content={content}
+      <div className="xl:flex xl:items-stretch xl:gap-6">
+        <div className="xl:flex xl:min-w-0 xl:flex-1 xl:justify-center">
+          <CVShell
             data={data}
-            actions={actions}
-            isEditing={editingKey === meta.key}
-            onStartEditing={handleStartEditing}
-            onAddAndEdit={handleAddAndEdit}
+            wrap={(meta, content) => (
+              <EditableSection
+                meta={meta}
+                content={content}
+                data={data}
+                actions={actions}
+                isEditing={editingKey === meta.key}
+                onStartEditing={handleStartEditing}
+                onAddAndEdit={handleAddAndEdit}
+              />
+            )}
           />
-        )}
-      />
-      <EditorDrawer
-        editingKey={editingKey}
-        visible={drawerVisible}
-        data={data}
-        actions={actions}
-        onDone={handleDone}
-        onCancel={handleCancel}
-      />
+        </div>
+        <EditorDrawer
+          editingKey={editingKey}
+          visible={drawerVisible}
+          isWide={isWide}
+          data={data}
+          actions={actions}
+          onDone={handleDone}
+          onCancel={handleCancel}
+        />
+      </div>
     </div>
   );
 };
@@ -151,7 +160,8 @@ const EditableSection = ({
       {!isEditing && (
         <div
           className={cn(
-            "absolute right-0 top-0 z-20 flex items-center gap-0.5 rounded-full border border-border bg-background/90 p-0.5 shadow-sm backdrop-blur print:hidden",
+            "absolute right-0 z-20 flex items-center gap-0.5 rounded-full border border-border bg-background/90 p-0.5 shadow-sm backdrop-blur print:hidden",
+            meta.key === "hero" ? "top-10" : "top-0",
           )}
         >
           {meta.key !== "hero" && meta.key !== "footer" && (
@@ -208,10 +218,11 @@ const EditableSection = ({
 };
 
 const EditorDrawer = ({
-  editingKey, visible, data, actions, onDone, onCancel,
+  editingKey, visible, isWide, data, actions, onDone, onCancel,
 }: {
   editingKey: SectionKey | null;
   visible: boolean;
+  isWide: boolean;
   data: CVData;
   actions: ReturnType<typeof useCVActions>;
   onDone: () => void;
@@ -223,22 +234,35 @@ const EditorDrawer = ({
 
   return (
     <div
-      className="pointer-events-none fixed inset-0 z-40 print:hidden"
+      className={cn(
+        "print:hidden",
+        isWide
+          ? cn(
+              "relative z-10 flex shrink-0 flex-col transition-[width,opacity] duration-300 ease-out",
+              visible ? "w-[440px] opacity-100" : "w-0 opacity-0",
+            )
+          : "pointer-events-none fixed inset-0 z-40",
+      )}
       aria-hidden={!visible}
     >
-      <div
-        className={cn(
-          "absolute inset-0 bg-background/40 backdrop-blur-[2px] transition-opacity duration-300",
-          visible ? "opacity-100" : "opacity-0",
-        )}
-      />
+      {!isWide && (
+        <div
+          className={cn(
+            "absolute inset-0 bg-background/40 backdrop-blur-[2px] transition-opacity duration-300",
+            visible ? "opacity-100" : "opacity-0",
+          )}
+        />
+      )}
       <aside
         role="dialog"
-        aria-modal="true"
+        aria-modal={!isWide}
         aria-label={`Edit ${meta.title}`}
         className={cn(
-          "pointer-events-auto absolute inset-y-0 right-0 flex w-full max-w-[440px] flex-col border-l border-border bg-card shadow-2xl transition-transform duration-300 ease-out sm:w-[420px]",
-          visible ? "translate-x-0" : "translate-x-full",
+          "flex flex-col border-border bg-card",
+          isWide
+            ? "sticky top-0 h-[calc(100vh-3.5rem)] w-full overflow-hidden shadow-xl xl:border-l"
+            : "pointer-events-auto absolute inset-y-0 right-0 w-full max-w-[440px] border-l shadow-2xl transition-transform duration-300 ease-out sm:w-[420px]",
+          !isWide && (visible ? "translate-x-0" : "translate-x-full"),
         )}
       >
         <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">

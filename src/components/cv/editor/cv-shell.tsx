@@ -145,7 +145,7 @@ export const CVShell = ({
 
   return (
     <div className="bg-background">
-      <main className="cv-main mx-auto px-4 pt-8 pb-20">
+      <main className="cv-main mx-auto px-4 pb-20">
         {order.map((k) => {
           const meta = metas[k];
           return <Fragment key={k}>{wrap(meta, content(meta))}</Fragment>;

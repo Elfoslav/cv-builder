@@ -15,6 +15,7 @@ import { DEFAULT_THEME, type ThemeId } from "@/lib/themes";
 import { type SectionDesigns, SECTION_DESIGN_OPTIONS } from "@/lib/section-designs";
 import { CardColumnsPicker } from "./CardColumnsPicker";
 import { FieldLabel } from "@/components/cv/FieldLabel";
+import { EDIT_VARIANTS, type EditVariant } from "@/lib/edit-variants";
 
 const LIST_KEYS: SectionKey[] = ["experience", "education", "projects", "hobbies"];
 const DRAWER_TRANSITION_MS = 300;
@@ -32,6 +33,10 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
   const [editingKey, setEditingKey] = useState<SectionKey | null>(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [snapshot, setSnapshot] = useState<SectionSnapshot | null>(null);
+  const [editVariant, setEditVariant] = useState<EditVariant>(() => {
+    const saved = localStorage.getItem("cv-builder:edit-variant") as EditVariant | null;
+    return saved && saved in EDIT_VARIANTS ? saved : "dashed";
+  });
   // On wide viewports the edit panel docks beside a live, print-width preview
   // so edits are visible as they happen; on narrow screens it overlays instead.
   const isWide = useMediaQuery("(min-width: 1280px)");
@@ -85,24 +90,30 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
     closeEditor();
   };
 
+  const handleVariantChange = (v: EditVariant) => {
+    setEditVariant(v);
+    localStorage.setItem("cv-builder:edit-variant", v);
+  };
+
   return (
     <div data-theme={theme} className={cn("cv-theme", editingKey && "cv-editing")}>
       <div className="xl:flex xl:items-stretch xl:gap-6">
         <div className="xl:flex xl:min-w-0 xl:flex-1 xl:justify-center">
-          <div className="mx-auto w-full max-w-[760px] print:mx-0 print:max-w-none">
+          <div className="mx-auto w-full max-w-[735px] print:mx-0 print:max-w-none">
             <div className="overflow-hidden rounded-xl border bg-background shadow-[0_8px_32px_hsl(var(--foreground)/0.08)] print:rounded-none print:border-0 print:shadow-none">
               <CVShell
                 data={data}
                 wrap={(meta, content) => (
-                  <EditableSection
-                    meta={meta}
-                    content={content}
-                    data={data}
-                    actions={actions}
-                    isEditing={editingKey === meta.key}
-                    onStartEditing={handleStartEditing}
-                    onAddAndEdit={handleAddAndEdit}
-                  />
+              <EditableSection
+                meta={meta}
+                content={content}
+                data={data}
+                actions={actions}
+                isEditing={editingKey === meta.key}
+                editVariant={editVariant}
+                onStartEditing={handleStartEditing}
+                onAddAndEdit={handleAddAndEdit}
+              />
                 )}
               />
             </div>
@@ -119,6 +130,8 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
           isWide={isWide}
           data={data}
           actions={actions}
+          editVariant={editVariant}
+          onVariantChange={handleVariantChange}
           onDone={handleDone}
           onCancel={handleCancel}
         />
@@ -128,13 +141,21 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
 };
 
 const EditableSection = ({
-  meta, content, data, actions, isEditing, onStartEditing, onAddAndEdit,
+  meta,
+  content,
+  data,
+  actions,
+  isEditing,
+  editVariant,
+  onStartEditing,
+  onAddAndEdit,
 }: {
   meta: SectionMeta;
   content: ReactNode;
   data: CVData;
   actions: ReturnType<typeof useCVActions>;
   isEditing: boolean;
+  editVariant: EditVariant;
   onStartEditing: (key: SectionKey) => void;
   onAddAndEdit: (key: ListKey) => void;
 }) => {
@@ -157,15 +178,27 @@ const EditableSection = ({
                 ? data.hobbies.length === 0
                 : false;
 
+  const variantClass = EDIT_VARIANTS[editVariant].className;
   return (
     <div
       className={cn(
-        "group/section relative transition-[outline-color] duration-300",
+        "group/section relative transition-all duration-300",
         isEmpty && "empty-section",
-        isEditing &&
-          "cv-section-edit mb-12 rounded-2xl outline-2 outline-dashed outline-offset-[8px] outline-primary/50 print:mb-0 print:outline-none",
+        isEditing && "cv-section-edit mb-12 print:mb-0",
       )}
     >
+      {isEditing && (
+        <div
+          className={cn(
+            "pointer-events-none absolute inset-x-0 -mx-8 rounded-xl print:hidden",
+            meta.key === "hero" ? "top-0" : "-top-3",
+            meta.key === "footer" ? "bottom-0" : "-bottom-3",
+            variantClass
+          )}
+          aria-hidden
+        />
+      )}
+      <div className="relative">
       {!isEditing && (
         <div
           className={cn(
@@ -222,18 +255,29 @@ const EditableSection = ({
           </Button>
         </div>
       )}
+      </div>
     </div>
   );
 };
 
 const EditorDrawer = ({
-  editingKey, visible, isWide, data, actions, onDone, onCancel,
+  editingKey,
+  visible,
+  isWide,
+  data,
+  actions,
+  editVariant,
+  onVariantChange,
+  onDone,
+  onCancel,
 }: {
   editingKey: SectionKey | null;
   visible: boolean;
   isWide: boolean;
   data: CVData;
   actions: ReturnType<typeof useCVActions>;
+  editVariant: EditVariant;
+  onVariantChange: (v: EditVariant) => void;
   onDone: () => void;
   onCancel: () => void;
 }) => {
@@ -293,6 +337,31 @@ const EditorDrawer = ({
 
         <div className="flex-1 overflow-y-auto px-5 py-5">
           <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Edit state
+            </span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+          <div className="mt-3">
+            <FieldLabel label="Visual variant" />
+            <Select value={editVariant} onValueChange={(v) => onVariantChange(v as EditVariant)}>
+              <SelectTrigger aria-label="Visual variant">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {(Object.entries(EDIT_VARIANTS) as [EditVariant, (typeof EDIT_VARIANTS)[EditVariant]][]).map(
+                  ([id, v]) => (
+                    <SelectItem key={id} value={id}>
+                      {v.label}
+                    </SelectItem>
+                  )
+                )}
+              </SelectContent>
+            </Select>
+            <p className="mt-1.5 text-xs text-muted-foreground">{EDIT_VARIANTS[editVariant].desc}</p>
+          </div>
+
+          <div className="mt-5 flex items-center gap-2">
             <SlidersHorizontal className="h-3.5 w-3.5 text-primary" />
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Design

@@ -12,7 +12,7 @@ export const DesignDrafts = () => {
   return (
     <div className="min-h-screen bg-muted/30 print:hidden">
       <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-3">
+        <div className="page-container flex flex-wrap items-center justify-between gap-3 py-3">
           <div className="flex items-center gap-3">
             <Button asChild size="sm" variant="ghost">
               <Link to="/">
@@ -29,7 +29,7 @@ export const DesignDrafts = () => {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-6 py-6">
+      <main className="page-container py-6">
         <p className="py-12 text-center text-sm text-muted-foreground">
           No drafts yet.
         </p>

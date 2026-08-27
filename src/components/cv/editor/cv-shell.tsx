@@ -107,7 +107,7 @@ export const CVShell = ({
     );
     switch (meta.key) {
       case "hero":
-        return <HeroView data={data} variant={d.hero} />;
+        return <div className="mb-12"><HeroView data={data} variant={d.hero} /></div>;
       case "about":
         return data.about
           ? section(<AboutView about={data.about} variant={d.about} />)

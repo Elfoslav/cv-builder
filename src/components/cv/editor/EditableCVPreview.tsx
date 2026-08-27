@@ -402,6 +402,7 @@ const CardColumnsField = ({
       section={section}
       value={value}
       onChange={onChange}
+      maxColumns={6}
     />
   </div>
 );

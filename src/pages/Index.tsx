@@ -192,7 +192,7 @@ const Index = () => {
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-background print:block print:h-auto">
       <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur-md print:hidden">
-        <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2">
+        <div className="page-container flex flex-wrap items-center justify-between gap-2 py-2">
           <div className="flex items-center gap-2">
             {import.meta.env.DEV && (
               <Button size="sm" variant="ghost" className="gap-2" asChild title="Editor design drafts">
@@ -308,7 +308,9 @@ const Index = () => {
       </header>
 
       <div className="flex-1 overflow-y-auto print:overflow-visible">
-        <EditableCVPreview data={data} setData={setData} theme={theme} />
+        <div className="page-container print:px-0">
+          <EditableCVPreview data={data} setData={setData} theme={theme} />
+        </div>
       </div>
     </div>
   );

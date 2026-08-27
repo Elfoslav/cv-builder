@@ -280,6 +280,12 @@
 		background-size: 40px 40px;
 		mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black, transparent);
 	}
+
+	/* Shared page container: the single max-width every topbar and page
+	   content aligns to, so all pages share the same horizontal rhythm. */
+	.page-container {
+		@apply mx-auto w-full max-w-7xl px-4;
+	}
 }
 
 /* ==========================================================================

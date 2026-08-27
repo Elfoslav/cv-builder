@@ -21,6 +21,17 @@
   orthogonal. Theme ids live in `src/lib/themes.ts`, design ids in `src/lib/section-designs.ts`.
 - CV data is persisted to `localStorage` via `useCVData` (`src/lib/use-cv-data.ts`).
 
+## Layout
+
+- All page topbars and page-level content share one horizontal container: the `.page-container`
+  utility (`mx-auto w-full max-w-7xl px-4`, defined in `src/index.css`). Every page topbar's inner
+  wrapper must use `page-container` so the builder, landing, and `/drafts` topbars line up at the
+  same width. Wrap page content in `page-container` too (add `print:px-0` on the editor body so print
+  stays full-bleed). Do not hardcode a different `max-w-*` for a topbar.
+- The builder's scroll container (`overflow-y-auto`) must stay full-width — only its **inner**
+  content wrapper should be `page-container`. Putting `page-container` on the scroll element itself
+  caps and centers the box, which pushes the scrollbar away from the viewport's right edge.
+
 ## Verification
 
 ```bash

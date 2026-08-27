@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import { CVData, type CardColumns, type CardColumnsMap } from "@/lib/cv-types";
-import { useCVActions, ListKey, SectionKey, ITEM_LABEL, blankItem } from "./use-cv-actions";
+import { useCVActions, SectionKey } from "./use-cv-actions";
 import { CVShell, SectionMeta } from "./cv-shell";
 import { buildForm } from "./section-forms";
 import { snapshotSection, restoreSection, type SectionSnapshot } from "./section-snapshot";
@@ -9,7 +9,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import {
   Select, SelectGroup, SelectContent, SelectItem, SelectLabel, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { ArrowDown, ArrowUp, Check, Pencil, Plus, X, SlidersHorizontal, PenLine } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Pencil, X, SlidersHorizontal, PenLine } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DEFAULT_THEME, type ThemeId } from "@/lib/themes";
 import { type SectionDesigns, SECTION_DESIGN_OPTIONS } from "@/lib/section-designs";
@@ -17,7 +17,6 @@ import { CardColumnsPicker } from "./CardColumnsPicker";
 import { FieldLabel } from "@/components/cv/FieldLabel";
 import { EDIT_VARIANTS, type EditVariant } from "@/lib/edit-variants";
 
-const LIST_KEYS: SectionKey[] = ["experience", "education", "projects", "hobbies"];
 const DRAWER_TRANSITION_MS = 300;
 
 interface EditableCVPreviewProps {
@@ -74,11 +73,6 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
     openEditor(key, snapshotSection(data, key));
   };
 
-  const handleAddAndEdit = (key: ListKey) => {
-    openEditor(key, snapshotSection(data, key));
-    actions.appendItem(key, blankItem(key));
-  };
-
   const handleDone = () => {
     closeEditor();
   };
@@ -101,9 +95,9 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
         <div className="xl:flex xl:min-w-0 xl:flex-1 xl:justify-center">
           <div className="mx-auto w-full max-w-[735px] print:mx-0 print:max-w-none">
             <div className="overflow-hidden rounded-xl border bg-background shadow-[0_8px_32px_hsl(var(--foreground)/0.08)] print:rounded-none print:border-0 print:shadow-none">
-              <CVShell
-                data={data}
-                wrap={(meta, content) => (
+          <CVShell
+            data={data}
+            wrap={(meta, content) => (
               <EditableSection
                 meta={meta}
                 content={content}
@@ -112,10 +106,9 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
                 isEditing={editingKey === meta.key}
                 editVariant={editVariant}
                 onStartEditing={handleStartEditing}
-                onAddAndEdit={handleAddAndEdit}
               />
-                )}
-              />
+            )}
+          />
             </div>
             <div className="mt-3 hidden justify-center print:hidden xl:flex">
               <span className="rounded-full border bg-card px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground shadow-sm">
@@ -148,7 +141,6 @@ const EditableSection = ({
   isEditing,
   editVariant,
   onStartEditing,
-  onAddAndEdit,
 }: {
   meta: SectionMeta;
   content: ReactNode;
@@ -157,9 +149,7 @@ const EditableSection = ({
   isEditing: boolean;
   editVariant: EditVariant;
   onStartEditing: (key: SectionKey) => void;
-  onAddAndEdit: (key: ListKey) => void;
 }) => {
-  const isList = LIST_KEYS.includes(meta.key);
 
   // A section with no content is still shown on screen (so you can add to it),
   // but it is hidden in print/export output via the `.empty-section` rule.
@@ -182,7 +172,7 @@ const EditableSection = ({
   return (
     <div
       className={cn(
-        "group/section relative transition-all duration-300",
+        "group/section relative",
         isEmpty && "empty-section",
         isEditing && "cv-section-edit mb-12 print:mb-0",
       )}
@@ -242,19 +232,6 @@ const EditableSection = ({
       )}
 
       {content}
-
-      {!isEditing && isList && (
-        <div className="mt-3 print:hidden">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onAddAndEdit(meta.key as ListKey)}
-            className="w-full gap-1.5 border-dashed"
-          >
-            <Plus className="h-3.5 w-3.5" /> Add {ITEM_LABEL[meta.key as ListKey]}
-          </Button>
-        </div>
-      )}
       </div>
     </div>
   );

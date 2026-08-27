@@ -11,7 +11,8 @@ describe("DesignDrafts", () => {
       </MemoryRouter>,
     );
     expect(screen.getByText("Design drafts")).toBeInTheDocument();
-    expect(screen.getByText("No drafts yet.")).toBeInTheDocument();
+    expect(screen.getByText("Color themes")).toBeInTheDocument();
+    expect(screen.getByText("Per-section layouts")).toBeInTheDocument();
   });
 
   it("has a back link to the editor", () => {

@@ -15,7 +15,8 @@ import { DEFAULT_THEME, type ThemeId } from "@/lib/themes";
 import { type SectionDesigns, SECTION_DESIGN_OPTIONS } from "@/lib/section-designs";
 import { CardColumnsPicker } from "./CardColumnsPicker";
 import { FieldLabel } from "@/components/cv/FieldLabel";
-import { EDIT_VARIANTS, type EditVariant } from "@/lib/edit-variants";
+import { EDIT_VARIANTS, DEFAULT_EDIT_VARIANT } from "@/lib/edit-variants";
+import { DEFAULT_DRAWER_VARIANT, type DrawerVariant } from "@/lib/drawer-variants";
 
 const DRAWER_TRANSITION_MS = 300;
 
@@ -32,9 +33,13 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
   const [editingKey, setEditingKey] = useState<SectionKey | null>(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [snapshot, setSnapshot] = useState<SectionSnapshot | null>(null);
-  const [editVariant, setEditVariant] = useState<EditVariant>(() => {
-    const saved = localStorage.getItem("cv-builder:edit-variant") as EditVariant | null;
-    return saved && saved in EDIT_VARIANTS ? saved : "dashed";
+  const editVariant = DEFAULT_EDIT_VARIANT;
+  const [drawerVariant] = useState<DrawerVariant>(() => {
+    const saved = localStorage.getItem("cv-builder:drawer-variant") as DrawerVariant | null;
+    return saved &&
+      ["polished", "flat", "compact", "tabs", "glass", "timeline", "bento", "command"].includes(saved)
+      ? saved
+      : DEFAULT_DRAWER_VARIANT;
   });
   // On wide viewports the edit panel docks beside a live, print-width preview
   // so edits are visible as they happen; on narrow screens it overlays instead.
@@ -84,11 +89,6 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
     closeEditor();
   };
 
-  const handleVariantChange = (v: EditVariant) => {
-    setEditVariant(v);
-    localStorage.setItem("cv-builder:edit-variant", v);
-  };
-
   return (
     <div data-theme={theme} className={cn("cv-theme", editingKey && "cv-editing")}>
       <div className="xl:flex xl:items-stretch xl:gap-6">
@@ -123,8 +123,7 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
           isWide={isWide}
           data={data}
           actions={actions}
-          editVariant={editVariant}
-          onVariantChange={handleVariantChange}
+          drawerVariant={drawerVariant}
           onDone={handleDone}
           onCancel={handleCancel}
         />
@@ -181,8 +180,8 @@ const EditableSection = ({
         <div
           className={cn(
             "pointer-events-none absolute inset-x-0 -mx-8 rounded-xl print:hidden",
-            meta.key === "hero" ? "top-0" : "-top-3",
-            meta.key === "footer" ? "bottom-0" : "-bottom-3",
+            meta.key === "hero" ? "top-0" : meta.key === "footer" ? "top-7" : "-top-3",
+            "-bottom-3",
             variantClass
           )}
           aria-hidden
@@ -243,8 +242,7 @@ const EditorDrawer = ({
   isWide,
   data,
   actions,
-  editVariant,
-  onVariantChange,
+  drawerVariant,
   onDone,
   onCancel,
 }: {
@@ -253,11 +251,11 @@ const EditorDrawer = ({
   isWide: boolean;
   data: CVData;
   actions: ReturnType<typeof useCVActions>;
-  editVariant: EditVariant;
-  onVariantChange: (v: EditVariant) => void;
+  drawerVariant: DrawerVariant;
   onDone: () => void;
   onCancel: () => void;
 }) => {
+  const [activeTab, setActiveTab] = useState<"design" | "content">("content");
   if (!editingKey) return null;
 
   const meta = getEditorMeta(editingKey, data);
@@ -288,14 +286,21 @@ const EditorDrawer = ({
         aria-modal={!isWide}
         aria-label={`Edit ${meta.title}`}
         className={cn(
-          "flex flex-col border-border bg-card",
+          "flex flex-col border-border",
+          drawerVariant === "glass" ? "bg-card/70 backdrop-blur-2xl" : "bg-card",
           isWide
-            ? "sticky top-0 h-[calc(100vh-3.5rem)] w-full overflow-hidden shadow-xl xl:border-l"
-            : "pointer-events-auto absolute inset-y-0 right-0 w-full max-w-[440px] border-l shadow-2xl transition-transform duration-300 ease-out sm:w-[420px]",
+            ? "sticky top-0 h-[calc(100vh-3.5rem)] w-full overflow-hidden rounded-l-xl border shadow-[0_8px_40px_hsl(var(--foreground)/0.08)] xl:border-l"
+            : "pointer-events-auto absolute inset-y-0 right-0 w-full max-w-[440px] rounded-l-xl border-l shadow-2xl transition-transform duration-300 ease-out sm:w-[420px]",
+          drawerVariant === "glass" && "border-white/10 shadow-[0_8px_40px_hsl(var(--foreground)/0.12)]",
           !isWide && (visible ? "translate-x-0" : "translate-x-full"),
         )}
       >
-        <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
+        <div
+          className={cn(
+            "flex items-center justify-between gap-3 border-b px-5 py-4 backdrop-blur-sm",
+            drawerVariant === "glass" ? "bg-white/40" : "bg-muted/30"
+          )}
+        >
           <div className="min-w-0">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
               Editing
@@ -312,50 +317,199 @@ const EditorDrawer = ({
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-5 py-5">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Edit state
-            </span>
-            <div className="h-px flex-1 bg-border" />
+        {drawerVariant === "tabs" ? (
+          <div className="flex-1 overflow-y-auto">
+            <div className="sticky top-0 z-10 flex gap-1 border-b bg-card px-2 py-2">
+              <Button
+                size="sm"
+                variant={activeTab === "design" ? "secondary" : "ghost"}
+                className="flex-1"
+                onClick={() => setActiveTab("design")}
+              >
+                <SlidersHorizontal className="h-3.5 w-3.5" /> Design
+              </Button>
+              <Button
+                size="sm"
+                variant={activeTab === "content" ? "secondary" : "ghost"}
+                className="flex-1"
+                onClick={() => setActiveTab("content")}
+              >
+                <PenLine className="h-3.5 w-3.5" /> Content
+              </Button>
+            </div>
+            <div className="p-5">
+              {activeTab === "design" ? (
+                <DesignPicker meta={meta} data={data} actions={actions} />
+              ) : (
+                buildForm(meta.key, data, actions)
+              )}
+            </div>
           </div>
-          <div className="mt-3">
-            <FieldLabel label="Visual variant" />
-            <Select value={editVariant} onValueChange={(v) => onVariantChange(v as EditVariant)}>
-              <SelectTrigger aria-label="Visual variant">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {(Object.entries(EDIT_VARIANTS) as [EditVariant, (typeof EDIT_VARIANTS)[EditVariant]][]).map(
-                  ([id, v]) => (
-                    <SelectItem key={id} value={id}>
-                      {v.label}
-                    </SelectItem>
-                  )
-                )}
-              </SelectContent>
-            </Select>
-            <p className="mt-1.5 text-xs text-muted-foreground">{EDIT_VARIANTS[editVariant].desc}</p>
+        ) : drawerVariant === "flat" ? (
+          <div className="flex-1 overflow-y-auto px-5 py-6">
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="h-3.5 w-3.5 text-primary" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Design</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+            <DesignPicker className="mt-3" meta={meta} data={data} actions={actions} />
+            <div className="mt-6 flex items-center gap-2 border-t pt-6">
+              <PenLine className="h-3.5 w-3.5 text-primary" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Content</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+            <div className="mt-3">{buildForm(meta.key, data, actions)}</div>
           </div>
-
-          <div className="mt-5 flex items-center gap-2">
-            <SlidersHorizontal className="h-3.5 w-3.5 text-primary" />
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Design
-            </span>
-            <div className="h-px flex-1 bg-border" />
+        ) : drawerVariant === "compact" ? (
+          <div className="flex-1 overflow-y-auto px-4 py-4">
+            <div className="rounded-lg border bg-card p-3">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal className="h-3 w-3 text-primary" />
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Design</span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+              <DesignPicker className="mt-2 text-sm" meta={meta} data={data} actions={actions} />
+            </div>
+            <div className="mt-3 rounded-lg border bg-card p-3">
+              <div className="flex items-center gap-2">
+                <PenLine className="h-3 w-3 text-primary" />
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Content</span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+              <div className="mt-2 text-sm">{buildForm(meta.key, data, actions)}</div>
+            </div>
           </div>
-          <DesignPicker className="mb-0 mt-3" meta={meta} data={data} actions={actions} />
-
-          <div className="mt-5 flex items-center gap-2 border-t border-border pt-5">
-            <PenLine className="h-3.5 w-3.5 text-primary" />
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Content
-            </span>
-            <div className="h-px flex-1 bg-border" />
+        ) : drawerVariant === "glass" ? (
+          <div className="flex-1 overflow-y-auto bg-gradient-to-b from-white/60 to-white/20 px-5 py-6 backdrop-blur-sm">
+            <div className="rounded-xl border border-white/40 bg-white/70 p-4 shadow-[0_8px_24px_hsl(var(--foreground)/0.06)] backdrop-blur">
+              <div className="flex items-center gap-2">
+                <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-primary text-white shadow-sm">
+                  <SlidersHorizontal className="h-3 w-3" />
+                </div>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Design</span>
+                <div className="h-px flex-1 bg-border/50" />
+              </div>
+              <DesignPicker className="mb-0 mt-3" meta={meta} data={data} actions={actions} />
+            </div>
+            <div className="mt-4 rounded-xl border border-white/40 bg-white/70 p-4 shadow-[0_8px_24px_hsl(var(--foreground)/0.06)] backdrop-blur">
+              <div className="flex items-center gap-2">
+                <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-foreground text-card shadow-sm">
+                  <PenLine className="h-3 w-3" />
+                </div>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Content</span>
+                <div className="h-px flex-1 bg-border/50" />
+              </div>
+              <div className="mt-3">{buildForm(meta.key, data, actions)}</div>
+            </div>
           </div>
-          <div className="mt-3">{buildForm(meta.key, data, actions)}</div>
-        </div>
+        ) : drawerVariant === "timeline" ? (
+          <div className="flex-1 overflow-y-auto px-5 py-6">
+            <div className="relative pl-8">
+              <div className="absolute left-[11px] top-2 h-[calc(100%-16px)] w-px bg-gradient-to-b from-primary via-primary/40 to-transparent" />
+              <div className="relative">
+                <div className="absolute -left-[30px] flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground shadow-sm ring-4 ring-background">
+                  1
+                </div>
+                <div className="rounded-xl border bg-card p-4 shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <SlidersHorizontal className="h-3.5 w-3.5 text-primary" />
+                    <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Design • Step 1</span>
+                  </div>
+                  <DesignPicker className="mb-0 mt-3" meta={meta} data={data} actions={actions} />
+                </div>
+              </div>
+              <div className="relative mt-6">
+                <div className="absolute -left-[30px] flex h-6 w-6 items-center justify-center rounded-full bg-foreground text-[11px] font-bold text-card shadow-sm ring-4 ring-background">
+                  2
+                </div>
+                <div className="rounded-xl border bg-card p-4 shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <PenLine className="h-3.5 w-3.5 text-primary" />
+                    <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Content • Step 2</span>
+                  </div>
+                  <div className="mt-3">{buildForm(meta.key, data, actions)}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : drawerVariant === "bento" ? (
+          <div className="flex-1 overflow-y-auto bg-muted/20 p-4">
+            <div className="grid gap-3">
+              <div className="rounded-xl border bg-card p-4 shadow-sm">
+                <div className="flex items-center gap-2">
+                  <SlidersHorizontal className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Design</span>
+                </div>
+                <DesignPicker className="mt-3" meta={meta} data={data} actions={actions} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-xl border bg-card p-3">
+                  <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Columns</div>
+                  <div className="mt-2 text-xs text-muted-foreground">Cards per row</div>
+                  <div className="mt-2 h-6 rounded bg-secondary" />
+                </div>
+                <div className="rounded-xl border bg-card p-3">
+                  <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Preview</div>
+                  <div className="mt-2 h-14 rounded-lg bg-gradient-primary opacity-80" />
+                </div>
+              </div>
+              <div className="rounded-xl border bg-card p-4 shadow-sm">
+                <div className="flex items-center gap-2">
+                  <PenLine className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Content</span>
+                </div>
+                <div className="mt-3">{buildForm(meta.key, data, actions)}</div>
+              </div>
+            </div>
+          </div>
+        ) : drawerVariant === "command" ? (
+          <div className="flex-1 overflow-y-auto">
+            <div className="sticky top-0 z-10 border-b bg-card/80 p-3 backdrop-blur">
+              <div className="flex items-center gap-2 rounded-lg border bg-muted/50 px-3 py-2">
+                <PenLine className="h-3.5 w-3.5 text-muted-foreground" />
+                <input
+                  placeholder="Search fields…"
+                  className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                  readOnly
+                />
+                <span className="rounded border bg-card px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">⌘K</span>
+              </div>
+            </div>
+            <div className="p-5">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal className="h-3.5 w-3.5 text-primary" />
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Design</span>
+                <span className="ml-auto font-mono text-[10px] text-muted-foreground">↵ to apply</span>
+              </div>
+              <DesignPicker className="mt-3" meta={meta} data={data} actions={actions} />
+              <div className="mt-6 flex items-center gap-2 border-t pt-6">
+                <PenLine className="h-3.5 w-3.5 text-primary" />
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Content</span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+              <div className="mt-3">{buildForm(meta.key, data, actions)}</div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex-1 overflow-y-auto px-5 py-6">
+            <div className="rounded-xl border bg-card p-4 shadow-sm">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal className="h-3.5 w-3.5 text-primary" />
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Design</span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+              <DesignPicker className="mb-0 mt-3" meta={meta} data={data} actions={actions} />
+            </div>
+            <div className="mt-4 rounded-xl border bg-card p-4 shadow-sm">
+              <div className="flex items-center gap-2">
+                <PenLine className="h-3.5 w-3.5 text-primary" />
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Content</span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+              <div className="mt-3">{buildForm(meta.key, data, actions)}</div>
+            </div>
+          </div>
+        )}
       </aside>
     </div>
   );

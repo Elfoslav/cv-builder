@@ -19,7 +19,7 @@ export const ThemeSwitcher = ({ theme, setTheme }: ThemeSwitcherProps) => {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="h-7 gap-1.5 px-2 text-xs" title="Color theme">
+        <Button variant="outline" size="sm" className="gap-1.5 px-2" title="Color theme">
           <Palette className="h-3.5 w-3.5 text-primary" />
           <span className="max-w-24 truncate">{active?.name}</span>
           <ChevronDown className="h-3 w-3 opacity-60" />

@@ -171,7 +171,7 @@ const EditableSection = ({
                 variant="ghost"
                 disabled={!meta.canMoveUp}
                 onClick={() => actions.moveSection(meta.key, -1)}
-                className="h-6 w-6 text-muted-foreground hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
+                className="h-7 w-7 text-muted-foreground disabled:pointer-events-none disabled:opacity-30"
                 title="Move section up"
               >
                 <ArrowUp className="h-3 w-3" />
@@ -181,7 +181,7 @@ const EditableSection = ({
                 variant="ghost"
                 disabled={!meta.canMoveDown}
                 onClick={() => actions.moveSection(meta.key, 1)}
-                className="h-6 w-6 text-muted-foreground hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
+                className="h-7 w-7 text-muted-foreground disabled:pointer-events-none disabled:opacity-30"
                 title="Move section down"
               >
                 <ArrowDown className="h-3 w-3" />
@@ -192,7 +192,7 @@ const EditableSection = ({
             size="sm"
             variant="ghost"
             onClick={() => onStartEditing(meta.key)}
-            className="h-6 gap-1 rounded-full px-2 text-[11px] text-foreground hover:bg-muted hover:text-primary"
+            className="h-7 gap-1 px-2 text-xs text-foreground"
           >
             <Pencil className="h-3 w-3" /> Edit
           </Button>
@@ -273,10 +273,10 @@ const EditorDrawer = ({
             <h3 className="truncate text-sm font-semibold text-foreground">Editing — {meta.title}</h3>
           </div>
           <div className="flex shrink-0 items-center gap-1.5">
-            <Button size="sm" variant="ghost" className="h-8" onClick={onCancel}>
+            <Button size="sm" variant="ghost" onClick={onCancel}>
               <X className="h-3.5 w-3.5" /> Cancel
             </Button>
-            <Button size="sm" className="h-8" onClick={onDone}>
+            <Button size="sm" onClick={onDone}>
               <Check className="h-3.5 w-3.5" /> Done
             </Button>
           </div>

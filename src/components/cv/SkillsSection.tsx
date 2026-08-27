@@ -169,13 +169,13 @@ export const SkillsSection = ({ data, setData }: Props) => {
                     className="h-8 flex-1 text-sm"
                   />
                   <LevelSelect value={s.percentage} onChange={(pct) => patchSkill(s.id, { percentage: pct })} />
-                  <Button size="icon" variant="ghost" className="h-8 w-7" disabled={sIdx === 0} onClick={() => moveSkill(s.id, -1)}>
+                  <Button size="icon" variant="ghost" className="h-7 w-7" disabled={sIdx === 0} onClick={() => moveSkill(s.id, -1)}>
                     <ArrowUp className="h-3.5 w-3.5" />
                   </Button>
-                  <Button size="icon" variant="ghost" className="h-8 w-7" disabled={sIdx === items.length - 1} onClick={() => moveSkill(s.id, 1)}>
+                  <Button size="icon" variant="ghost" className="h-7 w-7" disabled={sIdx === items.length - 1} onClick={() => moveSkill(s.id, 1)}>
                     <ArrowDown className="h-3.5 w-3.5" />
                   </Button>
-                  <Button size="icon" variant="ghost" className="h-8 w-7" onClick={() => removeSkill(s.id)}>
+                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => removeSkill(s.id)}>
                     <Trash2 className="h-3.5 w-3.5 text-destructive" />
                   </Button>
                 </div>

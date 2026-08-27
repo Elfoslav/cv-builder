@@ -63,8 +63,8 @@ export const LangDialogs = ({ m }: LangMenuContentProps) => (
           autoFocus
         />
         <DialogFooter>
-          <Button variant="ghost" onClick={() => m.setAddOpen(false)}>Cancel</Button>
-          <Button onClick={() => m.add(m.newName)}>Add</Button>
+          <Button size="sm" variant="ghost" onClick={() => m.setAddOpen(false)}>Cancel</Button>
+          <Button size="sm" onClick={() => m.add(m.newName)}>Add</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

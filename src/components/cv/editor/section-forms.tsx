@@ -110,16 +110,16 @@ const ItemShell = ({
       <span className="truncate text-xs font-semibold text-foreground">{title}</span>
       <div className="flex shrink-0 gap-0.5">
         {onMoveUp && (
-          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={onMoveUp} title="Move up">
+          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={onMoveUp} title="Move up">
             <ArrowUp className="h-3.5 w-3.5" />
           </Button>
         )}
         {onMoveDown && (
-          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={onMoveDown} title="Move down">
+          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={onMoveDown} title="Move down">
             <ArrowDown className="h-3.5 w-3.5" />
           </Button>
         )}
-        <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive" onClick={onDelete} title="Delete">
+        <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={onDelete} title="Delete">
           <Trash2 className="h-3.5 w-3.5" />
         </Button>
       </div>

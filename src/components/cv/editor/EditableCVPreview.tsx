@@ -89,20 +89,29 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
     <div data-theme={theme} className={cn("cv-theme", editingKey && "cv-editing")}>
       <div className="xl:flex xl:items-stretch xl:gap-6">
         <div className="xl:flex xl:min-w-0 xl:flex-1 xl:justify-center">
-          <CVShell
-            data={data}
-            wrap={(meta, content) => (
-              <EditableSection
-                meta={meta}
-                content={content}
+          <div className="mx-auto w-full max-w-[760px] print:mx-0 print:max-w-none">
+            <div className="overflow-hidden rounded-xl border bg-background shadow-[0_8px_32px_hsl(var(--foreground)/0.08)] print:rounded-none print:border-0 print:shadow-none">
+              <CVShell
                 data={data}
-                actions={actions}
-                isEditing={editingKey === meta.key}
-                onStartEditing={handleStartEditing}
-                onAddAndEdit={handleAddAndEdit}
+                wrap={(meta, content) => (
+                  <EditableSection
+                    meta={meta}
+                    content={content}
+                    data={data}
+                    actions={actions}
+                    isEditing={editingKey === meta.key}
+                    onStartEditing={handleStartEditing}
+                    onAddAndEdit={handleAddAndEdit}
+                  />
+                )}
               />
-            )}
-          />
+            </div>
+            <div className="mt-3 hidden justify-center print:hidden xl:flex">
+              <span className="rounded-full border bg-card px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground shadow-sm">
+                Print width • 703px • matches PDF
+              </span>
+            </div>
+          </div>
         </div>
         <EditorDrawer
           editingKey={editingKey}

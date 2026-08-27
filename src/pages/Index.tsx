@@ -310,8 +310,8 @@ const Index = () => {
         }
       />
 
-      <div className="flex-1 overflow-y-auto print:overflow-visible">
-        <div className="page-container print:px-0">
+      <div className="flex-1 overflow-y-auto bg-muted/20 print:bg-background print:overflow-visible">
+        <div className="page-container py-6 print:px-0 print:py-0 sm:py-8">
           <EditableCVPreview data={data} setData={setData} theme={theme} />
         </div>
       </div>

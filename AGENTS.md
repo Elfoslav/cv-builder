@@ -31,6 +31,10 @@
 - The builder's scroll container (`overflow-y-auto`) must stay full-width — only its **inner**
   content wrapper should be `page-container`. Putting `page-container` on the scroll element itself
   caps and centers the box, which pushes the scrollbar away from the viewport's right edge.
+- All pages must use the shared `AppTopbar` component (`src/components/layout/AppTopbar.tsx`) for
+  their topbar. It enforces identical height (`h-14`), border, backdrop, and `page-container`
+  alignment. Do not create bespoke `<header>` elements — pass page-specific actions via `left`/`right`
+  props. This guarantees the landing, builder, and `/drafts` topbars have the same height and styling.
 
 ## Verification
 

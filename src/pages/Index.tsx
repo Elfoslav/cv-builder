@@ -7,6 +7,7 @@ import { LanguageSwitcher } from "@/components/cv/LanguageSwitcher";
 import { ThemeSwitcher } from "@/components/cv/ThemeSwitcher";
 import { useCVData } from "@/lib/use-cv-data";
 import { Button } from "@/components/ui/button";
+import { AppTopbar } from "@/components/layout/AppTopbar";
 import {
   Printer, Download, Loader2, Languages, Palette, Upload, FileJson, Menu,
 } from "lucide-react";
@@ -191,9 +192,10 @@ const Index = () => {
 
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-background print:block print:h-auto">
-      <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur-md print:hidden">
-        <div className="page-container flex flex-wrap items-center justify-between gap-2 py-2">
-          <div className="flex items-center gap-2">
+      <AppTopbar
+        className="print:hidden"
+        left={
+          <>
             {import.meta.env.DEV && (
               <Button size="sm" variant="ghost" className="gap-2" asChild title="Editor design drafts">
                 <Link to="/drafts">
@@ -211,8 +213,9 @@ const Index = () => {
               deleteLanguage={deleteLanguage}
             />
             <ThemeSwitcher theme={theme} setTheme={setTheme} />
-          </div>
-
+          </>
+        }
+        right={
           <div className="flex items-center gap-1">
             <div className="hidden items-center gap-1 md:flex">
               <Button size="sm" variant="ghost" title="Export JSON" onClick={exportJSON}>
@@ -304,8 +307,8 @@ const Index = () => {
               onChange={importJSON}
             />
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <div className="flex-1 overflow-y-auto print:overflow-visible">
         <div className="page-container print:px-0">

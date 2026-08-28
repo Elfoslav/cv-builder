@@ -9,7 +9,7 @@ import { useCVData } from "@/lib/use-cv-data";
 import { Button } from "@/components/ui/button";
 import { AppTopbar } from "@/components/layout/AppTopbar";
 import {
-  Printer, Download, Loader2, Languages, Palette, Upload, FileJson, Menu,
+  Printer, Download, Loader2, Languages, Palette, Upload, FileJson, Menu, Home,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -196,6 +196,12 @@ const Index = () => {
         className="print:hidden"
         left={
           <>
+            <Button size="sm" variant="ghost" className="gap-2" asChild title="Back to homepage">
+              <Link to="/">
+                <Home className="h-4 w-4" />
+                <span className="hidden text-xs font-medium sm:inline">Home</span>
+              </Link>
+            </Button>
             {import.meta.env.DEV && (
               <Button size="sm" variant="ghost" className="gap-2" asChild title="Editor design drafts">
                 <Link to="/drafts">

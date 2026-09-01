@@ -20,6 +20,7 @@
 - Color themes (`data-theme` CSS tokens) and per-section designs (`data.sectionDesigns`) are
   orthogonal. Theme ids live in `src/lib/themes.ts`, design ids in `src/lib/section-designs.ts`.
 - CV data is persisted to `localStorage` via `useCVData` (`src/lib/use-cv-data.ts`).
+- Routing: `/` is the marketing landing, `/resume-builder` is the private builder, `/themes` is the public themes gallery, and `/drafts` is dev-only. `/drafts` must be guarded by `import.meta.env.DEV` in `src/App.tsx` (render `NotFound` in prod) and never linked publicly. Link public theme browsing to `/themes`; the homepage’s marquee strip in the “One resume, multiple looks” section is the preview for `/themes`.
 
 ## Layout
 

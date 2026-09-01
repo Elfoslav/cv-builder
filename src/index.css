@@ -115,59 +115,20 @@
 	* {
 		-webkit-print-color-adjust: exact !important;
 		print-color-adjust: exact !important;
-		/* Strip effects that commonly cause rendering glitches in PDF */
-		box-shadow: none !important;
-		text-shadow: none !important;
+		/* Only blur and motion are dropped — they never render reliably in a
+		   static PDF. Everything else (gradients, shadows, the grid backdrop) is
+		   kept so the exported PDF matches the on-screen design exactly. */
 		filter: none !important;
 		backdrop-filter: none !important;
 		-webkit-backdrop-filter: none !important;
 		transition: none !important;
 		animation: none !important;
 	}
-	/* Keep structural gradient accents (card accent bars, gradient headlines,
-	   buttons) so designs like the Accent-card variant export faithfully.
-	   Only drop large decorative overlays and subtle surface shading for
-	   clean, predictable flat output. */
-	.bg-gradient-glow {
-		background: transparent !important;
-	}
-	/* The page has no margin (`.cv-theme` fills the sheet edge-to-edge), so
-	   put the page gutter *inside* the theme: pad the wrapper and give it the
-	   themed background. Content gets breathing room while every visible edge
-	   stays theme-colored (no white un-themed border around the CV). */
+	/* Page gutters come from the `@page` margin now; the wrapper only needs the
+	   themed content background. The `@page` margin area is themed by the root
+	   background propagating from the `data-theme`d <html> (see export-pdf.ts). */
 	.cv-theme {
 		background: hsl(var(--background));
-		padding: 12mm;
-	}
-	/* Fixed background covering the entire page (including last page gaps).
-	   `position: fixed` repeats on every printed page. `inset: -12mm` extends
-	   into the @page margin area so the theme colour fills the whole sheet. */
-	.cv-theme::before {
-		content: "";
-		position: fixed;
-		inset: -12mm;
-		background: hsl(var(--background));
-		z-index: -1;
-	}
-	.bg-gradient-card {
-		background: hsl(var(--card)) !important;
-		background-image: none !important;
-	}
-	/* Preserve hobby card gradients and shadows in print so accent / soft
-	   gradient variants match their on-screen appearance. */
-	.cv-hobby-card.bg-gradient-card {
-		background: var(--gradient-card) !important;
-		background-image: var(--gradient-card) !important;
-		box-shadow: var(--shadow-card) !important;
-	}
-	/* Remove decorative grid background in print */
-	.grid-bg {
-		background-image: none !important;
-		mask-image: none !important;
-	}
-	/* Neutralize glow text effects */
-	.glow-text {
-		text-shadow: none !important;
 	}
 	/* Force two-column layouts even on narrow print page widths.
 	   The card grid now uses a fixed (non-responsive) column count, so
@@ -188,23 +149,13 @@
 	.empty-section {
 		display: none !important;
 	}
-	/* Tighten section spacing in print so the first page fills naturally */
+	/* Inter-section spacing only — the top/bottom page gutter is the `@page`
+	   margin, applied uniformly to every page including continuation pages. */
 	main > section {
-		/* Every page can start on a section, so give each section its own
-		   top gutter: `.cv-theme` padding only pads the document start (page 1)
-		   and end (last page), not the tops of later pages. 12mm matches the
-		   side gutters, keeping the same themed margin on all pages.
-		   The negative margin cancels the padding on pages where the section
-		   stays put (no double spacing), while at the top of a new page the
-		   top margin is dropped and the padding renders as breathing room
-		   below the page edge. */
-		padding-top: 12mm !important;
-		margin-top: -12mm !important;
 		margin-bottom: 2rem !important;
 	}
 	main {
-		padding-top: 0 !important;
-		padding-bottom: 1rem !important;
+		padding: 0 !important;
 	}
 	/* Keep each discrete item on one page so a break lands between items,
 	   not through the middle of one: skill groups already carry `.avoid-break`,
@@ -225,22 +176,23 @@
 		page-break-inside: avoid;
 	}
 
-	/* Gutter on continuation pages: an invisible wrapper around each breakable
-	   item carries the page gutter. A negative margin cancels the padding on
-	   pages where the item stays put (no double spacing), while at the top of a
-	   new page the top margin is dropped and the padding renders as breathing
-	   room below the page edge. */
+	/* Keep each breakable item whole so a break lands between items, not through
+	   one. The top-of-page gutter is provided by the `@page` margin, so no
+	   per-item padding/negative-margin trick is needed here anymore. */
 	.page-gutter,
 	.cv-skill-group {
 		break-inside: avoid;
 		page-break-inside: avoid;
-		padding-top: 12mm;
-		margin-top: -12mm;
 	}
 }
 
 @page {
-	margin: 0;
+	/* A real page margin gives every page — including continuation pages — the
+	   same 12mm gutter on all four sides. The themed full-bleed background is
+	   preserved because the print document's <html> carries the `data-theme`
+	   (set in export-pdf.ts), so the root background propagates across the whole
+	   sheet, margins included. */
+	margin: 12mm;
 	/* Hide browser-injected headers/footers (URL, date, page numbers) */
 	marks: none;
 	@top-left {

@@ -34,12 +34,17 @@ export async function exportElementToPDF(
   // Clone the element so we don't disturb the live DOM.
   const clone = element.cloneNode(true) as HTMLElement;
 
+  // Carry the CV's theme onto the print document's <html> so the themed
+  // background propagates across the whole sheet — including the `@page`
+  // margin area, which the root element's background paints in print.
+  const themeAttr = element.getAttribute("data-theme");
+
   // Remove any elements explicitly hidden in print — they shouldn't take up
   // space or affect layout in the print document either.
   clone.querySelectorAll(".print\\:hidden, [data-print-hide]").forEach((n) => n.remove());
 
   const html = `<!DOCTYPE html>
-<html lang="en">
+<html lang="en"${themeAttr ? ` data-theme="${escapeHtml(themeAttr)}"` : ""}>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -52,7 +57,9 @@ ${styleTags}
   html, body {
     margin: 0;
     padding: 0;
-    background: #ffffff;
+    /* Themed (via the <html> data-theme) so the whole sheet — including the
+       @page margin area — carries the CV's background color, not white. */
+    background: hsl(var(--background));
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }

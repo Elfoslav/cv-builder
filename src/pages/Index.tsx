@@ -9,7 +9,7 @@ import { useCVData } from "@/lib/use-cv-data";
 import { Button } from "@/components/ui/button";
 import { AppTopbar } from "@/components/layout/AppTopbar";
 import {
-  Printer, Download, Loader2, Languages, Palette, Upload, FileJson, Menu, Home,
+  Download, Loader2, Languages, Upload, FileJson, MoreHorizontal,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -91,31 +91,16 @@ const Index = () => {
     await runCVPrintFlow(langData, themeId, (cvRoot) => exportElementToPDF(cvRoot, fileName));
   };
 
-  const handlePrint = async () => {
-    if (exporting) return;
-    setExporting(true);
-    const safeName = safeFileName(data.name);
-    try {
-      await printCV(data, `${safeName} - CV.pdf`, theme);
-      sonnerToast.success('Opened the print dialog for "' + safeName + '"');
-    } catch (err) {
-      console.error("Print failed", err);
-      sonnerToast.error("Print failed. Try Download PDF instead.");
-    } finally {
-      setExporting(false);
-    }
-  };
-
   const handleDownloadPDF = async () => {
     if (exporting) return;
     setExporting(true);
     const safeName = safeFileName(data.name);
     try {
       await printCV(data, `${safeName} - CV.pdf`, theme);
-      sonnerToast.success('Choose "Save as PDF" in the print dialog');
+      sonnerToast.success('Print dialog opened — pick "Save as PDF" (or a printer)');
     } catch (err) {
       console.error("PDF export failed", err);
-      sonnerToast.error("PDF export failed. Try the Print option as a fallback.");
+      sonnerToast.error("Couldn't open the print dialog. Please try again.");
     } finally {
       setExporting(false);
     }
@@ -183,7 +168,7 @@ const Index = () => {
         }));
         uiToast({ title: "Imported", description: "CV data loaded successfully." });
       } catch {
-        uiToast({ title: "Import failed", description: "Invalid JSON file.", variant: "destructive" });
+        uiToast({ title: "Import failed", description: "That file isn't a valid CV backup.", variant: "destructive" });
       }
     };
     reader.readAsText(file);
@@ -196,111 +181,89 @@ const Index = () => {
         className="print:hidden"
         left={
           <>
-            <Button size="sm" variant="ghost" className="gap-2" asChild title="Back to homepage">
-              <Link to="/">
-                <Home className="h-4 w-4" />
-                <span className="hidden text-xs font-medium sm:inline">Home</span>
-              </Link>
-            </Button>
-            {import.meta.env.DEV && (
-              <Button size="sm" variant="ghost" className="gap-2" asChild title="Editor design drafts">
-                <Link to="/drafts">
-                  <Palette className="h-4 w-4" />
-                  <span className="text-xs font-medium">Drafts</span>
-                </Link>
-              </Button>
-            )}
-            <LanguageSwitcher
-              languages={languages}
-              activeId={activeId}
-              setActiveId={setActiveId}
-              addLanguage={addLanguage}
-              renameLanguage={renameLanguage}
-              deleteLanguage={deleteLanguage}
-            />
-            <ThemeSwitcher theme={theme} setTheme={setTheme} />
+            <Link to="/" className="flex shrink-0 items-center gap-2 font-semibold" title="Back to homepage">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gradient-primary text-[11px] font-bold tracking-tight text-primary-foreground shadow-sm">
+                CR
+              </span>
+              <span className="hidden whitespace-nowrap text-sm font-semibold lg:inline">{APP_NAME}</span>
+            </Link>
+            <div className="hidden h-6 w-px bg-border sm:block" />
+            <Link
+              to="/themes"
+              className="hidden font-mono text-xs tracking-wide text-muted-foreground underline-offset-4 hover:text-foreground hover:underline sm:inline"
+              title="Browse themes"
+            >
+              Themes
+            </Link>
+            <div className="flex items-center gap-1.5">
+              <LanguageSwitcher
+                languages={languages}
+                activeId={activeId}
+                setActiveId={setActiveId}
+                addLanguage={addLanguage}
+                renameLanguage={renameLanguage}
+                deleteLanguage={deleteLanguage}
+              />
+              <ThemeSwitcher theme={theme} setTheme={setTheme} />
+            </div>
           </>
         }
+        center={
+          <span className="hidden min-w-0 max-w-[32ch] truncate text-sm font-medium text-foreground lg:block" title={`${data.name} — ${data.role}`}>
+            {data.name} — {data.role || "Resume"}
+          </span>
+        }
         right={
-          <div className="flex items-center gap-1">
-            <div className="hidden items-center gap-1 md:flex">
-              <Button size="sm" variant="ghost" title="Export JSON" onClick={exportJSON}>
-                <FileJson className="h-4 w-4" />
-                <span className="text-xs font-medium">JSON</span>
-              </Button>
-              <Button size="sm" variant="ghost" title="Import JSON" onClick={() => importInput.current?.click()}>
-                <Upload className="h-4 w-4" />
-                <span className="text-xs font-medium">Import</span>
-              </Button>
-              <Button size="sm" variant="ghost" className="gap-2" onClick={handlePrint}>
-                <Printer className="h-4 w-4" />
-                <span className="text-xs font-medium">Print</span>
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button size="sm" className="gap-2" disabled={exporting}>
-                    {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-                    <span className="text-xs font-medium">{exporting ? "Generating…" : "Download PDF"}</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem onClick={handleDownloadPDF} disabled={exporting}>
-                    <Download className="mr-2 h-4 w-4" />
-                    Current language
-                  </DropdownMenuItem>
-                  {languages.length > 1 && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuLabel className="text-xs text-muted-foreground">
-                        All languages
-                      </DropdownMenuLabel>
-                      <DropdownMenuItem onClick={handleDownloadAllPDFs} disabled={exporting}>
-                        <Languages className="mr-2 h-4 w-4" />
-                        Download all ({languages.length})
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-
+          <div className="flex items-center gap-1.5">
+            {/* Secondary actions, tucked into an overflow menu to keep the bar calm */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="ghost" className="md:hidden" aria-label="Menu">
-                  <Menu className="h-4 w-4" />
+                <Button size="sm" variant="ghost" className="gap-1.5" aria-label="More actions">
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="hidden text-xs font-medium sm:inline">More</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-60">
-                {import.meta.env.DEV && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/drafts">
-                      <Palette className="mr-2 h-4 w-4" />
-                      Design drafts
-                    </Link>
-                  </DropdownMenuItem>
-                )}
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="text-xs text-muted-foreground">Back up your CV</DropdownMenuLabel>
                 <DropdownMenuItem onClick={exportJSON}>
                   <FileJson className="mr-2 h-4 w-4" />
-                  Export JSON
+                  Export data
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => importInput.current?.click()}>
                   <Upload className="mr-2 h-4 w-4" />
-                  Import JSON
+                  Import data
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handlePrint}>
-                  <Printer className="mr-2 h-4 w-4" />
-                  Print
-                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Primary action */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" className="gap-2" disabled={exporting}>
+                  {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                  {exporting ? (
+                    <span className="text-xs font-medium">Generating…</span>
+                  ) : (
+                    <span className="text-xs font-medium">
+                      <span className="hidden sm:inline">Download </span>PDF
+                    </span>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem onClick={handleDownloadPDF} disabled={exporting}>
-                  {exporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
-                  {exporting ? "Generating…" : "Download PDF"}
+                  <Download className="mr-2 h-4 w-4" />
+                  Current language
                 </DropdownMenuItem>
                 {languages.length > 1 && (
-                  <DropdownMenuItem onClick={handleDownloadAllPDFs} disabled={exporting}>
-                    <Languages className="mr-2 h-4 w-4" />
-                    Download all ({languages.length})
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel className="text-xs text-muted-foreground">All languages</DropdownMenuLabel>
+                    <DropdownMenuItem onClick={handleDownloadAllPDFs} disabled={exporting}>
+                      <Languages className="mr-2 h-4 w-4" />
+                      Download all ({languages.length})
+                    </DropdownMenuItem>
+                  </>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>

@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Landing from "./pages/Landing.tsx";
 import Index from "./pages/Index.tsx";
 import DesignDrafts from "./pages/DesignDrafts.tsx";
+import Themes from "./pages/Themes.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -19,7 +20,12 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/resume-builder" element={<Index />} />
-          <Route path="/drafts" element={<DesignDrafts />} />
+          <Route path="/themes" element={<Themes />} />
+          {import.meta.env.DEV ? (
+            <Route path="/drafts" element={<DesignDrafts />} />
+          ) : (
+            <Route path="/drafts" element={<NotFound />} />
+          )}
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

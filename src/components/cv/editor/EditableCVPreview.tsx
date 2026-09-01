@@ -255,7 +255,7 @@ const EditorDrawer = ({
   onDone: () => void;
   onCancel: () => void;
 }) => {
-  const [activeTab, setActiveTab] = useState<"design" | "content">("content");
+  const [activeTab, setActiveTab] = useState<"design" | "content">("design");
   if (!editingKey) return null;
 
   const meta = getEditorMeta(editingKey, data);

@@ -132,6 +132,13 @@
 	.cv-theme {
 		background: hsl(var(--background));
 	}
+	/* Full-bleed header in export: cancel the print-sheet cell's 12mm side
+	   padding (and .cv-main's 1rem) so the header band reaches the page's left
+	   and right edges; content stays aligned via matching padding. */
+	.cv-hero {
+		margin-inline: calc(-1rem - 12mm);
+		padding-inline: calc(1rem + 12mm);
+	}
 	/* Force two-column layouts even on narrow print page widths.
 	   The card grid now uses a fixed (non-responsive) column count, so
 	   this print override is only referenced by the checks list. */
@@ -295,6 +302,15 @@
    content box. */
 .cv-main {
 	max-width: 703px;
+}
+
+/* Full-bleed header backdrop: the glow/grid should reach the CV's side edges,
+   not stop at the content column. Negative inline margin cancels `.cv-main`'s
+   px-4 (1rem) so the header band spans edge-to-edge; matching padding keeps the
+   header content aligned with the rest of the sections. */
+.cv-hero {
+	margin-inline: -1rem;
+	padding-inline: 1rem;
 }
 
 /* Editing keeps the selected section highlighted while the drawer lives

@@ -19,31 +19,42 @@ const pick = <T extends object, K extends keyof T>(obj: T, keys: readonly K[]): 
 
 export const snapshotSection = (data: CVData, key: SectionKey): SectionSnapshot => {
   const L = data.labels;
+  // The editor's "Design" controls mutate these live for the section being
+  // edited (layout, card/skill column counts). Snapshot them for every section
+  // so Cancel restores the original design as well as the content. Only the
+  // edited section changes while the drawer is open, so restoring the whole
+  // objects reverts exactly that change and leaves other sections untouched.
+  const design: Partial<CVData> = {
+    sectionDesigns: clone(data.sectionDesigns),
+    cardColumns: clone(data.cardColumns),
+    skillColumns: clone(data.skillColumns),
+  };
   switch (key) {
     case "hero":
       return {
-        fields: pick(data, [
-          "name", "role", "bio", "email", "phone", "location", "github", "linkedin",
-        ] as const),
+        fields: {
+          ...design,
+          ...pick(data, ["name", "role", "bio", "email", "phone", "location", "github", "linkedin"] as const),
+        },
         labels: {},
       };
     case "about":
-      return { fields: { about: data.about }, labels: pick(L, ["aboutTitle", "aboutSubtitle"] as const) };
+      return { fields: { ...design, about: data.about }, labels: pick(L, ["aboutTitle", "aboutSubtitle"] as const) };
     case "skills":
       return {
-        fields: { skills: clone(data.skills), skillGroups: clone(data.skillGroups) },
+        fields: { ...design, skills: clone(data.skills), skillGroups: clone(data.skillGroups) },
         labels: pick(L, ["skillsTitle", "skillsSubtitle"] as const),
       };
     case "experience":
-      return { fields: { experience: clone(data.experience) }, labels: pick(L, ["experienceTitle", "experienceSubtitle"] as const) };
+      return { fields: { ...design, experience: clone(data.experience) }, labels: pick(L, ["experienceTitle", "experienceSubtitle"] as const) };
     case "education":
-      return { fields: { education: clone(data.education) }, labels: pick(L, ["educationTitle", "educationSubtitle"] as const) };
+      return { fields: { ...design, education: clone(data.education) }, labels: pick(L, ["educationTitle", "educationSubtitle"] as const) };
     case "projects":
-      return { fields: { projects: clone(data.projects) }, labels: pick(L, ["projectsTitle", "projectsSubtitle"] as const) };
+      return { fields: { ...design, projects: clone(data.projects) }, labels: pick(L, ["projectsTitle", "projectsSubtitle"] as const) };
     case "hobbies":
-      return { fields: { hobbies: clone(data.hobbies) }, labels: pick(L, ["hobbiesTitle", "hobbiesSubtitle"] as const) };
+      return { fields: { ...design, hobbies: clone(data.hobbies) }, labels: pick(L, ["hobbiesTitle", "hobbiesSubtitle"] as const) };
     case "footer":
-      return { fields: {}, labels: pick(L, ["footerThanks", "footerCopyright"] as const) };
+      return { fields: { ...design }, labels: pick(L, ["footerThanks", "footerCopyright"] as const) };
   }
 };
 

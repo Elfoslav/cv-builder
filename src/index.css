@@ -48,7 +48,7 @@
 		--skill-low: 350 75% 55%;
 
 		--gradient-primary: linear-gradient(135deg, hsl(220 75% 45%), hsl(199 85% 50%));
-		--gradient-glow: radial-gradient(circle at 50% 0%, hsl(220 75% 45% / 0.1), transparent 70%);
+		--gradient-glow: linear-gradient(180deg, hsl(220 75% 45% / 0.1), transparent);
 		--gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 20% 98%));
 
 		--shadow-glow: 0 10px 40px hsl(220 75% 45% / 0.15);
@@ -94,6 +94,15 @@
 	}
 }
 
+/* Gradient-filled text, used by the gradient-headline card design. */
+.text-gradient-primary {
+	background-image: var(--gradient-primary);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	color: transparent;
+}
+
 @media print {
 	/* Force backgrounds & colors to render in print/PDF */
 	html,
@@ -106,53 +115,30 @@
 	* {
 		-webkit-print-color-adjust: exact !important;
 		print-color-adjust: exact !important;
-		/* Strip effects that commonly cause rendering glitches in PDF */
-		box-shadow: none !important;
-		text-shadow: none !important;
+		/* Only blur and motion are dropped — they never render reliably in a
+		   static PDF. Everything else (gradients, shadows, the grid backdrop) is
+		   kept so the exported PDF matches the on-screen design exactly. */
 		filter: none !important;
 		backdrop-filter: none !important;
 		-webkit-backdrop-filter: none !important;
 		transition: none !important;
 		animation: none !important;
 	}
-	/* Replace gradient backgrounds with flat surfaces for predictable output */
-	.bg-gradient-card,
-	.bg-gradient-primary,
-	.bg-gradient-glow,
-	[class*="bg-gradient-"] {
-		background: hsl(var(--card)) !important;
-		background-image: none !important;
+	/* Full-bleed themed background: with `@page { margin: 0 }` the sheet is
+	   edge-to-edge, so the themed background (root <html> + this wrapper) fills
+	   the whole page — margins included. Page gutters are provided instead by
+	   the repeating table header/footer below (see .cv-print-sheet), which the
+	   `@page` margin area cannot be (it always prints paper-white). */
+	.cv-theme {
+		background: hsl(var(--background));
 	}
-	/* Remove decorative grid background in print */
-	.grid-bg {
-		background-image: none !important;
-		mask-image: none !important;
-	}
-	/* Neutralize glow text effects */
-	.glow-text {
-		text-shadow: none !important;
-	}
-	/* Force two-column layouts even on narrow print page widths */
-	.print-grid-2 {
-		display: grid !important;
-		grid-template-columns: 1fr 1fr !important;
-		gap: 1.5rem 2rem !important;
-	}
-	/* Inner two-column skill grid in print */
-	.print-grid-2 .grid.sm\:grid-cols-2 {
-		display: grid !important;
-		grid-template-columns: 1fr 1fr !important;
-		gap: 0.5rem 1.25rem !important;
-	}
+	/* Force two-column layouts even on narrow print page widths.
+	   The card grid now uses a fixed (non-responsive) column count, so
+	   this print override is only referenced by the checks list. */
 	.print-grid-2-tight {
 		display: grid !important;
 		grid-template-columns: 1fr 1fr !important;
 		gap: 0.5rem !important;
-	}
-	.print-grid-5 {
-		display: grid !important;
-		grid-template-columns: repeat(5, 1fr) !important;
-		gap: 1rem !important;
 	}
 	/* Avoid awkward page breaks inside small items only.
      Sections themselves must be allowed to break so they can flow up
@@ -165,18 +151,70 @@
 	.empty-section {
 		display: none !important;
 	}
-	/* Tighten section spacing in print so the first page fills naturally */
+	/* Inter-section spacing only — the top/bottom page gutter is the `@page`
+	   margin, applied uniformly to every page including continuation pages. */
 	main > section {
 		margin-bottom: 2rem !important;
 	}
 	main {
-		padding-top: 1rem !important;
-		padding-bottom: 1rem !important;
+		padding: 0 !important;
+	}
+	/* Keep each discrete item on one page so a break lands between items,
+	   not through the middle of one: skill groups already carry `.avoid-break`,
+	   and everything below is a per-entry block (timeline entries, bordered &
+	   card rows, card grids, skill bars/chips, hobby pills/checks). */
+	.cv-timeline-item,
+	.cv-timeline-row,
+	.cv-project-row,
+	.cv-timeline-card,
+	.cv-project-card,
+	.cv-hobby-card,
+	.cv-skillbar,
+	.cv-skill-chip,
+	.cv-skill-dot,
+	.cv-hobby-pill,
+	.cv-hobby-check {
+		break-inside: avoid;
+		page-break-inside: avoid;
+	}
+
+	/* Keep each breakable item whole so a break lands between items, not through
+	   one. Top/bottom page gutters come from the repeating table header/footer. */
+	.page-gutter,
+	.cv-skill-group {
+		break-inside: avoid;
+		page-break-inside: avoid;
+	}
+
+	/* Export print sheet (built in export-pdf.ts): the CV content sits in the
+	   <tbody>; the empty <thead>/<tfoot> repeat on EVERY printed page (default
+	   table behaviour), producing a consistent 12mm top & bottom gutter on
+	   continuation pages too. Horizontal gutter comes from the cell padding.
+	   Because these are content — not `@page` margins — the themed full-bleed
+	   background shows through behind them. */
+	.cv-print-gutter {
+		height: 12mm;
 	}
 }
 
+/* Print-sheet table structure — only present in the exported document. Kept
+   outside @media print so the iframe lays it out correctly before printing. */
+.cv-print-sheet {
+	width: 100%;
+	border-collapse: collapse;
+}
+.cv-print-sheet td {
+	padding: 0 12mm;
+	border: 0;
+	vertical-align: top;
+}
+
 @page {
-	margin: 12mm;
+	/* Zero margin so the sheet is edge-to-edge and the themed background bleeds
+	   to the paper edge on every page. The visual page gutters are provided by
+	   the print-sheet table instead (see .cv-print-sheet), which — unlike an
+	   `@page` margin — does not force a white border. */
+	margin: 0;
 	/* Hide browser-injected headers/footers (URL, date, page numbers) */
 	marks: none;
 	@top-left {
@@ -214,6 +252,412 @@
 			linear-gradient(hsl(var(--border) / 0.4) 1px, transparent 1px),
 			linear-gradient(90deg, hsl(var(--border) / 0.4) 1px, transparent 1px);
 		background-size: 40px 40px;
-		mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black, transparent);
+		mask-image: linear-gradient(to bottom, black, transparent);
+	-webkit-mask-image: linear-gradient(to bottom, black, transparent);
+	}
+
+	/* Shared page container: the single max-width every topbar and page
+	   content aligns to, so all pages share the same horizontal rhythm. */
+	.page-container {
+		@apply mx-auto w-full max-w-7xl px-4;
+	}
+}
+
+/* ==========================================================================
+   Resume themes — draft designs
+   Applied via `data-theme` on the `.cv-theme` CV wrapper. Every CV
+   component reads these HSL tokens with <var()>, so overriding them per
+   attribute re-skins the whole document (hero, cards, timeline, bars,
+   footer) with no component changes. Keep the swatches in src/lib/themes.ts
+   in sync with these blocks.
+   ========================================================================== */
+
+.cv-theme {
+	--theme-heading: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Seamless marquee used by the theme showcase (see ThemeMarquee). Items are
+   duplicated in the DOM, so translating by -50% loops without a visible seam. */
+@keyframes cv-marquee {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+/* The CV is a fixed-size print artifact: the editor canvas renders at the
+   same width as the printed/PDF page so grid item widths (and therefore
+   text wrapping) match exactly between view and export. A4 at 96dpi is
+   ~794px wide, but the print page adds 12mm themed padding per side inside
+   `.cv-theme`, so the live canvas compresses to ~703px to match the print
+   content box. */
+.cv-main {
+	max-width: 703px;
+}
+
+/* Editing keeps the selected section highlighted while the drawer lives
+   separately as a fixed overlay, so the preview never reflows. */
+.cv-editing .cv-section-edit {
+	position: relative;
+}
+
+.cv-theme h1,
+.cv-theme h2,
+.cv-theme h3 {
+	font-family: var(--theme-heading);
+}
+
+/* --- The reference design: vivid indigo → cyan -------------------------- */
+[data-theme="indigo"] {
+	--background: 0 0% 100%;
+	--foreground: 224 30% 12%;
+	--card: 0 0% 100%;
+	--card-foreground: 224 30% 12%;
+	--primary: 240 70% 48%;
+	--primary-foreground: 0 0% 100%;
+	--primary-glow: 240 85% 60%;
+	--secondary: 240 20% 96%;
+	--secondary-foreground: 230 25% 18%;
+	--muted: 240 15% 96%;
+	--muted-foreground: 230 12% 40%;
+	--accent: 197 85% 45%;
+	--accent-foreground: 0 0% 100%;
+	--border: 232 20% 90%;
+	--input: 232 20% 92%;
+	--ring: 240 70% 48%;
+	--radius: 0.65rem;
+	--gradient-primary: linear-gradient(135deg, hsl(242 78% 50%), hsl(197 90% 46%));
+	--gradient-glow: linear-gradient(180deg, hsl(242 80% 56% / 0.12), transparent);
+	--gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(240 25% 98%));
+	--shadow-glow: 0 10px 40px hsl(240 80% 50% / 0.16);
+	--shadow-card: 0 4px 20px hsl(230 30% 20% / 0.08);
+	--skill-high: 142 70% 40%;
+	--skill-mid: 38 90% 50%;
+	--skill-low: 350 75% 55%;
+	--terminal-yellow: 38 90% 45%;
+}
+
+/* --- Classic Serif: traditional paper résumé --------------------------- */
+[data-theme="classic"] {
+	--theme-heading: Georgia, "Times New Roman", serif;
+	font-family: Georgia, "Times New Roman", serif;
+	--background: 44 33% 97%;
+	--foreground: 220 25% 18%;
+	--card: 44 33% 99%;
+	--card-foreground: 220 25% 18%;
+	--primary: 214 50% 22%;
+	--primary-foreground: 44 33% 97%;
+	--primary-glow: 214 50% 40%;
+	--secondary: 44 20% 92%;
+	--secondary-foreground: 215 30% 22%;
+	--muted: 44 25% 94%;
+	--muted-foreground: 220 12% 40%;
+	--accent: 195 55% 32%;
+	--accent-foreground: 0 0% 100%;
+	--border: 39 25% 86%;
+	--input: 39 25% 88%;
+	--ring: 214 50% 30%;
+	--radius: 0;
+	--gradient-primary: linear-gradient(135deg, hsl(214 50% 22%), hsl(195 55% 34%));
+	--gradient-glow: linear-gradient(180deg, hsl(214 55% 35% / 0.08), transparent);
+	--gradient-card: linear-gradient(180deg, hsl(44 33% 99%), hsl(42 25% 95%));
+	--shadow-glow: none;
+	--shadow-card: none;
+	--skill-high: 195 60% 35%;
+	--skill-mid: 38 70% 40%;
+	--skill-low: 0 60% 45%;
+	--terminal-yellow: 38 70% 40%;
+}
+
+[data-theme="classic"] .cv-dot {
+	border-radius: 0;
+	transform: rotate(45deg) scale(0.85);
+}
+
+[data-theme="classic"] .cv-section-header {
+	border-bottom-width: 2px;
+}
+
+[data-theme="classic"] .cv-hero {
+	border-bottom-width: 2px;
+}
+
+/* --- Minimal Mono: monochrome, type-driven ------------------------------ */
+[data-theme="minimal"] {
+	--theme-heading: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+	--background: 0 0% 99%;
+	--foreground: 0 0% 14%;
+	--card: 0 0% 100%;
+	--card-foreground: 0 0% 14%;
+	--primary: 0 0% 14%;
+	--primary-foreground: 0 0% 99%;
+	--primary-glow: 0 0% 35%;
+	--secondary: 0 0% 95%;
+	--secondary-foreground: 0 0% 20%;
+	--muted: 0 0% 96%;
+	--muted-foreground: 0 0% 42%;
+	--accent: 0 0% 35%;
+	--accent-foreground: 0 0% 99%;
+	--border: 0 0% 88%;
+	--input: 0 0% 92%;
+	--ring: 0 0% 25%;
+	--radius: 0;
+	--gradient-primary: linear-gradient(135deg, hsl(0 0% 14%), hsl(0 0% 35%));
+	--gradient-glow: none;
+	--gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 100%));
+	--shadow-glow: none;
+	--shadow-card: none;
+	--skill-high: 0 0% 20%;
+	--skill-mid: 0 0% 45%;
+	--skill-low: 0 0% 65%;
+	--terminal-yellow: 0 0% 45%;
+}
+
+[data-theme="minimal"] .cv-hero {
+	border-bottom-width: 2px;
+}
+
+[data-theme="minimal"] .cv-hero .grid-bg,
+[data-theme="minimal"] .cv-hero .bg-gradient-glow {
+	display: none !important;
+}
+
+[data-theme="minimal"] .cv-dot {
+	border-radius: 0;
+}
+
+[data-theme="minimal"] .cv-section-header {
+	border-bottom-width: 2px;
+}
+
+[data-theme="minimal"] .cv-section-header h2,
+[data-theme="minimal"] .cv-hero h1 {
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+}
+
+[data-theme="minimal"] .cv-project-card,
+[data-theme="minimal"] .cv-hobby-card {
+	box-shadow: none;
+}
+
+[data-theme="minimal"] .cv-hero h1 {
+	letter-spacing: 0.05em;
+}
+
+/* --- Earthy Warm: terracotta, amber & soft cream ------------------------ */
+[data-theme="earthy"] {
+	--background: 36 45% 97%;
+	--foreground: 30 20% 16%;
+	--card: 35 50% 99%;
+	--card-foreground: 30 20% 16%;
+	--primary: 18 75% 42%;
+	--primary-foreground: 36 50% 98%;
+	--primary-glow: 18 85% 52%;
+	--secondary: 33 35% 93%;
+	--secondary-foreground: 30 25% 20%;
+	--muted: 33 30% 95%;
+	--muted-foreground: 30 12% 42%;
+	--accent: 28 85% 48%;
+	--accent-foreground: 36 50% 98%;
+	--border: 30 30% 88%;
+	--input: 30 30% 90%;
+	--ring: 18 75% 45%;
+	--radius: 0.85rem;
+	--gradient-primary: linear-gradient(135deg, hsl(18 75% 45%), hsl(30 85% 45%));
+	--gradient-glow: linear-gradient(180deg, hsl(28 85% 50% / 0.1), transparent);
+	--gradient-card: linear-gradient(180deg, hsl(35 50% 99%), hsl(33 40% 95%));
+	--shadow-glow: 0 10px 40px hsl(18 60% 40% / 0.14);
+	--shadow-card: 0 4px 18px hsl(30 40% 30% / 0.08);
+	--skill-high: 18 70% 45%;
+	--skill-mid: 38 90% 45%;
+	--skill-low: 0 60% 45%;
+	--terminal-yellow: 28 90% 45%;
+}
+
+[data-theme="earthy"] .cv-hero {
+	border-bottom-color: hsl(var(--border));
+}
+
+[data-theme="earthy"] .cv-dot {
+	box-shadow: 0 0 0 4px hsl(var(--secondary));
+}
+
+/* --- Oceanic: deep teal & fresh mint ------------------------------------- */
+[data-theme="ocean"] {
+	--background: 190 40% 98%;
+	--foreground: 200 25% 14%;
+	--card: 0 0% 100%;
+	--card-foreground: 200 25% 14%;
+	--primary: 195 75% 32%;
+	--primary-foreground: 0 0% 100%;
+	--primary-glow: 195 85% 45%;
+	--secondary: 190 30% 94%;
+	--secondary-foreground: 195 40% 18%;
+	--muted: 190 25% 96%;
+	--muted-foreground: 195 15% 40%;
+	--accent: 183 90% 38%;
+	--accent-foreground: 0 0% 100%;
+	--border: 190 30% 88%;
+	--input: 190 30% 90%;
+	--ring: 195 75% 35%;
+	--radius: 0.5rem;
+	--gradient-primary: linear-gradient(135deg, hsl(195 78% 34%), hsl(180 85% 38%));
+	--gradient-glow: linear-gradient(180deg, hsl(185 80% 45% / 0.12), transparent);
+	--gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(190 30% 97%));
+	--shadow-glow: 0 10px 40px hsl(190 70% 40% / 0.16);
+	--shadow-card: 0 4px 20px hsl(200 40% 20% / 0.08);
+	--skill-high: 170 60% 35%;
+	--skill-mid: 38 90% 45%;
+	--skill-low: 350 70% 55%;
+	--terminal-yellow: 38 90% 45%;
+}
+
+[data-theme="ocean"] .cv-dot {
+	background: transparent;
+	box-shadow: 0 0 0 2px hsl(var(--primary));
+}
+
+[data-theme="ocean"] .cv-section-header {
+	border-bottom-width: 2px;
+}
+
+/* --- Sunset: rose-to-amber, gradient headline ----------------------------- */
+[data-theme="sunset"] {
+	--background: 330 60% 99%;
+	--foreground: 340 25% 14%;
+	--card: 0 0% 100%;
+	--card-foreground: 340 25% 14%;
+	--primary: 330 75% 48%;
+	--primary-foreground: 0 0% 100%;
+	--primary-glow: 332 90% 60%;
+	--secondary: 330 60% 97%;
+	--secondary-foreground: 335 30% 20%;
+	--muted: 330 50% 97%;
+	--muted-foreground: 335 15% 40%;
+	--accent: 24 90% 50%;
+	--accent-foreground: 0 0% 100%;
+	--border: 330 30% 90%;
+	--input: 330 30% 92%;
+	--ring: 330 75% 50%;
+	--radius: 0.75rem;
+	--gradient-primary: linear-gradient(135deg, hsl(332 80% 52%), hsl(20 90% 55%));
+	--gradient-glow: linear-gradient(180deg, hsl(330 85% 60% / 0.12), transparent);
+	--gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(330 60% 97%));
+	--shadow-glow: 0 10px 40px hsl(330 75% 50% / 0.16);
+	--shadow-card: 0 4px 20px hsl(340 40% 20% / 0.08);
+	--skill-high: 332 70% 45%;
+	--skill-mid: 24 90% 50%;
+	--skill-low: 0 70% 50%;
+	--terminal-yellow: 24 90% 48%;
+}
+
+[data-theme="sunset"] .cv-hero h1 {
+	background-image: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)));
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	color: transparent;
+}
+
+[data-theme="sunset"] .cv-hobby-card,
+[data-theme="sunset"] .cv-project-card {
+	border-radius: 1rem;
+}
+
+/* --- Forest: evergreen & quiet sage --------------------------------------- */
+[data-theme="forest"] {
+	--background: 140 30% 98%;
+	--foreground: 155 25% 13%;
+	--card: 0 0% 100%;
+	--card-foreground: 155 25% 13%;
+	--primary: 150 60% 30%;
+	--primary-foreground: 0 0% 100%;
+	--primary-glow: 152 70% 42%;
+	--secondary: 145 30% 94%;
+	--secondary-foreground: 150 35% 18%;
+	--muted: 145 25% 96%;
+	--muted-foreground: 150 15% 40%;
+	--accent: 158 70% 45%;
+	--accent-foreground: 0 0% 100%;
+	--border: 145 25% 88%;
+	--input: 145 25% 90%;
+	--ring: 150 60% 35%;
+	--radius: 0.35rem;
+	--gradient-primary: linear-gradient(135deg, hsl(150 65% 32%), hsl(158 75% 45%));
+	--gradient-glow: linear-gradient(180deg, hsl(152 70% 45% / 0.1), transparent);
+	--gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(145 30% 96%));
+	--shadow-glow: 0 10px 40px hsl(150 60% 40% / 0.15);
+	--shadow-card: 0 4px 20px hsl(155 40% 20% / 0.08);
+	--skill-high: 158 55% 35%;
+	--skill-mid: 38 85% 45%;
+	--skill-low: 350 65% 50%;
+	--terminal-yellow: 38 85% 45%;
+}
+
+[data-theme="forest"] .cv-dot {
+	border-radius: 3px;
+}
+
+[data-theme="forest"] .cv-section-header {
+	border-bottom-color: hsl(var(--primary) / 0.35);
+}
+
+[data-theme="forest"] .cv-hobby-card {
+	background: hsl(var(--card));
+}
+
+/* --- Slate: corporate cool-gray & navy ------------------------------------ */
+[data-theme="slate"] {
+	--background: 220 30% 99%;
+	--foreground: 224 25% 15%;
+	--card: 0 0% 100%;
+	--card-foreground: 224 25% 15%;
+	--primary: 218 30% 38%;
+	--primary-foreground: 0 0% 100%;
+	--primary-glow: 218 35% 50%;
+	--secondary: 220 25% 96%;
+	--secondary-foreground: 222 25% 20%;
+	--muted: 220 20% 97%;
+	--muted-foreground: 222 12% 42%;
+	--accent: 220 45% 50%;
+	--accent-foreground: 0 0% 100%;
+	--border: 220 20% 90%;
+	--input: 220 20% 92%;
+	--ring: 218 35% 42%;
+	--radius: 0;
+	--gradient-primary: linear-gradient(135deg, hsl(218 35% 40%), hsl(220 48% 52%));
+	--gradient-glow: linear-gradient(180deg, hsl(220 45% 55% / 0.08), transparent);
+	--gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 25% 97%));
+	--shadow-glow: none;
+	--shadow-card: none;
+	--skill-high: 218 45% 45%;
+	--skill-mid: 35 70% 45%;
+	--skill-low: 0 60% 55%;
+	--terminal-yellow: 35 70% 45%;
+}
+
+[data-theme="slate"] .cv-section-header {
+	border-bottom-width: 2px;
+}
+
+[data-theme="slate"] .cv-dot {
+	border-radius: 0;
+}
+
+[data-theme="slate"] .cv-hobby-card,
+[data-theme="slate"] .cv-project-card {
+	box-shadow: none;
+}
+
+@media print {
+	/* Gradient headline text relies on background-clip; fall back to solid
+	   ink so it always prints legibly. */
+	[data-theme="sunset"] .cv-hero h1 {
+		background-image: none !important;
+		color: hsl(var(--foreground)) !important;
+		-webkit-text-fill-color: hsl(var(--foreground)) !important;
 	}
 }

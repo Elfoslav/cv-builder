@@ -34,12 +34,33 @@ export async function exportElementToPDF(
   // Clone the element so we don't disturb the live DOM.
   const clone = element.cloneNode(true) as HTMLElement;
 
+  // Carry the CV's theme onto the print document's <html> so the themed
+  // background propagates across the whole sheet — including the `@page`
+  // margin area, which the root element's background paints in print.
+  const themeAttr = element.getAttribute("data-theme");
+
   // Remove any elements explicitly hidden in print — they shouldn't take up
   // space or affect layout in the print document either.
   clone.querySelectorAll(".print\\:hidden, [data-print-hide]").forEach((n) => n.remove());
 
+  // Wrap the CV in a table whose empty <thead>/<tfoot> repeat on every printed
+  // page, giving a consistent top & bottom gutter on continuation pages too —
+  // something an @page margin can't do without printing a white border. The
+  // themed background (root <html> + .cv-theme) shows through behind the
+  // gutters, so the whole sheet stays full-bleed. Horizontal gutter is the
+  // cell padding (see .cv-print-sheet in index.css).
+  const table = clone.ownerDocument.createElement("table");
+  table.className = "cv-print-sheet";
+  table.innerHTML =
+    '<thead><tr><td><div class="cv-print-gutter"></div></td></tr></thead>' +
+    '<tbody><tr><td class="cv-print-body"></td></tr></tbody>' +
+    '<tfoot><tr><td><div class="cv-print-gutter"></div></td></tr></tfoot>';
+  const bodyCell = table.querySelector(".cv-print-body")!;
+  while (clone.firstChild) bodyCell.appendChild(clone.firstChild);
+  clone.appendChild(table);
+
   const html = `<!DOCTYPE html>
-<html lang="en">
+<html lang="en"${themeAttr ? ` data-theme="${escapeHtml(themeAttr)}"` : ""}>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -52,7 +73,9 @@ ${styleTags}
   html, body {
     margin: 0;
     padding: 0;
-    background: #ffffff;
+    /* Themed (via the <html> data-theme) so the whole sheet — including the
+       @page margin area — carries the CV's background color, not white. */
+    background: hsl(var(--background));
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }

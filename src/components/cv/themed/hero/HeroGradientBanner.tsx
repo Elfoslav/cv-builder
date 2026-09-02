@@ -1,0 +1,19 @@
+import { type CVData } from "@/lib/cv-types";
+import { BioText } from "@/components/cv/BioText";
+import { HeroContact } from "./HeroContact";
+
+/** Name and role sit on a vivid gradient banner; bio and contact below. */
+export const HeroGradientBanner = ({ data }: { data: CVData }) => (
+  <section className="cv-hero border-b border-border">
+    <div className="py-10 print:py-5">
+      <div className="rounded-xl bg-gradient-primary px-6 py-8 shadow-card">
+        <h1 className="text-4xl font-extrabold tracking-tight text-white">
+          {data.name || "Your Name"}
+        </h1>
+        <p className="mt-1.5 text-lg font-medium text-white/85">{data.role}</p>
+      </div>
+      <BioText bio={data.bio} className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground" />
+      <HeroContact data={data} className="mt-6 grid max-w-2xl grid-cols-1 gap-3 text-sm sm:grid-cols-2" />
+    </div>
+  </section>
+);

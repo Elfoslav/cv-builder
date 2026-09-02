@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { toast } from "sonner";
+
+/** Case-insensitive, whitespace-trimmed match used to block duplicate names. */
+export const sameName = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
 
 export interface MockLang {
   id: string;
@@ -71,17 +75,31 @@ export const useDraftActions = (p: DraftLangProps): LangDraft => {
   const add = (name: string, copyOverride?: boolean) => {
     const trimmed = name.trim();
     if (!trimmed) return;
+    if (p.languages.some((l) => sameName(l.name, trimmed))) {
+      toast.error(`A language named "${trimmed}" already exists.`);
+      return;
+    }
     const shouldCopy = copyOverride ?? copyFromActive;
     p.addLanguage(trimmed, shouldCopy);
     setNewName("");
     setAddOpen(false);
+    toast.success(`Added "${trimmed}" — you can now translate this version.`);
   };
 
   const rename = (name: string) => {
     const trimmed = name.trim();
     if (!trimmed || !active) return;
+    if (trimmed === active.name) {
+      setRenameOpen(false);
+      return;
+    }
+    if (p.languages.some((l) => l.id !== active.id && sameName(l.name, trimmed))) {
+      toast.error(`A language named "${trimmed}" already exists.`);
+      return;
+    }
     p.renameLanguage(active.id, trimmed);
     setRenameOpen(false);
+    toast.success(`Renamed to "${trimmed}".`);
   };
 
   const del = () => {

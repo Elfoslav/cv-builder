@@ -13,7 +13,7 @@ import {
   DropdownMenuLabel, DropdownMenuItem, DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Check, Plus, Pencil, Trash2, Copy } from "lucide-react";
-import { type LangDraft } from "./useLangDraft";
+import { sameName, type LangDraft } from "./useLangDraft";
 
 interface LangMenuContentProps {
   m: LangDraft;
@@ -49,7 +49,9 @@ export const LangMenuContent = ({ m }: LangMenuContentProps) => (
 /** Shared add / rename / delete dialogs used by every draft. */
 export const LangDialogs = ({ m }: LangMenuContentProps) => {
   const activeName = m.languages.find((l) => l.id === m.activeId)?.name ?? "current language";
-  const canAdd = m.newName.trim().length > 0;
+  const trimmedNew = m.newName.trim();
+  const isDuplicateNew = trimmedNew.length > 0 && m.languages.some((l) => sameName(l.name, trimmedNew));
+  const canAdd = trimmedNew.length > 0 && !isDuplicateNew;
 
   return (
   <>
@@ -60,14 +62,20 @@ export const LangDialogs = ({ m }: LangMenuContentProps) => {
           <DialogDescription>Create a separate CV version in another language.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4">
-          <Input
-            value={m.newName}
-            onChange={(e) => m.setNewName(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && canAdd && m.add(m.newName)}
-            placeholder="e.g. Deutsch, Français, 日本語"
-            maxLength={40}
-            autoFocus
-          />
+          <div className="grid gap-1.5">
+            <Input
+              value={m.newName}
+              onChange={(e) => m.setNewName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && canAdd && m.add(m.newName)}
+              placeholder="e.g. Deutsch, Français, 日本語"
+              maxLength={40}
+              autoFocus
+              aria-invalid={isDuplicateNew}
+            />
+            {isDuplicateNew && (
+              <p className="text-xs text-destructive">A language named “{trimmedNew}” already exists.</p>
+            )}
+          </div>
           <label
             htmlFor="copy-from-active"
             className="flex cursor-pointer items-start gap-3 rounded-lg border bg-muted/30 p-3 transition hover:bg-muted/50 has-[[data-state=checked]]:border-primary/30 has-[[data-state=checked]]:bg-primary/[0.04]"

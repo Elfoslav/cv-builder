@@ -48,7 +48,7 @@
 		--skill-low: 350 75% 55%;
 
 		--gradient-primary: linear-gradient(135deg, hsl(220 75% 45%), hsl(199 85% 50%));
-		--gradient-glow: radial-gradient(circle at 50% 0%, hsl(220 75% 45% / 0.1), transparent 70%);
+		--gradient-glow: radial-gradient(ellipse 160% 90% at 50% 0%, hsl(220 75% 45% / 0.1), transparent);
 		--gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 20% 98%));
 
 		--shadow-glow: 0 10px 40px hsl(220 75% 45% / 0.15);
@@ -328,7 +328,7 @@
 	--ring: 240 70% 48%;
 	--radius: 0.65rem;
 	--gradient-primary: linear-gradient(135deg, hsl(242 78% 50%), hsl(197 90% 46%));
-	--gradient-glow: radial-gradient(circle at 50% 0%, hsl(242 80% 56% / 0.12), transparent 70%);
+	--gradient-glow: radial-gradient(ellipse 160% 90% at 50% 0%, hsl(242 80% 56% / 0.12), transparent);
 	--gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(240 25% 98%));
 	--shadow-glow: 0 10px 40px hsl(240 80% 50% / 0.16);
 	--shadow-card: 0 4px 20px hsl(230 30% 20% / 0.08);
@@ -360,7 +360,7 @@
 	--ring: 214 50% 30%;
 	--radius: 0;
 	--gradient-primary: linear-gradient(135deg, hsl(214 50% 22%), hsl(195 55% 34%));
-	--gradient-glow: radial-gradient(circle at 50% 0%, hsl(214 55% 35% / 0.08), transparent 70%);
+	--gradient-glow: radial-gradient(ellipse 160% 90% at 50% 0%, hsl(214 55% 35% / 0.08), transparent);
 	--gradient-card: linear-gradient(180deg, hsl(44 33% 99%), hsl(42 25% 95%));
 	--shadow-glow: none;
 	--shadow-card: none;
@@ -466,7 +466,7 @@
 	--ring: 18 75% 45%;
 	--radius: 0.85rem;
 	--gradient-primary: linear-gradient(135deg, hsl(18 75% 45%), hsl(30 85% 45%));
-	--gradient-glow: radial-gradient(circle at 50% 0%, hsl(28 85% 50% / 0.1), transparent 70%);
+	--gradient-glow: radial-gradient(ellipse 160% 90% at 50% 0%, hsl(28 85% 50% / 0.1), transparent);
 	--gradient-card: linear-gradient(180deg, hsl(35 50% 99%), hsl(33 40% 95%));
 	--shadow-glow: 0 10px 40px hsl(18 60% 40% / 0.14);
 	--shadow-card: 0 4px 18px hsl(30 40% 30% / 0.08);
@@ -504,7 +504,7 @@
 	--ring: 195 75% 35%;
 	--radius: 0.5rem;
 	--gradient-primary: linear-gradient(135deg, hsl(195 78% 34%), hsl(180 85% 38%));
-	--gradient-glow: radial-gradient(circle at 50% 0%, hsl(185 80% 45% / 0.12), transparent 70%);
+	--gradient-glow: radial-gradient(ellipse 160% 90% at 50% 0%, hsl(185 80% 45% / 0.12), transparent);
 	--gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(190 30% 97%));
 	--shadow-glow: 0 10px 40px hsl(190 70% 40% / 0.16);
 	--shadow-card: 0 4px 20px hsl(200 40% 20% / 0.08);
@@ -543,7 +543,7 @@
 	--ring: 330 75% 50%;
 	--radius: 0.75rem;
 	--gradient-primary: linear-gradient(135deg, hsl(332 80% 52%), hsl(20 90% 55%));
-	--gradient-glow: radial-gradient(circle at 50% 0%, hsl(330 85% 60% / 0.12), transparent 70%);
+	--gradient-glow: radial-gradient(ellipse 160% 90% at 50% 0%, hsl(330 85% 60% / 0.12), transparent);
 	--gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(330 60% 97%));
 	--shadow-glow: 0 10px 40px hsl(330 75% 50% / 0.16);
 	--shadow-card: 0 4px 20px hsl(340 40% 20% / 0.08);
@@ -586,7 +586,7 @@
 	--ring: 150 60% 35%;
 	--radius: 0.35rem;
 	--gradient-primary: linear-gradient(135deg, hsl(150 65% 32%), hsl(158 75% 45%));
-	--gradient-glow: radial-gradient(circle at 50% 0%, hsl(152 70% 45% / 0.1), transparent 70%);
+	--gradient-glow: radial-gradient(ellipse 160% 90% at 50% 0%, hsl(152 70% 45% / 0.1), transparent);
 	--gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(145 30% 96%));
 	--shadow-glow: 0 10px 40px hsl(150 60% 40% / 0.15);
 	--shadow-card: 0 4px 20px hsl(155 40% 20% / 0.08);
@@ -628,7 +628,7 @@
 	--ring: 218 35% 42%;
 	--radius: 0;
 	--gradient-primary: linear-gradient(135deg, hsl(218 35% 40%), hsl(220 48% 52%));
-	--gradient-glow: radial-gradient(circle at 50% 0%, hsl(220 45% 55% / 0.08), transparent 70%);
+	--gradient-glow: radial-gradient(ellipse 160% 90% at 50% 0%, hsl(220 45% 55% / 0.08), transparent);
 	--gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 25% 97%));
 	--shadow-glow: none;
 	--shadow-card: none;

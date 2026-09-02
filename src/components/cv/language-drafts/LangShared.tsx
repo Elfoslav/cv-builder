@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter,
@@ -11,7 +12,7 @@ import {
 import {
   DropdownMenuLabel, DropdownMenuItem, DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Check, Plus, Pencil, Trash2 } from "lucide-react";
+import { Check, Plus, Pencil, Trash2, Copy } from "lucide-react";
 import { type LangDraft } from "./useLangDraft";
 
 interface LangMenuContentProps {
@@ -46,7 +47,11 @@ export const LangMenuContent = ({ m }: LangMenuContentProps) => (
 );
 
 /** Shared add / rename / delete dialogs used by every draft. */
-export const LangDialogs = ({ m }: LangMenuContentProps) => (
+export const LangDialogs = ({ m }: LangMenuContentProps) => {
+  const activeName = m.languages.find((l) => l.id === m.activeId)?.name ?? "current language";
+  const canAdd = m.newName.trim().length > 0;
+
+  return (
   <>
     <Dialog open={m.addOpen} onOpenChange={m.setAddOpen}>
       <DialogContent className="sm:max-w-md">
@@ -54,17 +59,41 @@ export const LangDialogs = ({ m }: LangMenuContentProps) => (
           <DialogTitle>Add language</DialogTitle>
           <DialogDescription>Create a separate CV version in another language.</DialogDescription>
         </DialogHeader>
-        <Input
-          value={m.newName}
-          onChange={(e) => m.setNewName(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && m.add(m.newName)}
-          placeholder="e.g. Deutsch, Français, 日本語"
-          maxLength={40}
-          autoFocus
-        />
+        <div className="grid gap-4">
+          <Input
+            value={m.newName}
+            onChange={(e) => m.setNewName(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && canAdd && m.add(m.newName)}
+            placeholder="e.g. Deutsch, Français, 日本語"
+            maxLength={40}
+            autoFocus
+          />
+          <label
+            htmlFor="copy-from-active"
+            className="flex cursor-pointer items-start gap-3 rounded-lg border bg-muted/30 p-3 transition hover:bg-muted/50 has-[[data-state=checked]]:border-primary/30 has-[[data-state=checked]]:bg-primary/[0.04]"
+          >
+            <Checkbox
+              id="copy-from-active"
+              checked={m.copyFromActive}
+              onCheckedChange={(v) => m.setCopyFromActive(Boolean(v))}
+              className="mt-0.5"
+            />
+            <span className="grid gap-1">
+              <span className="flex items-center gap-1.5 text-sm font-medium leading-none">
+                <Copy className="h-3.5 w-3.5 text-muted-foreground" />
+                Copy content from {activeName}
+              </span>
+              <span className="text-xs leading-snug text-muted-foreground">
+                {m.copyFromActive
+                  ? `Duplicate all sections, text and designs from ${activeName} so you only need to translate.`
+                  : "Start with a blank template using the default content."}
+              </span>
+            </span>
+          </label>
+        </div>
         <DialogFooter>
           <Button size="sm" variant="ghost" onClick={() => m.setAddOpen(false)}>Cancel</Button>
-          <Button size="sm" onClick={() => m.add(m.newName)}>Add</Button>
+          <Button size="sm" onClick={() => m.add(m.newName)} disabled={!canAdd}>Add</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -82,8 +111,8 @@ export const LangDialogs = ({ m }: LangMenuContentProps) => (
           autoFocus
         />
         <DialogFooter>
-          <Button variant="ghost" onClick={() => m.setRenameOpen(false)}>Cancel</Button>
-          <Button onClick={() => m.rename(m.editName)}>Save</Button>
+          <Button size="sm" variant="ghost" onClick={() => m.setRenameOpen(false)}>Cancel</Button>
+          <Button size="sm" onClick={() => m.rename(m.editName)}>Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -103,4 +132,5 @@ export const LangDialogs = ({ m }: LangMenuContentProps) => (
       </AlertDialogContent>
     </AlertDialog>
   </>
-);
+  );
+};

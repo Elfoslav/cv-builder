@@ -1,4 +1,5 @@
 import { type CVData } from "@/lib/cv-types";
+import { BioText } from "@/components/cv/BioText";
 import { HeroContact } from "./HeroContact";
 
 /** Reference look: gradient glow with a keyboard-grid backdrop. */
@@ -11,7 +12,7 @@ export const HeroGradient = ({ data }: { data: CVData }) => (
         {data.name || "Your Name"}
       </h1>
       <p className="mb-5 text-xl font-medium text-accent">{data.role}</p>
-      <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">{data.bio}</p>
+      <BioText bio={data.bio} className="max-w-2xl text-base leading-relaxed text-muted-foreground" />
       <HeroContact data={data} className="mt-6 grid grid-cols-2 gap-4 text-sm" />
     </div>
   </section>

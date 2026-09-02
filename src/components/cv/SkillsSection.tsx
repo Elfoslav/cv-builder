@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Folder, Pencil, Check, X, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import { LevelSelect } from "@/components/cv/LevelSelect";
 import { FieldLabel } from "@/components/cv/FieldLabel";
+import { AddButton } from "@/components/cv/editor/section-forms";
 import { toast } from "@/hooks/use-toast";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
@@ -129,10 +130,10 @@ export const SkillsSection = ({ data, setData }: Props) => {
                     maxLength={40}
                     className="h-7 text-sm"
                   />
-                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => renameGroup(g.id)}>
+                   <Button size="icon-sm" variant="ghost" onClick={() => renameGroup(g.id)}>
                     <Check className="h-3.5 w-3.5 text-primary" />
                   </Button>
-                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setRenaming(null)}>
+                  <Button size="icon-sm" variant="ghost" onClick={() => setRenaming(null)}>
                     <X className="h-3.5 w-3.5" />
                   </Button>
                 </>
@@ -143,16 +144,16 @@ export const SkillsSection = ({ data, setData }: Props) => {
                   <span className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
                     {items.length}
                   </span>
-                  <Button size="icon" variant="ghost" className="h-7 w-7" disabled={idx === 0} onClick={() => moveGroup(g.id, -1)}>
+                   <Button size="icon-sm" variant="ghost" disabled={idx === 0} onClick={() => moveGroup(g.id, -1)}>
                     <ArrowUp className="h-3.5 w-3.5" />
                   </Button>
-                  <Button size="icon" variant="ghost" className="h-7 w-7" disabled={idx === data.skillGroups.length - 1} onClick={() => moveGroup(g.id, 1)}>
+                  <Button size="icon-sm" variant="ghost" disabled={idx === data.skillGroups.length - 1} onClick={() => moveGroup(g.id, 1)}>
                     <ArrowDown className="h-3.5 w-3.5" />
                   </Button>
-                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setRenaming(g.id); setEditingName(g.name); }}>
+                  <Button size="icon-sm" variant="ghost" onClick={() => { setRenaming(g.id); setEditingName(g.name); }}>
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
-                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => deleteGroup(g.id)}>
+                  <Button size="icon-sm" variant="ghost" onClick={() => deleteGroup(g.id)}>
                     <Trash2 className="h-3.5 w-3.5 text-destructive" />
                   </Button>
                 </>
@@ -169,33 +170,25 @@ export const SkillsSection = ({ data, setData }: Props) => {
                     className="h-8 flex-1 text-sm"
                   />
                   <LevelSelect value={s.percentage} onChange={(pct) => patchSkill(s.id, { percentage: pct })} />
-                  <Button size="icon" variant="ghost" className="h-7 w-7" disabled={sIdx === 0} onClick={() => moveSkill(s.id, -1)}>
+                   <Button size="icon-sm" variant="ghost" disabled={sIdx === 0} onClick={() => moveSkill(s.id, -1)}>
                     <ArrowUp className="h-3.5 w-3.5" />
                   </Button>
-                  <Button size="icon" variant="ghost" className="h-7 w-7" disabled={sIdx === items.length - 1} onClick={() => moveSkill(s.id, 1)}>
+                  <Button size="icon-sm" variant="ghost" disabled={sIdx === items.length - 1} onClick={() => moveSkill(s.id, 1)}>
                     <ArrowDown className="h-3.5 w-3.5" />
                   </Button>
-                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => removeSkill(s.id)}>
+                  <Button size="icon-sm" variant="ghost" onClick={() => removeSkill(s.id)}>
                     <Trash2 className="h-3.5 w-3.5 text-destructive" />
                   </Button>
                 </div>
               ))}
             </div>
 
-            <Button
-              variant="outline" size="sm"
-              className="mt-2 h-7 w-full gap-1.5 border-dashed text-xs"
-              onClick={() => addSkill(g.id)}
-            >
-              <Plus className="h-3.5 w-3.5" /> Add skill
-            </Button>
+            <AddButton label="Add skill" onClick={() => addSkill(g.id)} />
           </div>
         );
       })}
 
-      <Button variant="outline" size="sm" className="h-7 w-full gap-1.5 border-dashed text-xs" onClick={addGroup}>
-        <Plus className="h-3.5 w-3.5" /> Add group
-      </Button>
+      <AddButton label="Add group" onClick={addGroup} />
       </div>
     </div>
   );

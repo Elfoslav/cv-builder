@@ -10,8 +10,10 @@ export const HobbyGradientBorderCards = ({ hobbies, columns = 4 }: { hobbies: Ho
     columns={columns}
     getKey={(h) => h.id}
     render={(hb) => (
-      <div className="cv-hobby-card rounded-lg bg-gradient-primary p-px shadow-card">
-        <div className="flex h-full flex-col rounded-[calc(var(--radius)-2px)] bg-card p-5 text-center">
+      <div className="cv-hobby-card relative rounded-lg p-px shadow-card">
+        {/* Soft gradient outline — matched to the badge/pill/chip border weight. */}
+        <div className="pointer-events-none absolute inset-0 rounded-lg bg-gradient-primary opacity-30" />
+        <div className="relative flex h-full flex-col rounded-[calc(var(--radius)-2px)] bg-card p-5 text-center">
           <HobbyCardContent hobby={hb} />
         </div>
       </div>

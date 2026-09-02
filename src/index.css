@@ -253,6 +253,17 @@
 	--theme-heading: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Seamless marquee used by the theme showcase (see ThemeMarquee). Items are
+   duplicated in the DOM, so translating by -50% loops without a visible seam. */
+@keyframes cv-marquee {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
+}
+
 /* The CV is a fixed-size print artifact: the editor canvas renders at the
    same width as the printed/PDF page so grid item widths (and therefore
    text wrapping) match exactly between view and export. A4 at 96dpi is

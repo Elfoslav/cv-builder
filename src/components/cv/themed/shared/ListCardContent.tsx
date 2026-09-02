@@ -25,7 +25,7 @@ export const ListCardContent = ({ entry, titleClass }: ListCardContentProps) => 
           <div className="min-w-0">
             <h3 className={cn("text-base font-semibold leading-tight text-foreground", titleClass)}>{entry.title}</h3>
             {entry.period && (
-              <p className="mt-0.5 inline-block rounded-full border border-primary bg-primary/5 px-2 py-0.5 font-mono text-[10px] text-primary">
+              <p className="mt-0.5 inline-block rounded-full border border-primary/25 bg-primary/[0.06] px-2 py-0.5 font-mono text-[10px] text-primary">
                 {entry.period}
               </p>
             )}

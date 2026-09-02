@@ -1,4 +1,5 @@
 import { type CVData } from "@/lib/cv-types";
+import { BioText } from "@/components/cv/BioText";
 import { HeroContact } from "./HeroContact";
 
 /** Flat header whose name is set in gradient text under a full-width gradient rule. */
@@ -13,7 +14,7 @@ export const HeroGradientHeadline = ({ data }: { data: CVData }) => (
         {data.name || "Your Name"}
       </h1>
       <div aria-hidden className="mt-5 h-0.5 w-full bg-gradient-primary" />
-      <p className="mt-6 max-w-2xl text-sm leading-relaxed text-muted-foreground">{data.bio}</p>
+      <BioText bio={data.bio} className="mt-6 max-w-2xl text-sm leading-relaxed text-muted-foreground" />
       <HeroContact data={data} className="mt-6 grid max-w-2xl grid-cols-1 gap-3 text-sm sm:grid-cols-2" />
     </div>
   </section>

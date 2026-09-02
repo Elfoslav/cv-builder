@@ -2,10 +2,12 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { AppTopbar } from "@/components/layout/AppTopbar";
+import { BrandLogo } from "@/components/layout/BrandLogo";
+import { OpenBuilderButton } from "@/components/layout/OpenBuilderButton";
 import { APP_NAME } from "@/lib/app";
+import { scrollToId } from "@/lib/utils";
 import { ShowcaseHome } from "@/components/landing/ShowcaseHome";
 import { StripHero } from "@/components/landing/heroes";
-import { ArrowRight } from "lucide-react";
 
 export default function Landing() {
   useEffect(() => {
@@ -26,48 +28,29 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/20">
       <AppTopbar
-        left={
-          <Link to="/" className="flex items-center gap-2 font-semibold">
-            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-primary text-[11px] font-bold tracking-tight text-primary-foreground shadow-sm">
-              CR
-            </span>
-            <span className="hidden sm:inline">{APP_NAME}</span>
-            <span className="sm:hidden">CR Builder</span>
-            <span className="hidden rounded-full border bg-secondary px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground sm:inline-flex">
-              Beta
-            </span>
-          </Link>
-        }
+        left={<BrandLogo beta shortName="CR Builder" />}
         center={
           <>
-            <button
-              onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-              className="rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => scrollToId("features")}
             >
               Features
-            </button>
-            <Link
-              to="/themes"
-              className="rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground"
-            >
-              Themes
-            </Link>
-            <button
-              onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-              className="rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+            </Button>
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/themes">Themes</Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => scrollToId("how-it-works")}
             >
               How it works
-            </button>
+            </Button>
           </>
         }
-        right={
-          <Button asChild size="sm" className="shadow-sm">
-            <Link to="/resume-builder">
-              Open builder
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        }
+        right={<OpenBuilderButton />}
       />
 
       <StripHero />

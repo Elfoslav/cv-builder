@@ -198,21 +198,21 @@ const EditableSection = ({
           {meta.key !== "hero" && meta.key !== "footer" && (
             <>
               <Button
-                size="icon"
+                size="icon-sm"
                 variant="ghost"
                 disabled={!meta.canMoveUp}
                 onClick={() => actions.moveSection(meta.key, -1)}
-                className="h-7 w-7 text-muted-foreground disabled:pointer-events-none disabled:opacity-30"
+                className="text-muted-foreground disabled:pointer-events-none disabled:opacity-30"
                 title="Move section up"
               >
                 <ArrowUp className="h-3 w-3" />
               </Button>
               <Button
-                size="icon"
+                size="icon-sm"
                 variant="ghost"
                 disabled={!meta.canMoveDown}
                 onClick={() => actions.moveSection(meta.key, 1)}
-                className="h-7 w-7 text-muted-foreground disabled:pointer-events-none disabled:opacity-30"
+                className="text-muted-foreground disabled:pointer-events-none disabled:opacity-30"
                 title="Move section down"
               >
                 <ArrowDown className="h-3 w-3" />
@@ -308,11 +308,13 @@ const EditorDrawer = ({
             <h3 className="truncate text-sm font-semibold text-foreground">Editing — {meta.title}</h3>
           </div>
           <div className="flex shrink-0 items-center gap-1.5">
-            <Button size="sm" variant="ghost" onClick={onCancel}>
-              <X className="h-3.5 w-3.5" /> Cancel
+            <Button size="sm" variant="ghost" className="gap-2" onClick={onCancel}>
+              <X className="h-4 w-4" />
+              <span className="text-xs font-medium">Cancel</span>
             </Button>
-            <Button size="sm" onClick={onDone}>
-              <Check className="h-3.5 w-3.5" /> Done
+            <Button size="sm" className="gap-2" onClick={onDone}>
+              <Check className="h-4 w-4" />
+              <span className="text-xs font-medium">Done</span>
             </Button>
           </div>
         </div>

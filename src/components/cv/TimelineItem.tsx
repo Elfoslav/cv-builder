@@ -49,7 +49,7 @@ export const TimelineItem = ({
 					{tags.map((tag) => (
 						<span
 							key={tag}
-							className="rounded-full border border-primary bg-primary/5 px-3 py-0.5 text-xs text-primary"
+							className="rounded-full border border-primary/25 bg-primary/[0.06] px-3 py-0.5 text-xs text-primary"
 						>
 							{tag}
 						</span>

@@ -1,4 +1,5 @@
 import { type CVData } from "@/lib/cv-types";
+import { BioText } from "@/components/cv/BioText";
 import { HeroContact } from "./HeroContact";
 
 /** Name, role and bio centered, contact inline below. */
@@ -12,7 +13,7 @@ export const HeroCentered = ({ data }: { data: CVData }) => (
           {data.name || "Your Name"}
         </h1>
         <p className="mb-4 text-lg font-medium text-accent">{data.role}</p>
-        <p className="mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground">{data.bio}</p>
+        <BioText bio={data.bio} className="mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground" />
         <HeroContact data={data} className="mt-6 grid max-w-xl grid-cols-1 gap-4 text-sm sm:grid-cols-2" />
       </div>
     </div>

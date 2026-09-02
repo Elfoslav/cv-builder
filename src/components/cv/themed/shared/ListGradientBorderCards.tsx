@@ -18,11 +18,14 @@ export const ListGradientBorderCards = ({ items, columns = 1 }: ListGradientBord
     render={(e: ListEntry) => (
         <div
         className={cn(
-          "rounded-lg bg-gradient-primary p-px shadow-card transition-all hover:shadow-glow",
+          "relative rounded-lg p-px shadow-card transition-all hover:shadow-glow",
           e.links ? "cv-project-card" : "cv-timeline-card",
         )}
       >
-        <div className="h-full rounded-[calc(var(--radius)-2px)] bg-card">
+        {/* Soft gradient outline — opacity matched to the badge/pill/chip
+            borders so the frame reads light, not heavy. */}
+        <div className="pointer-events-none absolute inset-0 rounded-lg bg-gradient-primary opacity-30" />
+        <div className="relative h-full rounded-[calc(var(--radius)-2px)] bg-card">
           <div className={e.links ? "p-3.5" : "p-4"}>
             <ListCardContent entry={e} />
           </div>

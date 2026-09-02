@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { EditableCVPreview } from "@/components/cv/editor/EditableCVPreview";
 import { CVPreview } from "@/components/cv/CVPreview";
 import { LanguageSwitcher } from "@/components/cv/LanguageSwitcher";
@@ -8,6 +8,7 @@ import { ThemeSwitcher } from "@/components/cv/ThemeSwitcher";
 import { useCVData } from "@/lib/use-cv-data";
 import { Button } from "@/components/ui/button";
 import { AppTopbar } from "@/components/layout/AppTopbar";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 import {
   Download, Loader2, Languages, Upload, FileJson, MoreHorizontal,
 } from "lucide-react";
@@ -20,7 +21,7 @@ import { toast as sonnerToast } from "sonner";
 import { toast as uiToast } from "@/hooks/use-toast";
 import { CVData, defaultLabels, DEFAULT_CARD_COLUMNS, DEFAULT_SKILL_COLUMNS, type CardColumnsMap, type SkillColumnsMap } from "@/lib/cv-types";
 import { DEFAULT_SECTION_DESIGNS } from "@/lib/section-designs";
-import { type ThemeId } from "@/lib/themes";
+import { THEME_IDS, type ThemeId } from "@/lib/themes";
 import { APP_NAME, APP_TITLE, APP_DESCRIPTION } from "@/lib/app";
 
 const safeFileName = (name: string, fallback = "CV") =>
@@ -35,6 +36,18 @@ const Index = () => {
   } = useCVData();
   const [exporting, setExporting] = useState(false);
   const importInput = useRef<HTMLInputElement>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Apply theme from ?theme= query (e.g. /resume-builder?theme=ocean from Themes "Try" buttons)
+  useEffect(() => {
+    const param = searchParams.get("theme");
+    if (param && (THEME_IDS as readonly string[]).includes(param)) {
+      setTheme(param as ThemeId);
+      const next = new URLSearchParams(searchParams);
+      next.delete("theme");
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, setSearchParams, setTheme]);
 
   useEffect(() => {
     document.title = APP_TITLE;
@@ -181,12 +194,7 @@ const Index = () => {
         className="print:hidden"
         left={
           <>
-            <Link to="/" className="flex shrink-0 items-center gap-2 font-semibold" title="Back to homepage">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gradient-primary text-[11px] font-bold tracking-tight text-primary-foreground shadow-sm">
-                CR
-              </span>
-              <span className="hidden whitespace-nowrap text-sm font-semibold lg:inline">{APP_NAME}</span>
-            </Link>
+            <BrandLogo title="Back to homepage" nameClass="hidden lg:inline" />
             <div className="hidden h-6 w-px bg-border sm:block" />
             <Link
               to="/themes"

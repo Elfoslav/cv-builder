@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, scrollToId } from "@/lib/utils";
 import { MiniResume, SHOWCASE_THEMES } from "./shared";
+import { ThemeMarquee, ThemePreview } from "./theme-showcase";
 import type { HeroVariant } from "@/lib/hero-variants";
 import {
   ArrowRight,
@@ -208,36 +209,6 @@ function SpotlightHero() {
   );
 }
 
-/* ------------------------------------------------------------------ *
- * 3. Strip — headline over a colorful row of themed resume previews
- * ------------------------------------------------------------------ */
-function StripPreview({ theme, accent, name, role }: { theme: string; accent: string; name: string; role: string }) {
-  return (
-    <div data-theme={theme} className="cv-theme w-[220px] shrink-0 overflow-hidden rounded-2xl border bg-card shadow-[0_16px_40px_hsl(var(--foreground)/0.14)]">
-      <div className="bg-background p-4">
-        <div className="font-mono text-[8px] uppercase tracking-[0.14em] text-muted-foreground">Resume — {accent}</div>
-        <div className="mt-1 text-[13px] font-extrabold leading-none tracking-tight" style={{ fontFamily: "var(--theme-heading)" }}>
-          {name}
-        </div>
-        <div className="text-[10px] font-medium text-primary">{role}</div>
-        <div className="mt-3 h-px w-full bg-border" />
-        <div className="mt-3 space-y-2">
-          <div className="rounded-lg border bg-card p-2">
-            <div className="h-1.5 w-16 rounded bg-foreground/75" />
-            <div className="mt-1 h-1 w-full rounded bg-muted" />
-          </div>
-          <div className="rounded-lg bg-secondary p-2">
-            <div className="space-y-1">
-              <div className="h-1.5 rounded bg-primary" style={{ width: "85%" }} />
-              <div className="h-1.5 rounded bg-primary/60" style={{ width: "60%" }} />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /** A stylized "live editor + print-width preview" window — the hero product shot. */
 function EditorWindow() {
   return (
@@ -307,7 +278,7 @@ function EditorWindow() {
 
 export function StripHero() {
   const toGallery = () =>
-    document.getElementById("themes-gallery")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    scrollToId("themes-gallery");
 
   return (
     <section className="relative flex min-h-[calc(100svh_-_3.5rem)] flex-col overflow-hidden border-b bg-gradient-to-b from-background via-background to-secondary/20">
@@ -329,7 +300,7 @@ export function StripHero() {
                 size="lg"
                 variant="outline"
                 className="h-11 rounded-full bg-card/80 px-6 backdrop-blur"
-                onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                onClick={() => scrollToId("features")}
               >
                 How it&apos;s different
               </Button>
@@ -345,14 +316,16 @@ export function StripHero() {
       </div>
 
       {/* scroll cue → theme gallery */}
-      <button
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={toGallery}
         aria-label="Scroll to the theme gallery"
-        className="group relative mx-auto mb-6 flex flex-col items-center gap-1 text-muted-foreground transition hover:text-foreground"
+        className="group relative mx-auto mb-6 flex flex-col items-center gap-1 rounded-full text-muted-foreground hover:text-foreground"
       >
         <span className="font-mono text-[10px] uppercase tracking-widest">Browse themes</span>
         <ChevronDown className="h-4 w-4 animate-bounce motion-reduce:animate-none" />
-      </button>
+      </Button>
     </section>
   );
 }
@@ -379,7 +352,7 @@ function StripLeftHero() {
               size="lg"
               variant="ghost"
               className="h-11 rounded-full px-6"
-              onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+              onClick={() => scrollToId("features")}
             >
               How it&apos;s different <ArrowRight className="h-4 w-4" />
             </Button>
@@ -387,18 +360,16 @@ function StripLeftHero() {
           <Trust className="mt-6" />
         </div>
       </div>
-      <div className="relative mt-8 overflow-hidden">
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-background to-transparent sm:w-28" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-background to-transparent sm:w-28" />
-        <div className="group flex w-max animate-[marquee_28s_linear_infinite] items-start gap-5 py-2 will-change-transform hover:[animation-play-state:paused] motion-reduce:animate-none">
-          {[...SHOWCASE_THEMES, ...SHOWCASE_THEMES].map((t, i) => (
-            <div key={`${t.theme}-${i}-left`} className={cn(i % 2 === 0 ? "translate-y-1" : "-translate-y-1")}>
-              <StripPreview theme={t.theme} accent={t.accent} name={t.name} role={t.role} />
-            </div>
-          ))}
-        </div>
-        <style>{`@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }`}</style>
-      </div>
+      <ThemeMarquee
+        className="mt-8"
+        items={SHOWCASE_THEMES}
+        durationSec={28}
+        renderItem={(t, i) => (
+          <div className={cn(i % 2 === 0 ? "translate-y-1" : "-translate-y-1")}>
+            <ThemePreview {...t} />
+          </div>
+        )}
+      />
     </section>
   );
 }
@@ -426,7 +397,7 @@ function StripSplitHero() {
                 size="lg"
                 variant="outline"
                 className="h-11 w-fit rounded-full bg-card px-6"
-                onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                onClick={() => scrollToId("features")}
               >
                 How it&apos;s different
               </Button>
@@ -435,27 +406,29 @@ function StripSplitHero() {
           </div>
           <div className="relative hidden grid-cols-2 gap-4 lg:grid">
             <div className="space-y-4">
-              <StripPreview theme="indigo" accent="Indigo" name="Alex Rivera" role="Product Designer" />
-              <StripPreview theme="forest" accent="Forest" name="Maya Chen" role="Backend Engineer" />
+              <ThemePreview theme="indigo" accent="Indigo" name="Alex Rivera" role="Product Designer" />
+              <ThemePreview theme="forest" accent="Forest" name="Maya Chen" role="Backend Engineer" />
             </div>
             <div className="space-y-4 pt-6">
-              <StripPreview theme="sunset" accent="Sunset" name="Jonah Park" role="Product Designer" />
-              <StripPreview theme="minimal" accent="Minimal" name="Sam Lee" role="Data Analyst" />
+              <ThemePreview theme="sunset" accent="Sunset" name="Jonah Park" role="Product Designer" />
+              <ThemePreview theme="minimal" accent="Minimal" name="Sam Lee" role="Data Analyst" />
             </div>
           </div>
         </div>
       </div>
-      <div className="relative overflow-hidden border-t bg-muted/20 py-2">
-        <div className="flex w-max animate-[marquee_40s_linear_infinite] gap-5 will-change-transform hover:[animation-play-state:paused] motion-reduce:animate-none">
-          {[...SHOWCASE_THEMES, ...SHOWCASE_THEMES].map((t, i) => (
-            <div key={`${t.theme}-${i}-split-strip`} className="opacity-60">
-              <div data-theme={t.theme} className="cv-theme flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-xs shadow-sm">
-                <span className="h-2 w-2 rounded-full bg-primary" /> {t.accent}
-              </div>
+      <ThemeMarquee
+        className="border-t bg-muted/20"
+        items={SHOWCASE_THEMES}
+        durationSec={40}
+        fade={false}
+        renderItem={(t) => (
+          <div className="opacity-60">
+            <div data-theme={t.theme} className="cv-theme flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-xs shadow-sm">
+              <span className="h-2 w-2 rounded-full bg-primary" /> {t.accent}
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
+        )}
+      />
     </section>
   );
 }
@@ -485,17 +458,17 @@ function StripMinimalHero() {
           </div>
         </div>
       </div>
-      <div className="relative overflow-hidden py-4">
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-background to-transparent sm:w-28" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-background to-transparent sm:w-28" />
-        <div className="flex w-max animate-[marquee_36s_linear_infinite] gap-6 py-2 will-change-transform hover:[animation-play-state:paused] motion-reduce:animate-none">
-          {[...SHOWCASE_THEMES, ...SHOWCASE_THEMES].map((t, i) => (
-            <div key={`${t.theme}-${i}-minimal`} className="opacity-90">
-              <StripPreview theme={t.theme} accent={t.accent} name={t.name} role={t.role} />
-            </div>
-          ))}
-        </div>
-      </div>
+      <ThemeMarquee
+        className="py-2"
+        items={SHOWCASE_THEMES}
+        durationSec={36}
+        gapClass="gap-6"
+        renderItem={(t) => (
+          <div className="opacity-90">
+            <ThemePreview {...t} />
+          </div>
+        )}
+      />
     </section>
   );
 }

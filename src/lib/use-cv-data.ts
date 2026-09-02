@@ -258,6 +258,7 @@ export const useCVData = (): {
         ? JSON.parse(JSON.stringify(source.data)) as CVData
         : defaultCV;
       return {
+        ...prev,
         languages: [...prev.languages, { id, name: name.trim() || "Untitled", data }],
         activeId: id,
       };
@@ -278,7 +279,7 @@ export const useCVData = (): {
       if (prev.languages.length <= 1) return prev;
       const languages = prev.languages.filter((l) => l.id !== id);
       const activeId = prev.activeId === id ? languages[0].id : prev.activeId;
-      return { languages, activeId };
+      return { ...prev, languages, activeId };
     });
   }, []);
 

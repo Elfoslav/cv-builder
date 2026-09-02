@@ -1,4 +1,5 @@
 import { type CVData } from "@/lib/cv-types";
+import { BioText } from "@/components/cv/BioText";
 import { HeroContact } from "./HeroContact";
 
 /**
@@ -13,7 +14,7 @@ export const HeroPlain = ({ data }: { data: CVData }) => (
       <h1 className="mt-2 text-4xl font-bold tracking-tight text-foreground">
         {data.name || "Your Name"}
       </h1>
-      <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">{data.bio}</p>
+      <BioText bio={data.bio} className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground" />
       <HeroContact data={data} className="mt-7 grid max-w-2xl grid-cols-1 gap-3 text-sm sm:grid-cols-2" />
     </div>
   </section>

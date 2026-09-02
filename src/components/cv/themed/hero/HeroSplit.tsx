@@ -1,4 +1,5 @@
 import { type CVData } from "@/lib/cv-types";
+import { BioText } from "@/components/cv/BioText";
 import { HeroContact } from "./HeroContact";
 
 /** Identity on the left, contact stacked in a side column. */
@@ -11,7 +12,7 @@ export const HeroSplit = ({ data }: { data: CVData }) => (
             {data.name || "Your Name"}
           </h1>
           <p className="mt-1 text-lg font-medium text-accent">{data.role}</p>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">{data.bio}</p>
+          <BioText bio={data.bio} className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground" />
         </div>
         <HeroContact data={data} className="mt-0 flex flex-col gap-2.5 border-l border-border pl-6 text-sm" />
       </div>

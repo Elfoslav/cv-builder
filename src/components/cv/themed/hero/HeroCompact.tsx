@@ -1,4 +1,5 @@
 import { type CVData } from "@/lib/cv-types";
+import { BioText } from "@/components/cv/BioText";
 import { HeroContact } from "./HeroContact";
 
 /** Name and contact on one line, bio underneath — tight spacing. */
@@ -14,7 +15,7 @@ export const HeroCompact = ({ data }: { data: CVData }) => (
         </div>
         <HeroContact data={data} className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm" />
       </div>
-      <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">{data.bio}</p>
+      <BioText bio={data.bio} className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground" />
     </div>
   </section>
 );

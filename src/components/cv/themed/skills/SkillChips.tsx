@@ -13,7 +13,7 @@ export const SkillChips = ({ groups, columns }: { groups: SkillGroupWithItems[];
           {items.map((s) => (
             <span
               key={s.id}
-              className="cv-skill-chip rounded-full border border-primary bg-primary px-3 py-1 text-xs text-primary-foreground"
+              className="cv-skill-chip rounded-full border border-primary/25 bg-primary/[0.06] px-3 py-1 text-xs font-medium text-primary"
             >
               {s.name}
             </span>

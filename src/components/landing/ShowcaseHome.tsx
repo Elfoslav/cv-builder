@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ColorfulComparison, ColorfulCta, HowItWorks, FEATURES, HUES, SHOWCASE_THEMES } from "./shared";
+import { ThemeMarquee, ThemePreview } from "./theme-showcase";
 import { ArrowRight } from "lucide-react";
 
 export function ShowcaseHome() {
@@ -21,39 +22,16 @@ export function ShowcaseHome() {
           </p>
         </div>
 
-        <div className="relative mt-10 overflow-hidden">
-          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-background to-transparent sm:w-28" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-background to-transparent sm:w-28" />
-          <div className="flex w-max animate-[marquee_32s_linear_infinite] items-start gap-5 py-2 will-change-transform hover:[animation-play-state:paused] motion-reduce:animate-none">
-            {[...SHOWCASE_THEMES, ...SHOWCASE_THEMES].map((t, i) => (
-              <div key={`${t.theme}-${i}`} className={cn(i % 2 === 0 ? "translate-y-2" : "-translate-y-2")}>
-                <div data-theme={t.theme} className="cv-theme w-[220px] shrink-0 overflow-hidden rounded-2xl border bg-card shadow-[0_16px_40px_hsl(var(--foreground)/0.14)]">
-                  <div className="bg-background p-4">
-                    <div className="font-mono text-[8px] uppercase tracking-[0.14em] text-muted-foreground">Resume — {t.accent}</div>
-                    <div className="mt-1 text-[13px] font-extrabold leading-none tracking-tight" style={{ fontFamily: "var(--theme-heading)" }}>
-                      {t.name}
-                    </div>
-                    <div className="text-[10px] font-medium text-primary">{t.role}</div>
-                    <div className="mt-3 h-px w-full bg-border" />
-                    <div className="mt-3 space-y-2">
-                      <div className="rounded-lg border bg-card p-2">
-                        <div className="h-1.5 w-16 rounded bg-foreground/75" />
-                        <div className="mt-1 h-1 w-full rounded bg-muted" />
-                      </div>
-                      <div className="rounded-lg bg-secondary p-2">
-                        <div className="space-y-1">
-                          <div className="h-1.5 rounded bg-primary" style={{ width: "85%" }} />
-                          <div className="h-1.5 rounded bg-primary/60" style={{ width: "60%" }} />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <style>{`@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }`}</style>
-        </div>
+        <ThemeMarquee
+          className="mt-10"
+          items={SHOWCASE_THEMES}
+          durationSec={32}
+          renderItem={(t, i) => (
+            <div className={cn(i % 2 === 0 ? "translate-y-2" : "-translate-y-2")}>
+              <ThemePreview {...t} />
+            </div>
+          )}
+        />
 
         <div className="mt-8 flex justify-center">
           <Button asChild variant="outline" size="lg" className="rounded-full bg-card px-7">

@@ -5,7 +5,6 @@ import { HeroContact } from "./HeroContact";
 /** Name, role and bio centered, contact inline below. */
 export const HeroCentered = ({ data }: { data: CVData }) => (
   <section className="cv-hero relative overflow-hidden border-b border-border">
-    <div className="grid-bg pointer-events-none absolute inset-0" />
     <div className="pointer-events-none absolute inset-0 bg-gradient-glow" />
     <div className="relative py-10 print:py-4">
       <div className="flex flex-col items-center text-center">

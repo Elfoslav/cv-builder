@@ -144,7 +144,9 @@ const Index = () => {
   };
 
   const exportJSON = () => {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    // Include the global color theme alongside the CV data so an import can
+    // restore the full look. Older files without `theme` still import fine.
+    const blob = new Blob([JSON.stringify({ ...data, theme }, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -160,23 +162,31 @@ const Index = () => {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const parsed = JSON.parse(String(reader.result)) as Partial<CVData>;
+        const parsed = JSON.parse(String(reader.result)) as Partial<CVData> & { theme?: string };
+        // `theme` is stored globally (not on CVData), so pull it out and apply
+        // it separately when the file carries a valid one.
+        const { theme: importedTheme, ...cvParsed } = parsed;
+        if (importedTheme && (THEME_IDS as readonly string[]).includes(importedTheme)) {
+          setTheme(importedTheme as ThemeId);
+        }
         setData((prev) => ({
           ...prev,
-          ...parsed,
-          labels: { ...defaultLabels, ...(parsed.labels ?? {}) },
+          ...cvParsed,
+          labels: { ...defaultLabels, ...(cvParsed.labels ?? {}) },
           sectionDesigns: {
             ...DEFAULT_SECTION_DESIGNS,
             ...prev.sectionDesigns,
-            ...(parsed.sectionDesigns ?? {}),
+            ...(cvParsed.sectionDesigns ?? {}),
           },
           cardColumns: {
             ...DEFAULT_CARD_COLUMNS,
-            ...(parsed.cardColumns as Partial<CardColumnsMap> | undefined),
+            ...prev.cardColumns,
+            ...(cvParsed.cardColumns as Partial<CardColumnsMap> | undefined),
           },
           skillColumns: {
             ...DEFAULT_SKILL_COLUMNS,
-            ...(parsed.skillColumns as Partial<SkillColumnsMap> | undefined),
+            ...prev.skillColumns,
+            ...(cvParsed.skillColumns as Partial<SkillColumnsMap> | undefined),
           },
         }));
         uiToast({ title: "Imported", description: "CV data loaded successfully." });

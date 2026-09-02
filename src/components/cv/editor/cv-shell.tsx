@@ -145,7 +145,9 @@ export const CVShell = ({
 
   return (
     <div className="bg-background">
-      <main className="cv-main mx-auto px-4 pb-20">
+      {/* Modest bottom breathing room in preview; in print the page-bottom gutter
+          is provided by the export print-sheet <tfoot>, so no extra padding. */}
+      <main className="cv-main mx-auto px-4 pb-8 print:pb-0">
         {order.map((k) => {
           const meta = metas[k];
           return <Fragment key={k}>{wrap(meta, content(meta))}</Fragment>;

@@ -5,6 +5,7 @@ import {
 } from "./cv-types";
 import { DEFAULT_SECTION_DESIGNS, type SectionDesigns } from "./section-designs";
 import { DEFAULT_THEME, THEME_IDS, type ThemeId } from "./themes";
+import { toast } from "sonner";
 
 const STORAGE_KEY = "cv-builder-data-v1";
 const STORAGE_KEY_MULTI = "cv-builder-data-v2";
@@ -127,6 +128,26 @@ const migrateData = (parsed: Partial<CVData> & { skills?: Array<{ group?: string
 const normalizeTheme = (raw?: unknown): ThemeId =>
   THEME_IDS.includes(raw as ThemeId) ? (raw as ThemeId) : DEFAULT_THEME;
 
+/**
+ * Validates and normalizes an arbitrary parsed object into a MultiCVStore, or
+ * returns null if it isn't a usable store. Shared by initial load and by the
+ * "Back up all" import so both apply the same migration/validation.
+ */
+export const normalizeStore = (parsed: unknown): MultiCVStore | null => {
+  const p = parsed as Partial<MultiCVStore> | null;
+  if (!p || !Array.isArray(p.languages) || p.languages.length === 0) return null;
+  const languages = p.languages
+    .filter((l) => l && typeof l === "object")
+    .map((l) => ({
+      id: typeof l.id === "string" && l.id ? l.id : uid(),
+      name: typeof l.name === "string" && l.name.trim() ? l.name : "Untitled",
+      data: migrateData((l.data ?? {}) as Partial<CVData>),
+    }));
+  if (languages.length === 0) return null;
+  const activeId = languages.some((l) => l.id === p.activeId) ? (p.activeId as string) : languages[0].id;
+  return { languages, activeId, theme: normalizeTheme(p.theme) };
+};
+
 const loadStore = (): MultiCVStore => {
   if (typeof window === "undefined") {
     const id = uid();
@@ -136,17 +157,8 @@ const loadStore = (): MultiCVStore => {
   const tryParseStore = (raw: string | null, source: string): MultiCVStore | null => {
     if (!raw) return null;
     try {
-      const parsed = JSON.parse(raw) as MultiCVStore;
-      if (parsed && Array.isArray(parsed.languages) && parsed.languages.length > 0) {
-        const languages = parsed.languages.map((l) => ({
-          ...l,
-          data: migrateData(l.data as Partial<CVData>),
-        }));
-        const activeId = languages.some((l) => l.id === parsed.activeId)
-          ? parsed.activeId
-          : languages[0].id;
-        return { languages, activeId, theme: normalizeTheme(parsed.theme) };
-      }
+      const store = normalizeStore(JSON.parse(raw));
+      if (store) return store;
       console.error(`[cv-store] ${source} is malformed (no languages array). Raw:`, raw);
       return null;
     } catch (err) {
@@ -198,6 +210,7 @@ export const useCVData = (): {
 } => {
   const [store, setStore] = useState<MultiCVStore>(() => loadStore());
   const loadedRef = useRef(false);
+  const saveFailedRef = useRef(false);
 
   useEffect(() => {
     // Skip the very first effect run so we never overwrite storage with the
@@ -219,8 +232,15 @@ export const useCVData = (): {
         }
       }
       localStorage.setItem(STORAGE_KEY_MULTI, serialized);
+      saveFailedRef.current = false;
     } catch (err) {
       console.error("[cv-store] Failed to save CV data to localStorage:", err);
+      // Notify once (not on every keystroke) so the user knows edits aren't
+      // persisting — e.g. storage is full or blocked. Cleared on next success.
+      if (!saveFailedRef.current) {
+        saveFailedRef.current = true;
+        toast.error("Couldn't save your changes — your browser storage may be full. Export a backup to be safe.");
+      }
     }
   }, [store]);
 
@@ -283,7 +303,17 @@ export const useCVData = (): {
     });
   }, []);
 
+  /** Replace the entire store from an imported full backup. Returns false if
+   *  the payload isn't a valid store (caller shows an error). */
+  const replaceStore = useCallback((parsed: unknown): boolean => {
+    const next = normalizeStore(parsed);
+    if (!next) return false;
+    setStore(next);
+    return true;
+  }, []);
+
   return {
+    store,
     data: active.data,
     setData,
     languages: store.languages,
@@ -292,6 +322,7 @@ export const useCVData = (): {
     addLanguage,
     renameLanguage,
     deleteLanguage,
+    replaceStore,
     theme: store.theme,
     setTheme,
   };

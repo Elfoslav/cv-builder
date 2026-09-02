@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { AppTopbar } from "@/components/layout/AppTopbar";
 import { BrandLogo } from "@/components/layout/BrandLogo";
 import {
-  Download, Loader2, Languages, Upload, FileJson, MoreHorizontal,
+  Download, Loader2, Languages, Upload, FileJson, MoreHorizontal, HardDriveDownload,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -27,11 +27,16 @@ import { APP_NAME, APP_TITLE, APP_DESCRIPTION } from "@/lib/app";
 const safeFileName = (name: string, fallback = "CV") =>
   (name?.trim() || fallback).replace(/[^a-z0-9-_ ]/gi, "").trim() || fallback;
 
+/** Identifies our export files so imports can validate/version them. */
+const EXPORT_SCHEMA = "cv-builder";
+const EXPORT_VERSION = 2;
+
 const Index = () => {
   const {
-    data, setData,
+    store, data, setData,
     languages, activeId, setActiveId,
     addLanguage, renameLanguage, deleteLanguage,
+    replaceStore,
     theme, setTheme,
   } = useCVData();
   const [exporting, setExporting] = useState(false);
@@ -143,17 +148,35 @@ const Index = () => {
     }
   };
 
-  const exportJSON = () => {
-    // Include the global color theme alongside the CV data so an import can
-    // restore the full look. Older files without `theme` still import fine.
-    const blob = new Blob([JSON.stringify({ ...data, theme }, null, 2)], { type: "application/json" });
+  const downloadJSON = (obj: unknown, filename: string) => {
+    const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${safeFileName(data.name)}.json`;
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
-    uiToast({ title: "Exported", description: "Your CV data was downloaded." });
+  };
+
+  // Export just the active language (for sharing one version). Versioned
+  // envelope carries the global color theme so an import restores the look.
+  const exportJSON = () => {
+    downloadJSON({ schema: EXPORT_SCHEMA, version: EXPORT_VERSION, kind: "language", theme, data }, `${safeFileName(data.name)}.json`);
+    uiToast({ title: "Exported", description: `Saved “${languages.find((l) => l.id === activeId)?.name ?? "this language"}” to a file.` });
+  };
+
+  // Full backup: every language + the active selection + theme. This is the
+  // real safety net for a local-first app (nothing is on a server).
+  const exportBackup = () => {
+    downloadJSON(
+      { schema: EXPORT_SCHEMA, version: EXPORT_VERSION, kind: "full", theme: store.theme, activeId: store.activeId, languages: store.languages },
+      `${safeFileName(data.name)} - full backup.json`,
+    );
+    uiToast({ title: "Backed up", description: `Saved all ${languages.length} language${languages.length > 1 ? "s" : ""} and your theme.` });
+  };
+
+  const applyImportedTheme = (t: unknown) => {
+    if (typeof t === "string" && (THEME_IDS as readonly string[]).includes(t)) setTheme(t as ThemeId);
   };
 
   const importJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -162,31 +185,50 @@ const Index = () => {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const parsed = JSON.parse(String(reader.result)) as Partial<CVData> & { theme?: string };
-        // `theme` is stored globally (not on CVData), so pull it out and apply
-        // it separately when the file carries a valid one.
-        const { theme: importedTheme, ...cvParsed } = parsed;
-        if (importedTheme && (THEME_IDS as readonly string[]).includes(importedTheme)) {
-          setTheme(importedTheme as ThemeId);
+        const parsed = JSON.parse(String(reader.result)) as Record<string, unknown>;
+        if (!parsed || typeof parsed !== "object") throw new Error("not an object");
+
+        // A full backup (envelope kind "full", or any file carrying a languages array).
+        if (parsed.kind === "full" || Array.isArray(parsed.languages)) {
+          if (!window.confirm(`Restore this backup? It replaces your current CV and all ${languages.length} language${languages.length > 1 ? "s" : ""}.`)) return;
+          if (replaceStore(parsed)) {
+            uiToast({ title: "Restored", description: "Your full backup was loaded." });
+          } else {
+            uiToast({ title: "Import failed", description: "That file isn't a valid CV backup.", variant: "destructive" });
+          }
+          return;
         }
+
+        // Otherwise a single language: a versioned envelope ({ kind:"language", data })
+        // or a legacy flat CVData (optionally with a `theme` field).
+        const envelope = parsed as { kind?: string; data?: unknown; theme?: unknown };
+        const rawPayload = (envelope.kind === "language" && envelope.data ? envelope.data : parsed) as Record<string, unknown>;
+        // Strip envelope/meta fields so they don't leak into CVData.
+        const { schema: _s, version: _v, kind: _k, theme: _t, ...cvParsed } = rawPayload as Record<string, unknown> & Partial<CVData>;
+        if (!cvParsed || typeof cvParsed !== "object" || !("name" in cvParsed || "skills" in cvParsed || "experience" in cvParsed)) {
+          throw new Error("unrecognized CV file");
+        }
+        if (!window.confirm("Import this file? It replaces the current language’s content.")) return;
+
+        applyImportedTheme(envelope.theme);
         setData((prev) => ({
           ...prev,
-          ...cvParsed,
-          labels: { ...defaultLabels, ...(cvParsed.labels ?? {}) },
+          ...(cvParsed as Partial<CVData>),
+          labels: { ...defaultLabels, ...((cvParsed as Partial<CVData>).labels ?? {}) },
           sectionDesigns: {
             ...DEFAULT_SECTION_DESIGNS,
             ...prev.sectionDesigns,
-            ...(cvParsed.sectionDesigns ?? {}),
+            ...((cvParsed as Partial<CVData>).sectionDesigns ?? {}),
           },
           cardColumns: {
             ...DEFAULT_CARD_COLUMNS,
             ...prev.cardColumns,
-            ...(cvParsed.cardColumns as Partial<CardColumnsMap> | undefined),
+            ...((cvParsed as { cardColumns?: Partial<CardColumnsMap> }).cardColumns),
           },
           skillColumns: {
             ...DEFAULT_SKILL_COLUMNS,
             ...prev.skillColumns,
-            ...(cvParsed.skillColumns as Partial<SkillColumnsMap> | undefined),
+            ...((cvParsed as { skillColumns?: Partial<SkillColumnsMap> }).skillColumns),
           },
         }));
         uiToast({ title: "Imported", description: "CV data loaded successfully." });
@@ -241,15 +283,26 @@ const Index = () => {
                   <span className="hidden text-xs font-medium sm:inline">More</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-60">
                 <DropdownMenuLabel className="text-xs text-muted-foreground">Back up your CV</DropdownMenuLabel>
+                <DropdownMenuItem onClick={exportBackup}>
+                  <HardDriveDownload className="mr-2 h-4 w-4" />
+                  <div className="flex flex-col">
+                    <span>Back up everything</span>
+                    <span className="text-xs text-muted-foreground">All languages + theme</span>
+                  </div>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={exportJSON}>
                   <FileJson className="mr-2 h-4 w-4" />
-                  Export data
+                  <div className="flex flex-col">
+                    <span>Export this language</span>
+                    <span className="text-xs text-muted-foreground">Just the current version</span>
+                  </div>
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => importInput.current?.click()}>
                   <Upload className="mr-2 h-4 w-4" />
-                  Import data
+                  Import / restore…
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

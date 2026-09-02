@@ -43,6 +43,22 @@ export async function exportElementToPDF(
   // space or affect layout in the print document either.
   clone.querySelectorAll(".print\\:hidden, [data-print-hide]").forEach((n) => n.remove());
 
+  // Wrap the CV in a table whose empty <thead>/<tfoot> repeat on every printed
+  // page, giving a consistent top & bottom gutter on continuation pages too —
+  // something an @page margin can't do without printing a white border. The
+  // themed background (root <html> + .cv-theme) shows through behind the
+  // gutters, so the whole sheet stays full-bleed. Horizontal gutter is the
+  // cell padding (see .cv-print-sheet in index.css).
+  const table = clone.ownerDocument.createElement("table");
+  table.className = "cv-print-sheet";
+  table.innerHTML =
+    '<thead><tr><td><div class="cv-print-gutter"></div></td></tr></thead>' +
+    '<tbody><tr><td class="cv-print-body"></td></tr></tbody>' +
+    '<tfoot><tr><td><div class="cv-print-gutter"></div></td></tr></tfoot>';
+  const bodyCell = table.querySelector(".cv-print-body")!;
+  while (clone.firstChild) bodyCell.appendChild(clone.firstChild);
+  clone.appendChild(table);
+
   const html = `<!DOCTYPE html>
 <html lang="en"${themeAttr ? ` data-theme="${escapeHtml(themeAttr)}"` : ""}>
 <head>

@@ -124,9 +124,11 @@
 		transition: none !important;
 		animation: none !important;
 	}
-	/* Page gutters come from the `@page` margin now; the wrapper only needs the
-	   themed content background. The `@page` margin area is themed by the root
-	   background propagating from the `data-theme`d <html> (see export-pdf.ts). */
+	/* Full-bleed themed background: with `@page { margin: 0 }` the sheet is
+	   edge-to-edge, so the themed background (root <html> + this wrapper) fills
+	   the whole page — margins included. Page gutters are provided instead by
+	   the repeating table header/footer below (see .cv-print-sheet), which the
+	   `@page` margin area cannot be (it always prints paper-white). */
 	.cv-theme {
 		background: hsl(var(--background));
 	}
@@ -177,22 +179,42 @@
 	}
 
 	/* Keep each breakable item whole so a break lands between items, not through
-	   one. The top-of-page gutter is provided by the `@page` margin, so no
-	   per-item padding/negative-margin trick is needed here anymore. */
+	   one. Top/bottom page gutters come from the repeating table header/footer. */
 	.page-gutter,
 	.cv-skill-group {
 		break-inside: avoid;
 		page-break-inside: avoid;
 	}
+
+	/* Export print sheet (built in export-pdf.ts): the CV content sits in the
+	   <tbody>; the empty <thead>/<tfoot> repeat on EVERY printed page (default
+	   table behaviour), producing a consistent 12mm top & bottom gutter on
+	   continuation pages too. Horizontal gutter comes from the cell padding.
+	   Because these are content — not `@page` margins — the themed full-bleed
+	   background shows through behind them. */
+	.cv-print-gutter {
+		height: 12mm;
+	}
+}
+
+/* Print-sheet table structure — only present in the exported document. Kept
+   outside @media print so the iframe lays it out correctly before printing. */
+.cv-print-sheet {
+	width: 100%;
+	border-collapse: collapse;
+}
+.cv-print-sheet td {
+	padding: 0 12mm;
+	border: 0;
+	vertical-align: top;
 }
 
 @page {
-	/* A real page margin gives every page — including continuation pages — the
-	   same 12mm gutter on all four sides. The themed full-bleed background is
-	   preserved because the print document's <html> carries the `data-theme`
-	   (set in export-pdf.ts), so the root background propagates across the whole
-	   sheet, margins included. */
-	margin: 12mm;
+	/* Zero margin so the sheet is edge-to-edge and the themed background bleeds
+	   to the paper edge on every page. The visual page gutters are provided by
+	   the print-sheet table instead (see .cv-print-sheet), which — unlike an
+	   `@page` margin — does not force a white border. */
+	margin: 0;
 	/* Hide browser-injected headers/footers (URL, date, page numbers) */
 	marks: none;
 	@top-left {

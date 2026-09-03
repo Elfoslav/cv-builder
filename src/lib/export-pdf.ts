@@ -116,6 +116,11 @@ ${clone.outerHTML}
   iframe.style.pointerEvents = "none";
   document.body.appendChild(iframe);
 
+  // Chrome derives the "Save as PDF" filename (and the print header) from the
+  // TOP window's document.title, not the printed iframe's <title>. Swap the
+  // parent title to the CV name for the duration of the print, then restore it.
+  const prevTitle = document.title;
+
   try {
     const doc = iframe.contentDocument;
     if (!doc) throw new Error("Could not access print iframe document");
@@ -153,6 +158,7 @@ ${clone.outerHTML}
     // Trigger the native print dialog. The user chooses "Save as PDF".
     const win = iframe.contentWindow;
     if (!win) throw new Error("Could not access print iframe window");
+    document.title = docTitle; // becomes the default PDF filename in Chrome
     win.focus();
     win.print();
 
@@ -161,6 +167,7 @@ ${clone.outerHTML}
     // some browsers.
     await new Promise((r) => setTimeout(r, 1000));
   } finally {
+    document.title = prevTitle;
     iframe.remove();
   }
 }

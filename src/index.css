@@ -132,20 +132,15 @@
 	.cv-theme {
 		background: hsl(var(--background));
 	}
-	/* Card shadows: the on-screen soft, large-blur drop shadow (0 4px 20px)
-	   rasterizes as a muddy/hard grey box in the exported PDF. Swap it for a
-	   tight, low-blur shadow that prints cleanly and still reads as a subtle
-	   card lift — a print-faithful shadow, not a stripped one. Themes that are
-	   intentionally flat (classic, minimal, slate) stay flat.
-	   NOTE: the `.cv-theme[data-theme]` compound is deliberate — the per-theme
-	   `[data-theme="…"]` blocks are defined LATER in this file with equal
-	   specificity, so a bare `.cv-theme` override would lose the cascade. */
+	/* Card shadows: Chrome's print pipeline rasterizes ANY box-shadow as a hard,
+	   offset grey rectangle (the blur is dropped), which reads as a grey
+	   duplicate card behind each one — worst on the right side of the page. No
+	   blur radius is small enough to avoid it, so drop the shadow in export. The
+	   card border + subtle `--gradient-card` fill give clean, faithful
+	   definition on paper. (The `.cv-theme[data-theme]` compound is deliberate:
+	   the per-theme `[data-theme="…"]` blocks are defined LATER in this file with
+	   equal specificity, so a bare `.cv-theme` override would lose the cascade.) */
 	.cv-theme[data-theme] {
-		--shadow-card: 0 1px 2px hsl(220 25% 25% / 0.18);
-	}
-	.cv-theme[data-theme="classic"],
-	.cv-theme[data-theme="minimal"],
-	.cv-theme[data-theme="slate"] {
 		--shadow-card: none;
 	}
 	/* Full-bleed header in export: cancel the print-sheet cell's 12mm side

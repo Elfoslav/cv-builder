@@ -132,6 +132,19 @@
 	.cv-theme {
 		background: hsl(var(--background));
 	}
+	/* Card shadows: the on-screen soft, large-blur drop shadow (0 4px 20px)
+	   rasterizes as a muddy/hard grey box in the exported PDF. Swap it for a
+	   tight, low-blur shadow that prints cleanly and still reads as a subtle
+	   card lift — a print-faithful shadow, not a stripped one. Themes that are
+	   intentionally flat (classic, minimal, slate) stay flat. */
+	.cv-theme {
+		--shadow-card: 0 1px 2px hsl(220 25% 25% / 0.18);
+	}
+	[data-theme="classic"],
+	[data-theme="minimal"],
+	[data-theme="slate"] {
+		--shadow-card: none;
+	}
 	/* Full-bleed header in export: cancel the print-sheet cell's 12mm side
 	   padding (and .cv-main's 1rem) so the header band reaches the page's left
 	   and right edges; content stays aligned via matching padding. */

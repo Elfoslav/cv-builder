@@ -25,7 +25,10 @@ import { THEME_IDS, type ThemeId } from "@/lib/themes";
 import { APP_NAME, APP_TITLE, APP_DESCRIPTION } from "@/lib/app";
 
 const safeFileName = (name: string, fallback = "CV") =>
-  (name?.trim() || fallback).replace(/[^a-z0-9-_ ]/gi, "").trim() || fallback;
+  ((name?.trim() || fallback)
+    .replace(/[^a-z0-9-_ ]/gi, "") // drop punctuation/accents the filesystem dislikes
+    .trim()
+    .replace(/\s+/g, "_") || fallback); // spaces → underscores for a compact name
 
 /** Identifies our export files so imports can validate/version them. */
 const EXPORT_SCHEMA = "cv-builder";
@@ -114,7 +117,7 @@ const Index = () => {
     setExporting(true);
     const safeName = safeFileName(data.name);
     try {
-      await printCV(data, `${safeName} - CV.pdf`, theme);
+      await printCV(data, `${safeName}_cv.pdf`, theme);
       sonnerToast.success('Print dialog opened — pick "Save as PDF" (or a printer)');
     } catch (err) {
       console.error("PDF export failed", err);
@@ -127,7 +130,7 @@ const Index = () => {
   const exportLanguage = async (langData: CVData, langName: string) => {
     const name = safeFileName(langData.name);
     const lang = safeFileName(langName, "lang");
-    await printCV(langData, `${name} - CV (${lang}).pdf`, theme);
+    await printCV(langData, `${name}_cv_${lang}.pdf`, theme);
   };
 
   const handleDownloadAllPDFs = async () => {
@@ -170,7 +173,7 @@ const Index = () => {
   const exportBackup = () => {
     downloadJSON(
       { schema: EXPORT_SCHEMA, version: EXPORT_VERSION, kind: "full", theme: store.theme, activeId: store.activeId, languages: store.languages },
-      `${safeFileName(data.name)} - full backup.json`,
+      `${safeFileName(data.name)}_full_backup.json`,
     );
     uiToast({ title: "Backed up", description: `Saved all ${languages.length} language${languages.length > 1 ? "s" : ""} and your theme.` });
   };

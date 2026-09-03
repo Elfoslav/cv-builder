@@ -139,6 +139,20 @@
 		margin-inline: calc(-1rem - 12mm);
 		padding-inline: calc(1rem + 12mm);
 	}
+	/* Lifted glow header (see export-pdf.ts): rendered as a full-bleed block
+	   BEFORE the gutter table, so on page 1 the hero spans the whole sheet and
+	   its glow reaches the paper's top and side edges — the gradient continues
+	   to the very top of the page. The glow is `absolute inset-0`, so it fills
+	   the band regardless of the content padding that re-aligns the text with
+	   the 12mm body gutter below. Overrides the in-table `.cv-hero` rule above. */
+	.cv-print-hero-bleed,
+	.cv-print-hero-bleed > * {
+		margin: 0;
+	}
+	.cv-print-hero-bleed .cv-hero {
+		margin: 0;
+		padding: 12mm 12mm 0;
+	}
 	/* Force two-column layouts even on narrow print page widths.
 	   The card grid now uses a fixed (non-responsive) column count, so
 	   this print override is only referenced by the checks list. */

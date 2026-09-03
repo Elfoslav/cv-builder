@@ -59,6 +59,21 @@ export async function exportElementToPDF(
   while (clone.firstChild) bodyCell.appendChild(clone.firstChild);
   clone.appendChild(table);
 
+  // Lift a glow header (Gradient glow / Centered glow) out of the gutter table
+  // so that on page 1 its radial glow bleeds to the paper's top and side edges —
+  // the gradient continues all the way to the very top of the page instead of
+  // sitting below the repeating 12mm top gutter. Body sections stay inside the
+  // table, so continuation pages keep their even top/bottom gutters. Only these
+  // `.cv-hero` variants are lifted; other hero designs keep their in-table look.
+  const heroSection = bodyCell.querySelector(".cv-hero");
+  const heroBlock = heroSection?.parentElement; // the hero's <div class="mb-12"> wrapper
+  if (heroSection && heroBlock) {
+    const bleed = clone.ownerDocument.createElement("div");
+    bleed.className = "cv-print-hero-bleed";
+    bleed.appendChild(heroBlock); // detaches it from the body cell
+    clone.insertBefore(bleed, table);
+  }
+
   const html = `<!DOCTYPE html>
 <html lang="en"${themeAttr ? ` data-theme="${escapeHtml(themeAttr)}"` : ""}>
 <head>

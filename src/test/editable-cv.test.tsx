@@ -15,20 +15,18 @@ describe("EditableCVPreview", () => {
     const { container } = render(<Harness />);
     // hero, about, experience, education, skills, projects, hobbies, footer
     expect(screen.getAllByRole("button", { name: /^Edit$/ }).length).toBe(8);
-    // each list section shows an always-visible "Add …" chip
-    expect(
-      container.querySelectorAll("button").length,
-    ).toBeGreaterThan(screen.getAllByRole("button", { name: /^Edit$/ }).length);
+    // Add buttons are now only in the drawer when editing, not in the preview
+    expect(container.querySelectorAll("button").length).toBeGreaterThanOrEqual(
+      screen.getAllByRole("button", { name: /^Edit$/ }).length,
+    );
+    expect(screen.queryByText(/Add experience entry/)).not.toBeInTheDocument();
   });
 
   it("lets you add a list item and edit the section inline", async () => {
     const { container } = render(<Harness />);
 
-    const addChip = screen.getAllByRole("button").find((b) =>
-      b.textContent?.includes("Add experience entry"),
-    );
-    expect(addChip).toBeInTheDocument();
-    fireEvent.click(addChip!);
+    const editButton = screen.getAllByRole("button", { name: /^Edit$/ })[2];
+    fireEvent.click(editButton);
 
     await waitFor(() => {
       expect(screen.getAllByText(/Editing — Work Experience/).length).toBeGreaterThan(0);
@@ -37,6 +35,7 @@ describe("EditableCVPreview", () => {
     const formAdd = Array.from(container.querySelectorAll("button")).find((b) =>
       b.textContent?.trim().includes("Add experience"),
     );
+    expect(formAdd).toBeInTheDocument();
     fireEvent.click(formAdd!);
 
     await waitFor(() => {
@@ -192,6 +191,23 @@ describe("EditableCVPreview", () => {
     const cancel = screen.getByRole("button", { name: /^Cancel$/ });
     const done = screen.getByRole("button", { name: /^Done$/ });
     expect(cancel.compareDocumentPosition(done) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("keeps the drawer mounted for the reverse close animation", async () => {
+    const { container } = render(<Harness />);
+    fireEvent.click(screen.getAllByRole("button", { name: /^Edit$/ })[2]);
+
+    await waitFor(() => {
+      expect(screen.getByRole("dialog", { name: /Edit Work Experience/ })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /^Done$/ }));
+
+    expect(container.querySelector('[role="dialog"]')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(container.querySelector('[role="dialog"]')).not.toBeInTheDocument();
+    });
   });
 
   it("cancel discards edits made while the section was open", async () => {

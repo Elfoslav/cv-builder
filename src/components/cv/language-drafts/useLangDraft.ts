@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { toast } from "sonner";
+
+/** Case-insensitive, whitespace-trimmed match used to block duplicate names. */
+export const sameName = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
 
 export interface MockLang {
   id: string;
@@ -18,7 +22,7 @@ export interface LangDraft {
   languages: MockLang[];
   activeId: string;
   setActiveId: (id: string) => void;
-  add: (name: string) => void;
+  add: (name: string, copyFromActiveOverride?: boolean) => void;
   rename: (name: string) => void;
   del: () => void;
   canDelete: boolean;
@@ -26,6 +30,8 @@ export interface LangDraft {
   setAddOpen: (open: boolean) => void;
   newName: string;
   setNewName: (name: string) => void;
+  copyFromActive: boolean;
+  setCopyFromActive: (v: boolean) => void;
   renameOpen: boolean;
   setRenameOpen: (open: boolean) => void;
   editName: string;
@@ -61,23 +67,39 @@ export const useDraftActions = (p: DraftLangProps): LangDraft => {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [editName, setEditName] = useState("");
+  const [copyFromActive, setCopyFromActive] = useState(true);
 
   const active = p.languages.find((l) => l.id === p.activeId);
   const canDelete = p.languages.length > 1;
 
-  const add = (name: string) => {
+  const add = (name: string, copyOverride?: boolean) => {
     const trimmed = name.trim();
     if (!trimmed) return;
-    p.addLanguage(trimmed, false);
+    if (p.languages.some((l) => sameName(l.name, trimmed))) {
+      toast.error(`A language named "${trimmed}" already exists.`);
+      return;
+    }
+    const shouldCopy = copyOverride ?? copyFromActive;
+    p.addLanguage(trimmed, shouldCopy);
     setNewName("");
     setAddOpen(false);
+    toast.success(`Added "${trimmed}" — you can now translate this version.`);
   };
 
   const rename = (name: string) => {
     const trimmed = name.trim();
     if (!trimmed || !active) return;
+    if (trimmed === active.name) {
+      setRenameOpen(false);
+      return;
+    }
+    if (p.languages.some((l) => l.id !== active.id && sameName(l.name, trimmed))) {
+      toast.error(`A language named "${trimmed}" already exists.`);
+      return;
+    }
     p.renameLanguage(active.id, trimmed);
     setRenameOpen(false);
+    toast.success(`Renamed to "${trimmed}".`);
   };
 
   const del = () => {
@@ -88,6 +110,7 @@ export const useDraftActions = (p: DraftLangProps): LangDraft => {
 
   const requestAdd = () => {
     setNewName("");
+    setCopyFromActive(true);
     setAddOpen(true);
   };
 
@@ -104,6 +127,7 @@ export const useDraftActions = (p: DraftLangProps): LangDraft => {
     setActiveId: p.setActiveId,
     add, rename, del, canDelete,
     addOpen, setAddOpen, newName, setNewName,
+    copyFromActive, setCopyFromActive,
     renameOpen, setRenameOpen, editName, setEditName,
     deleteOpen, setDeleteOpen,
     requestAdd, requestRename, requestDelete,
@@ -117,8 +141,8 @@ export const useLangDraft = () => {
   const [languages, setLanguages] = useState<MockLang[]>(INITIAL);
   const [activeId, setActiveId] = useState(INITIAL[0].id);
 
-  const addLanguage = (name: string) =>
-    setLanguages((ls) => [...ls, { id: uid(), name }]);
+  const addLanguage = (_name: string, _copy?: boolean) =>
+    setLanguages((ls) => [...ls, { id: uid(), name: _name }]);
   const renameLanguage = (id: string, name: string) =>
     setLanguages((ls) => ls.map((l) => (l.id === id ? { ...l, name } : l)));
   const deleteLanguage = (id: string) => {
@@ -142,7 +166,7 @@ export const toDraftProps = (m: LangDraft): DraftLangProps => ({
   languages: m.languages,
   activeId: m.activeId,
   setActiveId: m.setActiveId,
-  addLanguage: (name) => m.add(name),
+  addLanguage: (name, copy) => m.add(name, copy),
   renameLanguage: (id, name) => m.rename(name),
   deleteLanguage: () => m.del(),
 });

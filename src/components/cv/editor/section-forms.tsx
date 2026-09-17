@@ -90,7 +90,7 @@ const SectionTitleFields = ({
   </div>
 );
 
-const AddButton = ({ label, onClick }: { label: string; onClick: () => void }) => (
+export const AddButton = ({ label, onClick }: { label: string; onClick: () => void }) => (
   <Button variant="outline" size="sm" className="w-full gap-1.5 border-dashed" onClick={onClick}>
     <Plus className="h-3.5 w-3.5" /> {label}
   </Button>
@@ -110,16 +110,16 @@ const ItemShell = ({
       <span className="truncate text-xs font-semibold text-foreground">{title}</span>
       <div className="flex shrink-0 gap-0.5">
         {onMoveUp && (
-          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={onMoveUp} title="Move up">
+          <Button size="icon-sm" variant="ghost" onClick={onMoveUp} title="Move up">
             <ArrowUp className="h-3.5 w-3.5" />
           </Button>
         )}
         {onMoveDown && (
-          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={onMoveDown} title="Move down">
+          <Button size="icon-sm" variant="ghost" onClick={onMoveDown} title="Move down">
             <ArrowDown className="h-3.5 w-3.5" />
           </Button>
         )}
-        <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive" onClick={onDelete} title="Delete">
+        <Button size="icon-sm" variant="ghost" className="text-destructive" onClick={onDelete} title="Delete">
           <Trash2 className="h-3.5 w-3.5" />
         </Button>
       </div>

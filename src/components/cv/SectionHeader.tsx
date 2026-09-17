@@ -6,7 +6,7 @@ interface SectionHeaderProps {
 
 export const SectionHeader = ({ index, title, subtitle }: SectionHeaderProps) => {
 	return (
-		<div className="mb-6 flex items-baseline gap-4 border-b border-border pb-4">
+		<div className="cv-section-header mb-6 flex items-baseline gap-4 border-b border-border pb-4">
 			<span className="text-sm font-semibold text-primary">{index}</span>
 			<div className="flex-1">
 				{subtitle && (

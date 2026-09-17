@@ -1,8 +1,37 @@
 export type SkillColor = "green" | "cyan" | "purple" | "yellow" | "pink";
 
+import { DEFAULT_SECTION_DESIGNS, type SectionDesigns } from "./section-designs";
+
 export type ListKey = "skills" | "experience" | "education" | "projects" | "hobbies";
 
 export type SectionKey = "hero" | "about" | "footer" | ListKey;
+
+/** How many columns the card designs render in for a list section. */
+export type CardColumns = 1 | 2 | 3 | 4 | 5 | 6;
+
+export interface CardColumnsMap {
+  experience: CardColumns;
+  education: CardColumns;
+  projects: CardColumns;
+  hobbies: CardColumns;
+}
+
+/** Default number of columns per card layout: projects and hobbies tile, history lists stack. */
+export const DEFAULT_CARD_COLUMNS: CardColumnsMap = {
+  experience: 1,
+  education: 1,
+  projects: 2,
+  hobbies: 4,
+};
+
+/** Column counts for the skills section: the skill groups and the skills inside them. */
+export interface SkillColumnsMap {
+  groups: CardColumns;
+  skills: CardColumns;
+}
+
+/** Default to the classic two-column skills layout. */
+export const DEFAULT_SKILL_COLUMNS: SkillColumnsMap = { groups: 2, skills: 2 };
 
 export const SECTION_KEYS: SectionKey[] = [
   "hero", "about", "experience", "education", "skills", "projects", "hobbies", "footer",
@@ -118,6 +147,12 @@ export interface CVData {
   labels: CVLabels;
   /** Display order of the CV sections. Hero & footer are pinned at the ends. */
   sectionOrder: SectionKey[];
+  /** Per-section layout designs chosen in the editor. */
+  sectionDesigns: SectionDesigns;
+  /** Number of columns for the card designs, per list section. */
+  cardColumns: CardColumnsMap;
+  /** Column counts for skill groups and the skills inside them. */
+  skillColumns: SkillColumnsMap;
 }
 
 export const defaultCV: CVData = {
@@ -211,6 +246,9 @@ export const defaultCV: CVData = {
   ],
   labels: defaultLabels,
   sectionOrder: DEFAULT_SECTION_ORDER,
+  sectionDesigns: { ...DEFAULT_SECTION_DESIGNS },
+  cardColumns: { ...DEFAULT_CARD_COLUMNS },
+  skillColumns: { ...DEFAULT_SKILL_COLUMNS },
 };
 
 export const HOBBY_ICONS: Hobby["icon"][] = [

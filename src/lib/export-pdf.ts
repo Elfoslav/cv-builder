@@ -34,12 +34,48 @@ export async function exportElementToPDF(
   // Clone the element so we don't disturb the live DOM.
   const clone = element.cloneNode(true) as HTMLElement;
 
+  // Carry the CV's theme onto the print document's <html> so the themed
+  // background propagates across the whole sheet — including the `@page`
+  // margin area, which the root element's background paints in print.
+  const themeAttr = element.getAttribute("data-theme");
+
   // Remove any elements explicitly hidden in print — they shouldn't take up
   // space or affect layout in the print document either.
   clone.querySelectorAll(".print\\:hidden, [data-print-hide]").forEach((n) => n.remove());
 
+  // Wrap the CV in a table whose empty <thead>/<tfoot> repeat on every printed
+  // page, giving a consistent top & bottom gutter on continuation pages too —
+  // something an @page margin can't do without printing a white border. The
+  // themed background (root <html> + .cv-theme) shows through behind the
+  // gutters, so the whole sheet stays full-bleed. Horizontal gutter is the
+  // cell padding (see .cv-print-sheet in index.css).
+  const table = clone.ownerDocument.createElement("table");
+  table.className = "cv-print-sheet";
+  table.innerHTML =
+    '<thead><tr><td><div class="cv-print-gutter"></div></td></tr></thead>' +
+    '<tbody><tr><td class="cv-print-body"></td></tr></tbody>' +
+    '<tfoot><tr><td><div class="cv-print-gutter"></div></td></tr></tfoot>';
+  const bodyCell = table.querySelector(".cv-print-body")!;
+  while (clone.firstChild) bodyCell.appendChild(clone.firstChild);
+  clone.appendChild(table);
+
+  // Lift a glow header (Gradient glow / Centered glow) out of the gutter table
+  // so that on page 1 its radial glow bleeds to the paper's top and side edges —
+  // the gradient continues all the way to the very top of the page instead of
+  // sitting below the repeating 12mm top gutter. Body sections stay inside the
+  // table, so continuation pages keep their even top/bottom gutters. Only these
+  // `.cv-hero` variants are lifted; other hero designs keep their in-table look.
+  const heroSection = bodyCell.querySelector(".cv-hero");
+  const heroBlock = heroSection?.parentElement; // the hero's <div class="mb-12"> wrapper
+  if (heroSection && heroBlock) {
+    const bleed = clone.ownerDocument.createElement("div");
+    bleed.className = "cv-print-hero-bleed";
+    bleed.appendChild(heroBlock); // detaches it from the body cell
+    clone.insertBefore(bleed, table);
+  }
+
   const html = `<!DOCTYPE html>
-<html lang="en">
+<html lang="en"${themeAttr ? ` data-theme="${escapeHtml(themeAttr)}"` : ""}>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -52,7 +88,9 @@ ${styleTags}
   html, body {
     margin: 0;
     padding: 0;
-    background: #ffffff;
+    /* Themed (via the <html> data-theme) so the whole sheet — including the
+       @page margin area — carries the CV's background color, not white. */
+    background: hsl(var(--background));
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -77,6 +115,11 @@ ${clone.outerHTML}
   iframe.style.opacity = "0";
   iframe.style.pointerEvents = "none";
   document.body.appendChild(iframe);
+
+  // Chrome derives the "Save as PDF" filename (and the print header) from the
+  // TOP window's document.title, not the printed iframe's <title>. Swap the
+  // parent title to the CV name for the duration of the print, then restore it.
+  const prevTitle = document.title;
 
   try {
     const doc = iframe.contentDocument;
@@ -115,6 +158,7 @@ ${clone.outerHTML}
     // Trigger the native print dialog. The user chooses "Save as PDF".
     const win = iframe.contentWindow;
     if (!win) throw new Error("Could not access print iframe window");
+    document.title = docTitle; // becomes the default PDF filename in Chrome
     win.focus();
     win.print();
 
@@ -123,6 +167,7 @@ ${clone.outerHTML}
     // some browsers.
     await new Promise((r) => setTimeout(r, 1000));
   } finally {
+    document.title = prevTitle;
     iframe.remove();
   }
 }

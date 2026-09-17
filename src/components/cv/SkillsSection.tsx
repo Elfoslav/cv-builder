@@ -1,18 +1,11 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { CVData, Skill, SkillGroup } from "@/lib/cv-types";
+import { CVData, Skill } from "@/lib/cv-types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
-import { Label } from "@/components/ui/label";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
-import {
-  Popover, PopoverContent, PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Plus, Trash2, FolderPlus, Pencil, Check, X, ArrowUp, ArrowDown, Layers,
-} from "lucide-react";
+import { Folder, Pencil, Check, X, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { LevelSelect } from "@/components/cv/LevelSelect";
+import { FieldLabel } from "@/components/cv/FieldLabel";
+import { AddButton } from "@/components/cv/editor/section-forms";
 import { toast } from "@/hooks/use-toast";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
@@ -22,21 +15,22 @@ interface Props {
   setData: Dispatch<SetStateAction<CVData>>;
 }
 
+/**
+ * Skills editor — single hierarchy list.
+ * Groups and their skills live in one tree: no separate group-manager box
+ * and no duplicated group headings. Names rename inline, groups reorder,
+ * and each skill is a compact row (name + proficiency + order + delete).
+ */
 export const SkillsSection = ({ data, setData }: Props) => {
-  const [newGroupName, setNewGroupName] = useState("");
-  const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
+  const [renaming, setRenaming] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
 
   const addGroup = () => {
-    const name = newGroupName.trim();
-    if (!name) return;
-    if (data.skillGroups.some((g) => g.name.toLowerCase() === name.toLowerCase())) {
-      toast({ title: "Group exists", description: "A group with this name already exists.", variant: "destructive" });
-      return;
-    }
-    const group: SkillGroup = { id: uid(), name };
-    setData((prev) => ({ ...prev, skillGroups: [...prev.skillGroups, group] }));
-    setNewGroupName("");
+    const id = uid();
+    let n = data.skillGroups.length + 1;
+    const names = new Set(data.skillGroups.map((g) => g.name.toLowerCase()));
+    while (names.has(`group ${n}`)) n += 1;
+    setData((prev) => ({ ...prev, skillGroups: [...prev.skillGroups, { id, name: `Group ${n}` }] }));
   };
 
   const renameGroup = (id: string) => {
@@ -46,7 +40,7 @@ export const SkillsSection = ({ data, setData }: Props) => {
       ...prev,
       skillGroups: prev.skillGroups.map((g) => (g.id === id ? { ...g, name } : g)),
     }));
-    setEditingGroupId(null);
+    setRenaming(null);
   };
 
   const moveGroup = (id: string, dir: -1 | 1) => {
@@ -89,7 +83,6 @@ export const SkillsSection = ({ data, setData }: Props) => {
     setData((prev) => {
       const skill = prev.skills.find((s) => s.id === id);
       if (!skill) return prev;
-      // Indices of skills within the same group, preserving overall array order
       const sameGroupIndices = prev.skills
         .map((s, i) => ({ s, i }))
         .filter(({ s }) => s.group === skill.group)
@@ -115,155 +108,88 @@ export const SkillsSection = ({ data, setData }: Props) => {
     }));
 
   return (
-    <div className="space-y-4">
-      {/* Group manager */}
-      <div className="rounded border border-border bg-secondary/30 p-3">
-        <div className="mb-2 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-            <Layers className="h-3.5 w-3.5" />
-            Skill groups
-          </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button size="sm" variant="ghost" className="h-7 gap-1 text-xs">
-                <FolderPlus className="h-3.5 w-3.5" /> New group
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-64 space-y-2">
-              <Label className="text-xs">Group name</Label>
-              <Input
-                autoFocus
-                placeholder="e.g. Design tools"
-                value={newGroupName}
-                onChange={(e) => setNewGroupName(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") addGroup(); }}
-                maxLength={40}
-              />
-              <Button size="sm" className="w-full" onClick={addGroup}>Create</Button>
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        <div className="space-y-1.5">
-          {data.skillGroups.map((g, idx) => {
-            const count = data.skills.filter((s) => s.group === g.id).length;
-            const isEditing = editingGroupId === g.id;
-            return (
-              <div key={g.id} className="flex items-center gap-1 rounded bg-card px-2 py-1">
-                {isEditing ? (
-                  <>
-                    <Input
-                      autoFocus
-                      value={editingName}
-                      onChange={(e) => setEditingName(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") renameGroup(g.id);
-                        if (e.key === "Escape") setEditingGroupId(null);
-                      }}
-                      maxLength={40}
-                      className="h-7 text-sm"
-                    />
-                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => renameGroup(g.id)}>
-                      <Check className="h-3.5 w-3.5 text-primary" />
-                    </Button>
-                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditingGroupId(null)}>
-                      <X className="h-3.5 w-3.5" />
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <span className="flex-1 truncate text-sm">{g.name}</span>
-                    <span className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
-                      {count}
-                    </span>
-                    <Button size="icon" variant="ghost" className="h-7 w-7" disabled={idx === 0} onClick={() => moveGroup(g.id, -1)}>
-                      <ArrowUp className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button size="icon" variant="ghost" className="h-7 w-7" disabled={idx === data.skillGroups.length - 1} onClick={() => moveGroup(g.id, 1)}>
-                      <ArrowDown className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setEditingGroupId(g.id); setEditingName(g.name); }}>
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => deleteGroup(g.id)}>
-                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                    </Button>
-                  </>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Skills grouped by group */}
-      {data.skillGroups.map((g) => {
+    <div>
+      <FieldLabel label="Skill categories" />
+      <div className="space-y-4">
+        {data.skillGroups.map((g, idx) => {
         const items = data.skills.filter((s) => s.group === g.id);
+        const isEditing = renaming === g.id;
         return (
-          <div key={g.id} className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-accent">{g.name}</h4>
-              <Button size="sm" variant="ghost" className="h-7 gap-1 text-xs" onClick={() => addSkill(g.id)}>
-                <Plus className="h-3.5 w-3.5" /> Add
-              </Button>
+          <div key={g.id} className="rounded border border-border bg-secondary/20 p-2.5">
+            <div className="flex items-center gap-1">
+              {isEditing ? (
+                <>
+                  <Input
+                    autoFocus
+                    value={editingName}
+                    onChange={(e) => setEditingName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") renameGroup(g.id);
+                      if (e.key === "Escape") setRenaming(null);
+                    }}
+                    maxLength={40}
+                    className="h-7 text-sm"
+                  />
+                   <Button size="icon-sm" variant="ghost" onClick={() => renameGroup(g.id)}>
+                    <Check className="h-3.5 w-3.5 text-primary" />
+                  </Button>
+                  <Button size="icon-sm" variant="ghost" onClick={() => setRenaming(null)}>
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Folder className="h-3.5 w-3.5 text-accent" />
+                  <span className="flex-1 truncate text-sm font-medium">{g.name}</span>
+                  <span className="rounded bg-secondary px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+                    {items.length}
+                  </span>
+                   <Button size="icon-sm" variant="ghost" disabled={idx === 0} onClick={() => moveGroup(g.id, -1)}>
+                    <ArrowUp className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button size="icon-sm" variant="ghost" disabled={idx === data.skillGroups.length - 1} onClick={() => moveGroup(g.id, 1)}>
+                    <ArrowDown className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button size="icon-sm" variant="ghost" onClick={() => { setRenaming(g.id); setEditingName(g.name); }}>
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button size="icon-sm" variant="ghost" onClick={() => deleteGroup(g.id)}>
+                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                  </Button>
+                </>
+              )}
             </div>
-            {items.length === 0 ? (
-              <p className="rounded border border-dashed border-border px-3 py-2 text-xs text-muted-foreground">
-                No skills yet.
-              </p>
-            ) : (
-              items.map((s, sIdx) => (
-                <div key={s.id} className="space-y-2 rounded border border-border bg-secondary/20 p-3">
-                  <div className="flex gap-1">
-                    <Input
-                      placeholder="Skill name"
-                      value={s.name}
-                      onChange={(e) => patchSkill(s.id, { name: e.target.value })}
-                      maxLength={40}
-                    />
-                    <Button size="icon" variant="ghost" disabled={sIdx === 0} onClick={() => moveSkill(s.id, -1)} title="Move up">
-                      <ArrowUp className="h-4 w-4" />
-                    </Button>
-                    <Button size="icon" variant="ghost" disabled={sIdx === items.length - 1} onClick={() => moveSkill(s.id, 1)} title="Move down">
-                      <ArrowDown className="h-4 w-4" />
-                    </Button>
-                    <Button size="icon" variant="ghost" onClick={() => removeSkill(s.id)}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                  <Select value={s.group} onValueChange={(v) => patchSkill(s.id, { group: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {data.skillGroups.map((gr) => (
-                        <SelectItem key={gr.id} value={gr.id}>{gr.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <div>
-                    <div className="mb-1 flex justify-between font-mono text-xs text-muted-foreground">
-                      <span>Experience</span>
-                      <span>{s.percentage}%</span>
-                    </div>
-                    <Slider
-                      min={0} max={100} step={5}
-                      value={[s.percentage]}
-                      onValueChange={([v]) => patchSkill(s.id, { percentage: v })}
-                    />
-                  </div>
+
+            <div className="mt-2 space-y-1.5">
+              {items.map((s, sIdx) => (
+                <div key={s.id} className="flex items-center gap-1.5">
+                  <Input
+                    value={s.name}
+                    onChange={(e) => patchSkill(s.id, { name: e.target.value })}
+                    maxLength={40}
+                    className="h-8 flex-1 text-sm"
+                  />
+                  <LevelSelect value={s.percentage} onChange={(pct) => patchSkill(s.id, { percentage: pct })} />
+                   <Button size="icon-sm" variant="ghost" disabled={sIdx === 0} onClick={() => moveSkill(s.id, -1)}>
+                    <ArrowUp className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button size="icon-sm" variant="ghost" disabled={sIdx === items.length - 1} onClick={() => moveSkill(s.id, 1)}>
+                    <ArrowDown className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button size="icon-sm" variant="ghost" onClick={() => removeSkill(s.id)}>
+                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                  </Button>
                 </div>
-              ))
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full gap-2 border-dashed"
-              onClick={() => addSkill(g.id)}
-            >
-              <Plus className="h-3.5 w-3.5" /> Add skill
-            </Button>
+              ))}
+            </div>
+
+            <AddButton label="Add skill" onClick={() => addSkill(g.id)} />
           </div>
         );
       })}
+
+      <AddButton label="Add group" onClick={addGroup} />
+      </div>
     </div>
   );
 };

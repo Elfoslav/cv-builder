@@ -115,9 +115,7 @@
 	* {
 		-webkit-print-color-adjust: exact !important;
 		print-color-adjust: exact !important;
-		/* Only blur and motion are dropped — they never render reliably in a
-		   static PDF. Everything else (gradients, shadows, the grid backdrop) is
-		   kept so the exported PDF matches the on-screen design exactly. */
+		/* Blur and motion do not render reliably in a static PDF. */
 		filter: none !important;
 		backdrop-filter: none !important;
 		-webkit-backdrop-filter: none !important;
@@ -132,16 +130,21 @@
 	.cv-theme {
 		background: hsl(var(--background));
 	}
-	/* Card shadows: Chrome's print pipeline rasterizes ANY box-shadow as a hard,
-	   offset grey rectangle (the blur is dropped), which reads as a grey
-	   duplicate card behind each one — worst on the right side of the page. No
-	   blur radius is small enough to avoid it, so drop the shadow in export. The
-	   card border + subtle `--gradient-card` fill give clean, faithful
-	   definition on paper. (The `.cv-theme[data-theme]` compound is deliberate:
-	   the per-theme `[data-theme="…"]` blocks are defined LATER in this file with
-	   equal specificity, so a bare `.cv-theme` override would lose the cascade.) */
-	.cv-theme[data-theme] {
-		--shadow-card: none;
+	/* Chrome can print box shadows as hard rectangles. Remove them throughout
+	   the CV, including dots, cards, and headers, regardless of theme or hover. */
+	.cv-theme,
+	.cv-theme *,
+	.cv-theme *::before,
+	.cv-theme *::after {
+		box-shadow: none !important;
+	}
+	/* These themes use shadows as deliberate rings, so reproduce them without
+	   shadows in print. Outlines follow the dot's rounded shape. */
+	[data-theme="earthy"] .cv-dot {
+		outline: 4px solid hsl(var(--secondary));
+	}
+	[data-theme="ocean"] .cv-dot {
+		outline: 2px solid hsl(var(--primary));
 	}
 	/* Full-bleed header in export: cancel the print-sheet cell's 12mm side
 	   padding (and .cv-main's 1rem) so the header band reaches the page's left

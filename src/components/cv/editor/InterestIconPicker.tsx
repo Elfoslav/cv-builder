@@ -17,7 +17,7 @@ export const InterestIconPicker = ({ value, label, onChange }: {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button type="button" variant="outline" role="combobox" aria-expanded={open} aria-label={`Icon for ${label}`} className="w-40 shrink-0 justify-between font-normal">
+        <Button type="button" variant="outline" role="combobox" aria-expanded={open} aria-label={`Icon for ${label}`} className="w-full shrink-0 justify-between font-normal sm:w-40">
           <span className="flex min-w-0 items-center gap-2 truncate">
             {SelectedIcon && <SelectedIcon aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-primary" />}
             <span className="truncate">{value === "none" ? "No icon" : value}</span>

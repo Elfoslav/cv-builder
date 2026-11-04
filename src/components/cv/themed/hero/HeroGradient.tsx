@@ -12,7 +12,7 @@ export const HeroGradient = ({ data }: { data: CVData }) => (
       </h1>
       <p className="mb-5 text-xl font-medium text-accent">{data.role}</p>
       <BioText bio={data.bio} className="max-w-2xl text-base leading-relaxed text-muted-foreground" />
-      <HeroContact data={data} className="mt-6 grid grid-cols-2 gap-4 text-sm" />
+      <HeroContact data={data} className="cv-hero-contact-grid mt-6 grid grid-cols-2 gap-4 text-sm" />
     </div>
   </section>
 );

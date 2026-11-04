@@ -25,14 +25,14 @@ export function AppTopbar({ left, center, right, className }: AppTopbarProps) {
         className
       )}
     >
-      <div className="page-container grid h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4">
-        <div className="col-start-1 flex min-w-0 items-center gap-2 justify-self-start">{left}</div>
+      <div className="page-container grid h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1 sm:gap-4">
+        <div className="col-start-1 flex min-w-0 items-center gap-1 sm:gap-2 justify-self-start">{left}</div>
         {center && (
           <nav className="col-start-2 hidden min-w-0 items-center justify-center gap-1 lg:flex" aria-label="Primary">
             {center}
           </nav>
         )}
-        <div className="col-start-3 flex min-w-0 items-center justify-end gap-2 justify-self-end">{right}</div>
+        <div className="col-start-3 flex min-w-0 items-center justify-end gap-1 sm:gap-2 justify-self-end">{right}</div>
       </div>
     </header>
   );

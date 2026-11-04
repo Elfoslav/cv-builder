@@ -9,7 +9,7 @@ export const SkillChips = ({ groups, columns }: { groups: SkillGroupWithItems[];
     {groups.map(({ group, items }) => (
       <div key={group.id} className="cv-skill-group">
         <SkillGroupHeading name={group.name} />
-        <div className={cardGridClass(columns.skills, "flex flex-wrap gap-2", "gap-2")}>
+        <div className={`cv-skill-items ${cardGridClass(columns.skills, "flex flex-wrap gap-2", "gap-2")}`}>
           {items.map((s) => (
             <span
               key={s.id}

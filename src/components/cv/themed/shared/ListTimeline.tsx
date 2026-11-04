@@ -1,3 +1,4 @@
+import { ListEntryEdit } from "./ListEntryEdit";
 import { TimelineItem } from "@/components/cv/TimelineItem";
 import { type ListEntry } from "./types";
 import { ListLinks } from "./ListLinks";
@@ -7,6 +8,7 @@ export const ListTimeline = ({ items }: { items: ListEntry[] }) => (
   <div>
     {items.map((e, i) => (
       <div key={e.id} className="page-gutter">
+        <ListEntryEdit entry={e} />
         <TimelineItem
           period={e.period ?? ""}
           title={e.title}

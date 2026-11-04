@@ -6,7 +6,7 @@ import { HeroContact } from "./HeroContact";
 export const HeroSplit = ({ data }: { data: CVData }) => (
   <section className="cv-hero border-b border-border">
     <div className="py-10 print:py-5">
-      <div className="grid gap-8 grid-cols-[minmax(0,1fr)_minmax(0,240px)] items-start">
+      <div className="cv-hero-split grid gap-8 grid-cols-[minmax(0,1fr)_minmax(0,240px)] items-start">
         <div>
           <h1 className="text-5xl font-extrabold tracking-tight text-foreground">
             {data.name || "Your Name"}
@@ -14,7 +14,7 @@ export const HeroSplit = ({ data }: { data: CVData }) => (
           <p className="mt-1 text-lg font-medium text-accent">{data.role}</p>
           <BioText bio={data.bio} className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground" />
         </div>
-        <HeroContact data={data} className="mt-0 flex flex-col gap-2.5 border-l border-border pl-6 text-sm" />
+        <HeroContact data={data} className="cv-hero-split-contact mt-0 flex flex-col gap-2.5 border-l border-border pl-6 text-sm" />
       </div>
     </div>
   </section>

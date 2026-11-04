@@ -17,6 +17,7 @@ export interface ListLinks {
 
 export interface ListEntry {
   id: string;
+  onEdit?: () => void;
   period?: string;
   title: string;
   subtitle?: string;

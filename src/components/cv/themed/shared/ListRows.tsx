@@ -1,3 +1,4 @@
+import { ListEntryEdit } from "./ListEntryEdit";
 import { TagPills } from "@/components/cv/TagPills";
 import { cn } from "@/lib/utils";
 import { type ListEntry } from "./types";
@@ -16,6 +17,7 @@ export const ListRows = ({ items }: { items: ListEntry[] }) => (
             e.compact ? "cv-project-row" : "cv-timeline-row",
           )}
         >
+          <ListEntryEdit entry={e} />
           <div className="text-[11px] font-semibold uppercase tracking-wider text-primary">{e.period}</div>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <h3 className="text-base font-semibold text-foreground">{e.title}</h3>

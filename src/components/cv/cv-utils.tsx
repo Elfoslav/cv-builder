@@ -27,7 +27,7 @@ export const cardGridClass = (
   // count renders identically in the editor canvas and the print/PDF page.
   // Responsive `md:`/`lg:` breakpoints would reflow the editor differently
   // (wide viewport) than the ~794px print page, causing text wraps to diverge.
-  return `grid ${gap} ${cols} [&>*]:min-w-0`;
+  return `cv-responsive-grid grid ${gap} ${cols} [&>*]:min-w-0`;
 };
 
 export const groupSkills = (data: CVData) =>

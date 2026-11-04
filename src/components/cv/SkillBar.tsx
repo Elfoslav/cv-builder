@@ -23,8 +23,8 @@ export const SkillBar = ({ name, percentage }: SkillBarProps) => {
   return (
     <div className="cv-skillbar group">
       <div className="mb-1 flex items-baseline justify-between gap-2">
-        <span className="text-xs font-medium text-foreground leading-tight">{name}</span>
-        <span className="text-[10px] text-muted-foreground leading-tight">{levelLabel(percentage)}</span>
+        <span className="cv-skill-name min-w-0 text-xs font-medium text-foreground leading-tight">{name}</span>
+        <span className="cv-skill-level shrink-0 text-[10px] text-muted-foreground leading-tight">{levelLabel(percentage)}</span>
       </div>
       <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
         <div

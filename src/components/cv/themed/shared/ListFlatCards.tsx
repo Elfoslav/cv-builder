@@ -1,3 +1,4 @@
+import { ListEntryEdit } from "./ListEntryEdit";
 import { CVCard } from "@/components/cv/CVCard";
 import { TagPills } from "@/components/cv/TagPills";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,7 @@ const FlatCardItem = ({ entry }: { entry: ListEntry }) => {
   }
   return (
     <>
+      <ListEntryEdit entry={entry} />
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <div className="min-w-0">
           <h3 className="text-lg font-semibold text-foreground">{entry.title}</h3>

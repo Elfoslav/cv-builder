@@ -1,3 +1,4 @@
+import { ListEntryEdit } from "./ListEntryEdit";
 import { CVCard } from "@/components/cv/CVCard";
 import { TagPills } from "@/components/cv/TagPills";
 import { type ListEntry } from "./types";
@@ -28,6 +29,7 @@ export const ListCardRows = ({ items, tone = "gradient" }: ListCardRowsProps) =>
               : "cv-timeline-row p-3.5"
           }
         >
+          <ListEntryEdit entry={e} />
           {e.links ? (
             <>
               <div className="mb-1 flex flex-wrap items-center justify-between gap-2">

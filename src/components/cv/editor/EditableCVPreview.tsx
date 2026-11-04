@@ -30,6 +30,7 @@ interface EditableCVPreviewProps {
 export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: EditableCVPreviewProps) => {
   const actions = useCVActions(setData);
   const closeTimerRef = useRef<number | null>(null);
+  const [editingItemId, setEditingItemId] = useState<string | undefined>();
   const [editingKey, setEditingKey] = useState<SectionKey | null>(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [snapshot, setSnapshot] = useState<SectionSnapshot | null>(null);
@@ -75,6 +76,7 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
   };
 
   const handleStartEditing = (key: SectionKey) => {
+    setEditingItemId(undefined);
     openEditor(key, snapshotSection(data, key));
   };
 
@@ -93,10 +95,11 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
     <div data-theme={theme} className={cn("cv-theme", editingKey && "cv-editing")}>
       <div className="xl:flex xl:items-stretch xl:gap-6">
         <div className="xl:flex xl:min-w-0 xl:flex-1 xl:justify-center">
-          <div className="mx-auto w-full max-w-[735px] print:mx-0 print:max-w-none">
+          <div className="cv-editor-preview mx-auto w-full max-w-[735px] print:mx-0 print:max-w-none">
             <div className="overflow-hidden rounded-xl border bg-background shadow-[0_8px_32px_hsl(var(--foreground)/0.08)] print:rounded-none print:border-0 print:shadow-none">
           <CVShell
             data={data}
+            onEditItem={(key, id) => { setEditingItemId(id); openEditor(key, snapshotSection(data, key)); }}
             wrap={(meta, content) => (
               <EditableSection
                 meta={meta}
@@ -119,6 +122,7 @@ export const EditableCVPreview = ({ data, setData, theme = DEFAULT_THEME }: Edit
         </div>
         <EditorDrawer
           editingKey={editingKey}
+          editingItemId={editingItemId}
           visible={drawerVisible}
           isWide={isWide}
           data={data}
@@ -191,8 +195,8 @@ const EditableSection = ({
       {!isEditing && (
         <div
           className={cn(
-            "absolute right-0 z-20 flex items-center gap-0.5 rounded-full border border-border bg-background/90 p-0.5 shadow-sm backdrop-blur print:hidden",
-            meta.key === "hero" ? "top-10" : "top-0",
+            "relative z-20 mb-3 ml-auto flex w-fit items-center gap-0.5 rounded-full border border-border bg-background/90 p-0.5 shadow-sm backdrop-blur sm:absolute sm:right-0 sm:mb-0 print:hidden",
+            meta.key === "hero" ? "sm:top-10" : "sm:top-0",
           )}
         >
           {meta.key !== "hero" && meta.key !== "footer" && (
@@ -238,6 +242,7 @@ const EditableSection = ({
 
 const EditorDrawer = ({
   editingKey,
+  editingItemId,
   visible,
   isWide,
   data,
@@ -247,6 +252,7 @@ const EditorDrawer = ({
   onCancel,
 }: {
   editingKey: SectionKey | null;
+  editingItemId?: string;
   visible: boolean;
   isWide: boolean;
   data: CVData;
@@ -319,7 +325,9 @@ const EditorDrawer = ({
           </div>
         </div>
 
-        {drawerVariant === "tabs" ? (
+        {editingItemId ? (
+          <div className="flex-1 overflow-y-auto px-5 py-6">{buildForm(meta.key, data, actions, editingItemId, onDone)}</div>
+        ) : drawerVariant === "tabs" ? (
           <div className="flex-1 overflow-y-auto">
             <div className="sticky top-0 z-10 flex gap-1 border-b bg-card px-2 py-2">
               <Button

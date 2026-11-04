@@ -1,3 +1,4 @@
+import { ListEntryEdit } from "./ListEntryEdit";
 import { TagPills } from "@/components/cv/TagPills";
 import { cn } from "@/lib/utils";
 import { type ListEntry } from "./types";
@@ -41,6 +42,7 @@ export const ListCardContent = ({ entry, titleClass }: ListCardContentProps) => 
   }
   return (
     <>
+      <ListEntryEdit entry={entry} />
       <div className="text-xs font-semibold uppercase tracking-wider text-primary">{entry.period}</div>
       <h3 className={cn("mt-1.5 text-lg font-semibold text-foreground", titleClass)}>{entry.title}</h3>
       <MetaLine subtitle={entry.subtitle} location={entry.location} />

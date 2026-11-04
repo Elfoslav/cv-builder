@@ -116,7 +116,7 @@ export const SkillsSection = ({ data, setData }: Props) => {
         const isEditing = renaming === g.id;
         return (
           <div key={g.id} className="rounded border border-border bg-secondary/20 p-2.5">
-            <div className="flex items-center gap-1">
+            <div className="flex flex-wrap items-center gap-1">
               {isEditing ? (
                 <>
                   <Input
@@ -162,12 +162,12 @@ export const SkillsSection = ({ data, setData }: Props) => {
 
             <div className="mt-2 space-y-1.5">
               {items.map((s, sIdx) => (
-                <div key={s.id} className="flex items-center gap-1.5">
+                <div key={s.id} className="flex flex-wrap items-center gap-1.5">
                   <Input
                     value={s.name}
                     onChange={(e) => patchSkill(s.id, { name: e.target.value })}
                     maxLength={40}
-                    className="h-8 flex-1 text-sm"
+                    className="h-10 min-w-0 basis-full text-base sm:h-8 sm:basis-0 sm:flex-1 sm:text-sm"
                   />
                   <LevelSelect value={s.percentage} onChange={(pct) => patchSkill(s.id, { percentage: pct })} />
                    <Button size="icon-sm" variant="ghost" disabled={sIdx === 0} onClick={() => moveSkill(s.id, -1)}>

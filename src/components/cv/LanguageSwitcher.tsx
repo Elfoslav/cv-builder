@@ -19,10 +19,10 @@ export const LanguageSwitcher = (props: DraftLangProps) => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-1.5 px-2">
+          <Button variant="outline" size="sm" className="gap-1.5 px-2" aria-label={`Language: ${active?.name ?? "Select language"}`}>
             <Languages className="h-3.5 w-3.5 text-primary" />
-            <span className="max-w-24 truncate">{active?.name}</span>
-            <ChevronDown className="h-3 w-3 opacity-60" />
+            <span className="hidden max-w-24 truncate sm:inline">{active?.name}</span>
+            <ChevronDown className="hidden h-3 w-3 opacity-60 sm:block" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-52">

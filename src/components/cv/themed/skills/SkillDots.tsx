@@ -9,7 +9,7 @@ export const SkillDots = ({ groups, columns }: { groups: SkillGroupWithItems[]; 
     {groups.map(({ group, items }) => (
       <div key={group.id} className="cv-skill-group">
         <SkillGroupHeading name={group.name} />
-        <ul className={cardGridClass(columns.skills, "grid grid-cols-1 gap-y-2", "gap-x-6 gap-y-2")}>
+        <ul className={`cv-skill-items ${cardGridClass(columns.skills, "grid grid-cols-1 gap-y-2", "gap-x-6 gap-y-2")}`}>
           {items.map((s) => (
             <li key={s.id} className="cv-skill-dot flex items-center gap-2.5 text-sm">
               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />

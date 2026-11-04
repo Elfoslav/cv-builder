@@ -19,10 +19,10 @@ export const ThemeSwitcher = ({ theme, setTheme }: ThemeSwitcherProps) => {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-1.5 px-2" title="Color theme">
+        <Button variant="outline" size="sm" className="gap-1.5 px-2" title="Color theme" aria-label={`Color theme: ${active?.name ?? "Select theme"}`}>
           <Palette className="h-3.5 w-3.5 text-primary" />
-          <span className="max-w-24 truncate">{active?.name}</span>
-          <ChevronDown className="h-3 w-3 opacity-60" />
+          <span className="hidden max-w-24 truncate sm:inline">{active?.name}</span>
+          <ChevronDown className="hidden h-3 w-3 opacity-60 sm:block" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56">

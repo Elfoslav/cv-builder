@@ -25,7 +25,7 @@ export interface SectionMeta {
 export type WrapSection = (meta: SectionMeta, content: ReactNode) => ReactNode;
 
 export const CVShell = ({
-  data, wrap, hideEmpty, designs,
+  data, wrap, hideEmpty, designs, onEditItem,
 }: {
   data: CVData;
   wrap: WrapSection;
@@ -33,6 +33,7 @@ export const CVShell = ({
   hideEmpty?: boolean;
   /** Optional per-section design overrides (used by the drafts showcase). */
   designs?: Partial<SectionDesigns>;
+  onEditItem?: (section: "experience" | "education", id: string) => void;
 }) => {
   const L = data.labels;
 
@@ -113,11 +114,11 @@ export const CVShell = ({
           : section(<EmptyState label="Add a short introduction…" />);
       case "experience":
         return data.experience.length
-          ? section(<TimelineView items={data.experience.map((entry) => toListEntry(entry, entry.company))} variant={d.experience} columns={columns.experience} />)
+          ? section(<TimelineView items={data.experience.map((entry) => ({ ...toListEntry(entry, entry.company), onEdit: onEditItem && (() => onEditItem("experience", entry.id)) }))} variant={d.experience} columns={columns.experience} />)
           : section(<EmptyState label="No experience entries yet" />);
       case "education":
         return data.education.length
-          ? section(<TimelineView items={data.education.map((entry) => toListEntry(entry, entry.school))} variant={d.education} columns={columns.education} />)
+          ? section(<TimelineView items={data.education.map((entry) => ({ ...toListEntry(entry, entry.school), onEdit: onEditItem && (() => onEditItem("education", entry.id)) }))} variant={d.education} columns={columns.education} />)
           : section(<EmptyState label="No education entries yet" />);
       case "skills":
         return groupedSkills.length

@@ -22,7 +22,7 @@ const LABEL_KEYS: Partial<Record<SectionKey, { title: keyof CVLabels; subtitle: 
   hobbies: { title: "hobbiesTitle", subtitle: "hobbiesSubtitle" },
 };
 
-export const buildForm = (key: SectionKey, data: CVData, actions: CVActions): ReactNode => {
+export const buildForm = (key: SectionKey, data: CVData, actions: CVActions, itemId?: string, onItemDeleted?: () => void): ReactNode => {
   switch (key) {
     case "hero":
       return <HeroForm data={data} actions={actions} />;
@@ -31,9 +31,9 @@ export const buildForm = (key: SectionKey, data: CVData, actions: CVActions): Re
     case "skills":
       return <SkillsForm data={data} actions={actions} />;
     case "experience":
-      return <ExperienceForm data={data} actions={actions} />;
+      return <ExperienceForm data={data} actions={actions} itemId={itemId} onItemDeleted={onItemDeleted} />;
     case "education":
-      return <EducationForm data={data} actions={actions} />;
+      return <EducationForm data={data} actions={actions} itemId={itemId} onItemDeleted={onItemDeleted} />;
     case "projects":
       return <ProjectsForm data={data} actions={actions} />;
     case "hobbies":
@@ -58,7 +58,7 @@ const SectionTitleFields = ({
   titleKey: keyof CVLabels;
   subtitleKey: keyof CVLabels;
 }) => (
-  <div className="grid grid-cols-2 gap-2">
+  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
     <Field label="Section title">
       <Input
         value={data.labels[titleKey]}
@@ -129,7 +129,7 @@ const HeroForm = ({ data, actions }: { data: CVData; actions: CVActions }) => (
     <Field label="Email">
       <Input type="email" value={data.email} onChange={(e) => actions.update("email", e.target.value)} maxLength={120} />
     </Field>
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
       <Field label="Phone">
         <Input value={data.phone} onChange={(e) => actions.update("phone", e.target.value)} maxLength={40} />
       </Field>
@@ -137,7 +137,7 @@ const HeroForm = ({ data, actions }: { data: CVData; actions: CVActions }) => (
         <Input value={data.location} onChange={(e) => actions.update("location", e.target.value)} maxLength={80} />
       </Field>
     </div>
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
       <Field label="GitHub URL">
         <Input value={data.github} onChange={(e) => actions.update("github", e.target.value)} maxLength={200} />
       </Field>
@@ -157,26 +157,26 @@ const AboutForm = ({ data, actions }: { data: CVData; actions: CVActions }) => (
   </div>
 );
 
-const ExperienceForm = ({ data, actions }: { data: CVData; actions: CVActions }) => (
+const ExperienceForm = ({ data, actions, itemId, onItemDeleted }: { data: CVData; actions: CVActions; itemId?: string; onItemDeleted?: () => void }) => (
   <div className="space-y-3">
-    <SectionTitleFields data={data} actions={actions} titleKey="experienceTitle" subtitleKey="experienceSubtitle" />
-    <p className="text-[11px] text-muted-foreground">
+    {!itemId && <SectionTitleFields data={data} actions={actions} titleKey="experienceTitle" subtitleKey="experienceSubtitle" />}
+    {!itemId && <p className="text-[11px] text-muted-foreground">
       {data.experience.length} {data.experience.length === 1 ? "entry" : "entries"}
-    </p>
+    </p>}
     <div className="space-y-2">
-      {data.experience.map((e, idx) => (
+      {data.experience.map((e, idx) => (!itemId || itemId === e.id) && (
         <ItemShell
           key={e.id}
           title={e.title || "Untitled role"}
-          onDelete={() => actions.removeItem("experience", e.id)}
+          onDelete={() => { actions.removeItem("experience", e.id); if (itemId) onItemDeleted?.(); }}
           onMoveUp={idx > 0 ? () => actions.moveItem("experience", e.id, -1) : undefined}
           onMoveDown={idx < data.experience.length - 1 ? () => actions.moveItem("experience", e.id, 1) : undefined}
         >
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <Input placeholder="Period" value={e.period} onChange={(ev) => actions.patchItem("experience", e.id, { period: ev.target.value })} maxLength={40} />
             <Input placeholder="Location" value={e.location} onChange={(ev) => actions.patchItem("experience", e.id, { location: ev.target.value })} maxLength={60} />
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <Input placeholder="Job title" value={e.title} onChange={(ev) => actions.patchItem("experience", e.id, { title: ev.target.value })} maxLength={80} />
             <Input placeholder="Company" value={e.company} onChange={(ev) => actions.patchItem("experience", e.id, { company: ev.target.value })} maxLength={60} />
           </div>
@@ -184,31 +184,31 @@ const ExperienceForm = ({ data, actions }: { data: CVData; actions: CVActions })
           <Input placeholder="Tags (comma-separated)" value={e.tags} onChange={(ev) => actions.patchItem("experience", e.id, { tags: ev.target.value })} maxLength={200} />
         </ItemShell>
       ))}
-      <AddButton label="Add experience" onClick={() => actions.appendItem("experience", blankItem("experience") as Experience)} />
+      {!itemId && <AddButton label="Add experience" onClick={() => actions.appendItem("experience", blankItem("experience") as Experience)} />}
     </div>
   </div>
 );
 
-const EducationForm = ({ data, actions }: { data: CVData; actions: CVActions }) => (
+const EducationForm = ({ data, actions, itemId, onItemDeleted }: { data: CVData; actions: CVActions; itemId?: string; onItemDeleted?: () => void }) => (
   <div className="space-y-3">
-    <SectionTitleFields data={data} actions={actions} titleKey="educationTitle" subtitleKey="educationSubtitle" />
-    <p className="text-[11px] text-muted-foreground">
+    {!itemId && <SectionTitleFields data={data} actions={actions} titleKey="educationTitle" subtitleKey="educationSubtitle" />}
+    {!itemId && <p className="text-[11px] text-muted-foreground">
       {data.education.length} {data.education.length === 1 ? "entry" : "entries"}
-    </p>
+    </p>}
     <div className="space-y-2">
-      {data.education.map((e, idx) => (
+      {data.education.map((e, idx) => (!itemId || itemId === e.id) && (
         <ItemShell
           key={e.id}
           title={e.title || "Untitled degree"}
-          onDelete={() => actions.removeItem("education", e.id)}
+          onDelete={() => { actions.removeItem("education", e.id); if (itemId) onItemDeleted?.(); }}
           onMoveUp={idx > 0 ? () => actions.moveItem("education", e.id, -1) : undefined}
           onMoveDown={idx < data.education.length - 1 ? () => actions.moveItem("education", e.id, 1) : undefined}
         >
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <Input placeholder="Period" value={e.period} onChange={(ev) => actions.patchItem("education", e.id, { period: ev.target.value })} maxLength={40} />
             <Input placeholder="Location" value={e.location} onChange={(ev) => actions.patchItem("education", e.id, { location: ev.target.value })} maxLength={60} />
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <Input placeholder="Degree / Title" value={e.title} onChange={(ev) => actions.patchItem("education", e.id, { title: ev.target.value })} maxLength={100} />
             <Input placeholder="School" value={e.school} onChange={(ev) => actions.patchItem("education", e.id, { school: ev.target.value })} maxLength={80} />
           </div>
@@ -216,7 +216,7 @@ const EducationForm = ({ data, actions }: { data: CVData; actions: CVActions }) 
           <Input placeholder="Tags (comma-separated)" value={e.tags} onChange={(ev) => actions.patchItem("education", e.id, { tags: ev.target.value })} maxLength={200} />
         </ItemShell>
       ))}
-      <AddButton label="Add education" onClick={() => actions.appendItem("education", blankItem("education") as Education)} />
+      {!itemId && <AddButton label="Add education" onClick={() => actions.appendItem("education", blankItem("education") as Education)} />}
     </div>
   </div>
 );
@@ -236,13 +236,13 @@ const ProjectsForm = ({ data, actions }: { data: CVData; actions: CVActions }) =
           onMoveUp={idx > 0 ? () => actions.moveItem("projects", p.id, -1) : undefined}
           onMoveDown={idx < data.projects.length - 1 ? () => actions.moveItem("projects", p.id, 1) : undefined}
         >
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <Input placeholder="Project name" value={p.name} onChange={(ev) => actions.patchItem("projects", p.id, { name: ev.target.value })} maxLength={60} />
             <Input placeholder="Period" value={p.period ?? ""} onChange={(ev) => actions.patchItem("projects", p.id, { period: ev.target.value })} maxLength={40} />
           </div>
           <Textarea placeholder="Description" rows={2} value={p.description} onChange={(ev) => actions.patchItem("projects", p.id, { description: ev.target.value })} maxLength={400} />
           <Input placeholder="Tech stack (comma-separated)" value={p.stack} onChange={(ev) => actions.patchItem("projects", p.id, { stack: ev.target.value })} maxLength={200} />
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             <Input
               type="number" placeholder="Stars" value={p.stars ?? ""}
               onChange={(ev) => actions.patchItem("projects", p.id, { stars: ev.target.value ? Number(ev.target.value) : undefined })}
@@ -269,7 +269,7 @@ const HobbiesForm = ({ data, actions }: { data: CVData; actions: CVActions }) =>
           onMoveUp={idx > 0 ? () => actions.moveItem("hobbies", hb.id, -1) : undefined}
           onMoveDown={idx < data.hobbies.length - 1 ? () => actions.moveItem("hobbies", hb.id, 1) : undefined}
         >
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <Input
               placeholder="Hobby" value={hb.label}
               onChange={(e) => actions.patchItem("hobbies", hb.id, { label: e.target.value })}

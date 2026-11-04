@@ -47,21 +47,20 @@ export interface SkillGroup {
   name: string;
 }
 
-export const SKILL_ICONS = [
+export const HOBBY_ICONS = [
   "Award", "Baby", "Bike", "BookOpen", "Brain", "Briefcase", "Calculator", "Camera",
   "Cat", "ChartBar", "ChefHat", "Code2", "Coffee", "Database", "Dog", "Dumbbell",
   "Fish", "Flower2", "Globe", "GraduationCap", "Heart", "Languages", "Leaf", "Lightbulb",
   "Megaphone", "Microscope", "Music", "Paintbrush", "Palette", "PawPrint", "PenLine", "PenTool",
   "Scissors", "Settings", "Shield", "Smartphone", "Sprout", "Stethoscope", "Terminal", "Truck",
-  "Users", "Utensils", "Video", "Wrench",
+  "Users", "Utensils", "Video", "Wrench", "Mountain", "Gamepad2", "Book", "Plane", "none",
 ] as const;
 
-export type SkillIconName = (typeof SKILL_ICONS)[number];
+export type HobbyIconName = (typeof HOBBY_ICONS)[number];
 
 export interface Skill {
   id: string;
   name: string;
-  icon?: SkillIconName;
   percentage: number;
   color: SkillColor;
   /** ID of the SkillGroup this skill belongs to */
@@ -102,7 +101,7 @@ export interface Project {
 export interface Hobby {
   id: string;
   label: string;
-  icon: SkillIconName | "Mountain" | "Gamepad2" | "Book" | "Plane" | "none";
+  icon: HobbyIconName;
 }
 
 export interface CVLabels {
@@ -262,9 +261,5 @@ export const defaultCV: CVData = {
   cardColumns: { ...DEFAULT_CARD_COLUMNS },
   skillColumns: { ...DEFAULT_SKILL_COLUMNS },
 };
-
-export const HOBBY_ICONS: Hobby["icon"][] = [
-  "none", ...SKILL_ICONS, "Mountain", "Gamepad2", "Book", "Plane",
-];
 
 export const SKILL_COLORS: SkillColor[] = ["green", "cyan", "purple", "yellow", "pink"];

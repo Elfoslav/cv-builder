@@ -1,5 +1,5 @@
 import { type Hobby } from "@/lib/cv-types";
-import { ICON_MAP } from "@/components/cv/SkillIcon";
+import { ICON_MAP } from "@/components/cv/hobby-icons";
 
 /** Icon + label pills, wrapped to multiple lines. */
 export const HobbyPills = ({ hobbies }: { hobbies: Hobby[] }) => (

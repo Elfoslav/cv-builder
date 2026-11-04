@@ -7,7 +7,7 @@ import {
   Users, Utensils, Video, Wrench, Mountain, Gamepad2, Book, Plane,
 } from "lucide-react";
 import { type LucideIcon } from "lucide-react";
-import { type Hobby, type SkillIconName } from "@/lib/cv-types";
+import { type Hobby } from "@/lib/cv-types";
 
 export const ICON_MAP: Record<Exclude<Hobby["icon"], "none">, LucideIcon> = {
   Award, Baby, Bike, BookOpen, Brain, Briefcase, Calculator, Camera,
@@ -18,7 +18,3 @@ export const ICON_MAP: Record<Exclude<Hobby["icon"], "none">, LucideIcon> = {
   Users, Utensils, Video, Wrench, Mountain, Gamepad2, Book, Plane,
 };
 
-export const SkillIcon = ({ name, className }: { name?: SkillIconName; className?: string }) => {
-  const Icon = name && ICON_MAP[name];
-  return Icon ? <Icon aria-hidden="true" className={className} /> : null;
-};

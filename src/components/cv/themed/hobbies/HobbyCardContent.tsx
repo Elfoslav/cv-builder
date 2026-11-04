@@ -1,5 +1,5 @@
 import { type Hobby } from "@/lib/cv-types";
-import { ICON_MAP } from "@/components/cv/SkillIcon";
+import { ICON_MAP } from "@/components/cv/hobby-icons";
 import { cn } from "@/lib/utils";
 
 interface HobbyCardContentProps {

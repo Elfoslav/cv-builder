@@ -1,4 +1,3 @@
-import { SkillIcon } from "@/components/cv/SkillIcon";
 import { type SkillColumnsMap } from "@/lib/cv-types";
 import { cardGridClass } from "@/components/cv/cv-utils";
 import type { SkillGroupWithItems } from "./SkillsView";
@@ -14,7 +13,6 @@ export const SkillDots = ({ groups, columns }: { groups: SkillGroupWithItems[]; 
           {items.map((s) => (
             <li key={s.id} className="cv-skill-dot flex items-center gap-2.5 text-sm">
               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-              <SkillIcon name={s.icon} className="h-4 w-4 shrink-0 text-primary" />
               <span className="font-medium text-foreground">{s.name}</span>
               <span className="ml-auto text-[11px] text-muted-foreground">{s.percentage}%</span>
             </li>

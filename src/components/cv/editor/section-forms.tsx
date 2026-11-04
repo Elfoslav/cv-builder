@@ -11,7 +11,7 @@ import {
   Select, SelectContent, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { ICON_MAP } from "@/components/cv/SkillIcon";
+import { ICON_MAP } from "@/components/cv/hobby-icons";
 import { SkillsSection } from "@/components/cv/SkillsSection";
 import {
   Plus, Trash2, ArrowUp, ArrowDown, Check,

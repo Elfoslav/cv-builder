@@ -65,12 +65,11 @@ export const CVShell = ({
     id: string;
     period: string;
     title: string;
-    subtitle: string;
     location: string;
     description: string;
     tags: string;
-  }): ListEntry => ({
-    id: entry.id, period: entry.period, title: entry.title, subtitle: entry.subtitle,
+  }, subtitle: string): ListEntry => ({
+    id: entry.id, period: entry.period, title: entry.title, subtitle,
     location: entry.location, description: entry.description, tags: splitTags(entry.tags),
   });
 
@@ -114,11 +113,11 @@ export const CVShell = ({
           : section(<EmptyState label="Add a short introduction…" />);
       case "experience":
         return data.experience.length
-          ? section(<TimelineView items={data.experience.map(toListEntry)} variant={d.experience} columns={columns.experience} />)
+          ? section(<TimelineView items={data.experience.map((entry) => toListEntry(entry, entry.company))} variant={d.experience} columns={columns.experience} />)
           : section(<EmptyState label="No experience entries yet" />);
       case "education":
         return data.education.length
-          ? section(<TimelineView items={data.education.map(toListEntry)} variant={d.education} columns={columns.education} />)
+          ? section(<TimelineView items={data.education.map((entry) => toListEntry(entry, entry.school))} variant={d.education} columns={columns.education} />)
           : section(<EmptyState label="No education entries yet" />);
       case "skills":
         return groupedSkills.length

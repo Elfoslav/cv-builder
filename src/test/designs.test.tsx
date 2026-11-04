@@ -18,6 +18,12 @@ const ThemeHarness = () => {
 };
 
 describe("color theme + section designs", () => {
+  it("shows school and company names in the shared CV renderer", () => {
+    const { container } = render(<Harness />);
+    expect(within(container).getByText(defaultCV.education[0].school)).toBeInTheDocument();
+    expect(within(container).getByText(defaultCV.experience[0].company)).toBeInTheDocument();
+  });
+
   it("applies the color theme to the CV wrapper", () => {
     const { container } = render(<Harness theme="forest" />);
     const themed = container.querySelector('[data-theme="forest"]');

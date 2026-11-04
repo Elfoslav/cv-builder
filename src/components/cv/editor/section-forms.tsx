@@ -1,26 +1,17 @@
 import { type ReactNode } from "react";
 import {
-  CVData, CVLabels, HOBBY_ICONS, Hobby, Experience, Education, Project,
+  CVData, CVLabels, Hobby, Experience, Education, Project,
 } from "@/lib/cv-types";
 import { CVActions, SectionKey, blankItem } from "./use-cv-actions";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import {
-  Select, SelectContent, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
-import * as SelectPrimitive from "@radix-ui/react-select";
-import { ICON_MAP } from "@/components/cv/hobby-icons";
+import { InterestIconPicker } from "./InterestIconPicker";
 import { SkillsSection } from "@/components/cv/SkillsSection";
 import {
-  Plus, Trash2, ArrowUp, ArrowDown, Check,
+  Plus, Trash2, ArrowUp, ArrowDown,
 } from "lucide-react";
-
-const HobbyIcon = ({ name, className }: { name: Hobby["icon"]; className?: string }) => {
-  const Icon = name === "none" ? null : ICON_MAP[name];
-  return Icon ? <Icon aria-hidden="true" className={className} /> : null;
-};
 
 const LABEL_KEYS: Partial<Record<SectionKey, { title: keyof CVLabels; subtitle: keyof CVLabels }>> = {
   about: { title: "aboutTitle", subtitle: "aboutSubtitle" },
@@ -284,34 +275,11 @@ const HobbiesForm = ({ data, actions }: { data: CVData; actions: CVActions }) =>
               onChange={(e) => actions.patchItem("hobbies", hb.id, { label: e.target.value })}
               maxLength={40}
             />
-            <Select
+            <InterestIconPicker
               value={hb.icon}
-              onValueChange={(v) => actions.patchItem("hobbies", hb.id, { icon: v as Hobby["icon"] })}
-            >
-              <SelectTrigger className="w-40" aria-label={`Icon for ${hb.label}`}>
-                <HobbyIcon name={hb.icon} className="h-3.5 w-3.5 shrink-0 text-primary" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {HOBBY_ICONS.map((ic) => (
-                  <SelectPrimitive.Item
-                    key={ic}
-                    value={ic}
-                    className="group relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground"
-                  >
-                    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-                      <SelectPrimitive.ItemIndicator>
-                        <Check className="h-4 w-4" />
-                      </SelectPrimitive.ItemIndicator>
-                    </span>
-                    <span className="mr-2 flex h-4 w-4 shrink-0 items-center justify-center text-primary group-focus:text-accent-foreground">
-                      <HobbyIcon name={ic} className="h-3.5 w-3.5" />
-                    </span>
-                    <SelectPrimitive.ItemText>{ic === "none" ? "No icon" : ic}</SelectPrimitive.ItemText>
-                  </SelectPrimitive.Item>
-                ))}
-              </SelectContent>
-            </Select>
+              label={hb.label}
+              onChange={(icon) => actions.patchItem("hobbies", hb.id, { icon })}
+            />
           </div>
         </ItemShell>
       ))}

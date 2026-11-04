@@ -17,9 +17,12 @@ describe("interest icons", () => {
     render(<Harness />);
     await user.click(screen.getAllByRole("button", { name: "Edit" })[6]);
     await user.click(await screen.findByRole("combobox", { name: `Icon for ${defaultCV.hobbies[0].label}` }));
+    await user.type(screen.getByRole("combobox", { name: "Search interest icons" }), "paw");
+    expect(screen.queryByRole("option", { name: "ChefHat" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("option", { name: "PawPrint" }));
     expect(screen.getByRole("combobox", { name: `Icon for ${defaultCV.hobbies[0].label}` })).toHaveTextContent("PawPrint");
     await user.click(screen.getByRole("combobox", { name: `Icon for ${defaultCV.hobbies[0].label}` }));
+    await user.type(screen.getByRole("combobox", { name: "Search interest icons" }), "no icon");
     await user.click(screen.getByRole("option", { name: "No icon" }));
     expect(screen.getByRole("combobox", { name: `Icon for ${defaultCV.hobbies[0].label}` })).toHaveTextContent("No icon");
   });

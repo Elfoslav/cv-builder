@@ -48,9 +48,12 @@ export interface SkillGroup {
 }
 
 export const SKILL_ICONS = [
-  "Award", "BookOpen", "Brain", "Briefcase", "Calculator", "ChartBar", "Code2", "Database",
-  "Globe", "Languages", "Lightbulb", "Megaphone", "Palette", "PenTool", "Settings", "Shield",
-  "Smartphone", "Terminal", "Users", "Wrench",
+  "Award", "Baby", "Bike", "BookOpen", "Brain", "Briefcase", "Calculator", "Camera",
+  "Cat", "ChartBar", "ChefHat", "Code2", "Coffee", "Database", "Dog", "Dumbbell",
+  "Fish", "Flower2", "Globe", "GraduationCap", "Heart", "Languages", "Leaf", "Lightbulb",
+  "Megaphone", "Microscope", "Music", "Paintbrush", "Palette", "PawPrint", "PenLine", "PenTool",
+  "Scissors", "Settings", "Shield", "Smartphone", "Sprout", "Stethoscope", "Terminal", "Truck",
+  "Users", "Utensils", "Video", "Wrench",
 ] as const;
 
 export type SkillIconName = (typeof SKILL_ICONS)[number];

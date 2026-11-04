@@ -11,20 +11,15 @@ import {
   Select, SelectContent, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import * as SelectPrimitive from "@radix-ui/react-select";
+import { ICON_MAP } from "@/components/cv/SkillIcon";
 import { SkillsSection } from "@/components/cv/SkillsSection";
 import {
   Plus, Trash2, ArrowUp, ArrowDown, Check,
-  Code2, Coffee, Gamepad2, Mountain, Music, Book, Camera, Bike, Plane, Dumbbell, Flower2,
-  type LucideIcon,
 } from "lucide-react";
 
-const HOBBY_ICON_MAP: Record<string, LucideIcon> = {
-  Mountain, Coffee, Music, Code2, Gamepad2, Book, Camera, Bike, Plane, Dumbbell, Flower2,
-};
-
-const HobbyIcon = ({ name, className }: { name: string; className?: string }) => {
-  const Icon = HOBBY_ICON_MAP[name] ?? Code2;
-  return <Icon className={className} />;
+const HobbyIcon = ({ name, className }: { name: Hobby["icon"]; className?: string }) => {
+  const Icon = name === "none" ? null : ICON_MAP[name];
+  return Icon ? <Icon aria-hidden="true" className={className} /> : null;
 };
 
 const LABEL_KEYS: Partial<Record<SectionKey, { title: keyof CVLabels; subtitle: keyof CVLabels }>> = {
@@ -293,7 +288,7 @@ const HobbiesForm = ({ data, actions }: { data: CVData; actions: CVActions }) =>
               value={hb.icon}
               onValueChange={(v) => actions.patchItem("hobbies", hb.id, { icon: v as Hobby["icon"] })}
             >
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-40" aria-label={`Icon for ${hb.label}`}>
                 <HobbyIcon name={hb.icon} className="h-3.5 w-3.5 shrink-0 text-primary" />
                 <SelectValue />
               </SelectTrigger>
@@ -312,7 +307,7 @@ const HobbiesForm = ({ data, actions }: { data: CVData; actions: CVActions }) =>
                     <span className="mr-2 flex h-4 w-4 shrink-0 items-center justify-center text-primary group-focus:text-accent-foreground">
                       <HobbyIcon name={ic} className="h-3.5 w-3.5" />
                     </span>
-                    <SelectPrimitive.ItemText>{ic}</SelectPrimitive.ItemText>
+                    <SelectPrimitive.ItemText>{ic === "none" ? "No icon" : ic}</SelectPrimitive.ItemText>
                   </SelectPrimitive.Item>
                 ))}
               </SelectContent>

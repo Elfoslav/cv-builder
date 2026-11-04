@@ -1,13 +1,4 @@
-import { type LucideIcon } from "lucide-react";
-import {
-  Code2, Coffee, Gamepad2, Mountain, Music, Book, Camera, Bike, Plane, Dumbbell, Flower2,
-} from "lucide-react";
 import { type CVData, type CardColumns } from "@/lib/cv-types";
-
-/** Maps hobby icon names to lucide icons. */
-export const ICON_MAP: Record<string, LucideIcon> = {
-  Mountain, Coffee, Music, Code2, Gamepad2, Book, Camera, Bike, Plane, Dumbbell, Flower2,
-};
 
 export const splitTags = (s: string) => s.split(",").map((t) => t.trim()).filter(Boolean);
 

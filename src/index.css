@@ -186,10 +186,18 @@
 	.empty-section {
 		display: none !important;
 	}
-	/* Inter-section spacing only — the top/bottom page gutter is the `@page`
-	   margin, applied uniformly to every page including continuation pages. */
-	main > section {
-		margin-bottom: 2rem !important;
+	/* Separate adjacent CV sections in print. Padding keeps the divider clear of
+	   both sections, while the repeating print-sheet gutters frame each page. */
+	.cv-main > section {
+		margin-bottom: 7mm !important;
+	}
+	.cv-main > section + section {
+		border-top: 1px solid hsl(var(--primary) / 0.35);
+		padding-top: 7mm;
+	}
+	.cv-section-header {
+		break-after: avoid;
+		page-break-after: avoid;
 	}
 	main {
 		padding: 0 !important;

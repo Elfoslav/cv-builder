@@ -102,7 +102,7 @@ export interface Project {
 export interface Hobby {
   id: string;
   label: string;
-  icon: "Mountain" | "Coffee" | "Music" | "Code2" | "Gamepad2" | "Book" | "Camera" | "Bike" | "Plane" | "Dumbbell" | "Flower2";
+  icon: SkillIconName | "Mountain" | "Gamepad2" | "Book" | "Plane" | "none";
 }
 
 export interface CVLabels {
@@ -264,7 +264,7 @@ export const defaultCV: CVData = {
 };
 
 export const HOBBY_ICONS: Hobby["icon"][] = [
-  "Mountain", "Coffee", "Music", "Code2", "Gamepad2", "Book", "Camera", "Bike", "Plane", "Dumbbell", "Flower2",
+  "none", ...SKILL_ICONS, "Mountain", "Gamepad2", "Book", "Plane",
 ];
 
 export const SKILL_COLORS: SkillColor[] = ["green", "cyan", "purple", "yellow", "pink"];

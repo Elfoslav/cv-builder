@@ -1,5 +1,9 @@
+import { SkillIcon } from "@/components/cv/SkillIcon";
+import { type SkillIconName } from "@/lib/cv-types";
+
 interface SkillBarProps {
   name: string;
+  icon?: SkillIconName;
   percentage: number;
   /** @deprecated color is now derived from percentage */
   color?: string;
@@ -19,11 +23,11 @@ const barColor = (p: number) => {
   return 'bg-skill-low';
 };
 
-export const SkillBar = ({ name, percentage }: SkillBarProps) => {
+export const SkillBar = ({ name, icon, percentage }: SkillBarProps) => {
   return (
     <div className="cv-skillbar group">
       <div className="mb-1 flex items-baseline justify-between gap-2">
-        <span className="text-xs font-medium text-foreground leading-tight">{name}</span>
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground leading-tight"><SkillIcon name={icon} className="h-3.5 w-3.5 shrink-0" />{name}</span>
         <span className="text-[10px] text-muted-foreground leading-tight">{levelLabel(percentage)}</span>
       </div>
       <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">

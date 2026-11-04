@@ -47,9 +47,18 @@ export interface SkillGroup {
   name: string;
 }
 
+export const SKILL_ICONS = [
+  "Award", "BookOpen", "Brain", "Briefcase", "Calculator", "ChartBar", "Code2", "Database",
+  "Globe", "Languages", "Lightbulb", "Megaphone", "Palette", "PenTool", "Settings", "Shield",
+  "Smartphone", "Terminal", "Users", "Wrench",
+] as const;
+
+export type SkillIconName = (typeof SKILL_ICONS)[number];
+
 export interface Skill {
   id: string;
   name: string;
+  icon?: SkillIconName;
   percentage: number;
   color: SkillColor;
   /** ID of the SkillGroup this skill belongs to */

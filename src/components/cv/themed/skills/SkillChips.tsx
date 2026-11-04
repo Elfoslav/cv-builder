@@ -1,3 +1,4 @@
+import { SkillIcon } from "@/components/cv/SkillIcon";
 import { type SkillColumnsMap } from "@/lib/cv-types";
 import { cardGridClass } from "@/components/cv/cv-utils";
 import type { SkillGroupWithItems } from "./SkillsView";
@@ -13,8 +14,9 @@ export const SkillChips = ({ groups, columns }: { groups: SkillGroupWithItems[];
           {items.map((s) => (
             <span
               key={s.id}
-              className="cv-skill-chip rounded-full border border-primary/25 bg-primary/[0.06] px-3 py-1 text-xs font-medium text-primary"
+              className="cv-skill-chip inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/[0.06] px-3 py-1 text-xs font-medium text-primary"
             >
+              <SkillIcon name={s.icon} className="h-3.5 w-3.5 shrink-0" />
               {s.name}
             </span>
           ))}

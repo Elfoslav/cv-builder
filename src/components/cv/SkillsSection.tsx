@@ -1,5 +1,7 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { CVData, Skill } from "@/lib/cv-types";
+import { CVData, Skill, SKILL_ICONS, type SkillIconName } from "@/lib/cv-types";
+import { SkillIcon } from "@/components/cv/SkillIcon";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Folder, Pencil, Check, X, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
@@ -169,6 +171,19 @@ export const SkillsSection = ({ data, setData }: Props) => {
                     maxLength={40}
                     className="h-8 flex-1 text-sm"
                   />
+                  <Select value={s.icon ?? "none"} onValueChange={(value) => patchSkill(s.id, { icon: value === "none" ? undefined : value as SkillIconName })}>
+                    <SelectTrigger className="h-8 w-28" aria-label={`Icon for ${s.name}`}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No icon</SelectItem>
+                      {SKILL_ICONS.map((icon) => (
+                        <SelectItem key={icon} value={icon}>
+                          <span className="flex items-center gap-2"><SkillIcon name={icon} className="h-4 w-4" />{icon}</span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <LevelSelect value={s.percentage} onChange={(pct) => patchSkill(s.id, { percentage: pct })} />
                    <Button size="icon-sm" variant="ghost" disabled={sIdx === 0} onClick={() => moveSkill(s.id, -1)}>
                     <ArrowUp className="h-3.5 w-3.5" />

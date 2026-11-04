@@ -13,7 +13,7 @@ export const SkillBars = ({ groups, columns }: { groups: SkillGroupWithItems[]; 
         <SkillGroupHeading name={group.name} />
         <div className={cardGridClass(columns.skills, "grid grid-cols-1 gap-y-2.5", "gap-x-6 gap-y-2.5")}>
           {items.map((s) => (
-            <SkillBar key={s.id} name={s.name} percentage={s.percentage} color={s.color} />
+            <SkillBar key={s.id} name={s.name} icon={s.icon} percentage={s.percentage} color={s.color} />
           ))}
         </div>
       </div>
